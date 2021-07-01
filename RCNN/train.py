@@ -1,0 +1,260 @@
+import copy
+
+from Averager import Averager
+import numpy as np
+import torch.nn as nn
+import torch
+import time
+import datetime
+from torch.utils.data import DataLoader
+from QRDatasets import QRDatasets
+from utils import get_train_transform, collate_fn, plotting
+from wbf_ensemble import make_ensemble_predictions, run_wbf
+import os
+import pandas as pd
+import CSVGenerator
+from tqdm import tqdm
+from baseline_model import baseline_net
+
+class train:
+    def __init__(self, model: nn.Module, optimizer: torch.optim, num_epochs: int, train_dataset: QRDatasets,
+                 test_dataset: QRDatasets = None, batch_size: int = 4, valid_ratio: float = 0.2, early_stop: int = 2,
+                 lr_scheduler: torch.optim.lr_scheduler = None, model_dir_path: str = 'models'):
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        self.model = model
+        self.model.to(self.device)
+        self.optimizer = optimizer
+        self.num_epochs = num_epochs
+        self.lr_scheduler = lr_scheduler
+        self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
+        self.model_dir_path = model_dir_path
+        # This is required for early stopping, the number of epochs we will wait with no improvement before stopping
+        self.early_stop = early_stop
+        self.batch_size = batch_size
+        self.valid_ratio = valid_ratio
+
+    def mini_batch_training(self):
+        # preparing dataloader
+        data_size = self.train_dataset.__len__()
+        train_indices = np.arange(data_size)
+        np.random.shuffle(train_indices)
+        valid_indices = train_indices[:int(self.valid_ratio * data_size)]
+        train_indices = train_indices[int(self.valid_ratio * data_size):]
+        train_set = torch.utils.data.Subset(self.train_dataset, train_indices)
+        valid_set = torch.utils.data.Subset(self.train_dataset, valid_indices)
+        train_data_loader = DataLoader(train_set, shuffle=True, batch_size=self.batch_size,
+                                       pin_memory=True, collate_fn=collate_fn, num_workers=4)
+        valid_data_loader = DataLoader(valid_set, shuffle=True, batch_size=self.batch_size,
+                                       pin_memory=True, collate_fn=collate_fn, num_workers=4)
+
+        patience = self.early_stop
+        best_val = None
+        best_loss = None
+        best_model = None
+        train_score_list = []
+        train_loss_list = []
+        val_score_list = []
+        val_loss_list = []
+
+        print("start training")
+        for epoch in range(self.num_epochs):
+            print("Epoch "+str(epoch+1))
+            train_loss_hist = Averager()
+            valid_loss_hist = Averager()
+            start_time = time.time()
+            itr = 1
+            train_image_precisions = []
+            iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
+            train_loss_hist.reset()
+            train_scores = []
+            print("training")
+            for images, targets, image_ids in tqdm(train_data_loader):
+                self.model.train()
+                images = list(image.to(self.device) for image in images)
+                targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
+                           for t in targets]
+                # [{k: v.double().to(device) if k =='boxes' else v.to(device) for k, v in t.items()} for t in targets]
+                loss_dict = self.model(images, targets)
+                losses = sum(loss for loss in loss_dict.values())
+                loss_value = losses.item()
+
+                train_loss_hist.send(loss_value)
+
+                self.optimizer.zero_grad()
+                losses.backward()
+                self.optimizer.step()
+
+                # if itr % 50 == 0:
+                #     print(f"Iteration #{itr} loss: {loss_value}")
+
+                itr += 1
+                predictions = make_ensemble_predictions(images, self.device, [self.model])
+                train_image_precisions = self.gather_iou_scores(predictions, targets, images,
+                                                                train_image_precisions, iou_thresholds)
+
+            train_score_list.append(np.mean(train_image_precisions))
+            train_loss_list.append(train_loss_hist.value)
+
+            # update the learning rate
+            if self.lr_scheduler is not None:
+                self.lr_scheduler.step()
+
+            # At every epoch we will also calculate the validation IOU
+            print("validation")
+            validation_image_precisions = []
+            for images, targets, imageids in tqdm(valid_data_loader):  # return image, target, image_id
+                # model must be in train mode so that forward() would return losses
+                self.model.train()
+                images = list(image.to(self.device) for image in images)
+                targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
+                           for t in targets]
+                # outputs = model(images)
+                loss_dict = self.model(images, targets)
+                losses = sum(loss for loss in loss_dict.values())
+                loss_value = losses.item()
+                valid_loss_hist.send(loss_value)
+
+                # it is simply the combination of every output list from the model lists
+                predictions = make_ensemble_predictions(images, self.device, [self.model])
+                # gathering the iou scores into validation_image_precisions
+                validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
+                                                                     validation_image_precisions, iou_thresholds)
+
+            val_iou = np.mean(validation_image_precisions)
+#             print(val_iou)
+            val_score_list.append(val_iou)
+            val_loss = valid_loss_hist.value
+            val_loss_list.append(val_loss)
+            plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, self.model_dir_path)
+            print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}", "Validation IOU: {0:.4f}".format(val_iou),
+                  "Time taken :",
+                  str(datetime.timedelta(seconds=time.time() - start_time))[:7])
+#             if not best_val:
+            if not best_loss:
+                # So any validation roc_auc we have is the best one for now
+                best_val = val_iou
+                best_loss = val_loss
+                print("Saving model")
+                if not os.path.exists(self.model_dir_path):
+                    os.mkdir(self.model_dir_path)
+                # Saving the model
+                with open(self.model_dir_path + "/" + "best_model", 'w') as f:
+                    torch.save(self.model, self.model_dir_path + "/" + "best_model")
+                best_model = copy.deepcopy(self.model)
+                # continue
+#           elif val_iou >= best_val:
+            elif val_loss <= best_loss:
+                print("Saving model")
+                best_val = val_iou
+                best_loss = val_loss
+                # Resetting patience since we have new best validation accuracy
+                patience = self.early_stop
+                # Saving current best model
+                with open(self.model_dir_path + "/" + "best_model", 'w') as f:
+                    torch.save(self.model, self.model_dir_path + "/" + "best_model")
+
+            else:
+                patience -= 1
+                if patience == 0:
+                    print('Early stopping.')
+                    print('Best Validation IOU: {:.3f}'.format(best_val))
+                    print('Best Validation Loss: {:.3f}'.format(best_loss))
+                    break
+
+        return best_model, train_score_list, train_loss_list, val_score_list, val_loss_list
+
+    # return the array storing the scores of each image from the given images array
+    def gather_iou_scores(self, predictions, targets, images: np.array, image_precisions, iou_thresholds):
+        for i, image in enumerate(images):
+              scores = np.array([prediction[i]['scores'].data.cpu().numpy() for prediction in predictions])
+              image_precisions.append(np.mean(scores))
+        return image_precisions
+
+    def predict(self):
+        if (self.test_dataset):
+            detection_threshold = 0.5
+            results = []
+            outputs = []
+            test_images = []
+            data_loader = DataLoader(self.test_dataset, shuffle=True, batch_size=self.test_dataset.__len__(),
+                                     pin_memory=True, collate_fn=collate_fn, num_workers=4)
+            self.model.eval()
+            for images, targets, image_ids in data_loader:
+                images = list(image.to(self.device) for image in images)
+                predictions = make_ensemble_predictions(images, self.device, [self.model])
+
+                for i, image in enumerate(images):
+                    test_images.append(image)  # Saving image values
+                    boxes, scores, labels = run_wbf(predictions, image_index=i)
+
+                    boxes = boxes.astype(np.int32).clip(min=0, max=1023)
+
+                    preds = boxes
+                    preds_sorted_idx = np.argsort(scores)[::-1]
+                    preds_sorted = preds[preds_sorted_idx]
+                    boxes = preds
+
+                    output = {
+                        'boxes': boxes,
+                        'scores': scores
+                    }
+
+                    outputs.append(output)  # Saving outputs and scores
+                    image_id = image_ids[i]
+
+            return outputs, test_images
+        else:
+            print("There is no defined dataset for testing")
+            return None, None
+
+def main():        
+    # execute only if run as a script
+    print("Please Enter The Path To Images For Training")
+    path_to_images = input()
+    print("You Just Enter: " + path_to_images)
+    
+    # check whether the path exists
+    while not os.path.exists(path_to_images):
+        print("Path does not exist")
+        print("Please Re-Enter The Path To Images For Training")
+        path_to_images = input()
+        print("You Just Enter: " + path_to_images)
+    
+    if not os.path.exists(path_to_images+"/train_qr_labels.csv"):
+        CSVGenerator.run(path_to_images)
+    
+    train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
+    train_tf = get_train_transform()
+    train_dataset = QRDatasets(path_to_images, train_df, transforms=train_tf)
+    base_model = baseline_net(num_classes=2)
+    params = [p for p in base_model.parameters() if p.requires_grad]
+    optimizer = torch.optim.SGD(params, lr=0.002, momentum=0.9, weight_decay=0.0005)
+    my_trainer = train(model=base_model, optimizer=optimizer, num_epochs=20, early_stop=3, train_dataset=train_dataset)
+    my_trainer.mini_batch_training()
+
+    
+if __name__ == "__main__":
+    main()
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
