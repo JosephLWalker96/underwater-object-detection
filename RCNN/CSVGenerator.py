@@ -1,37 +1,33 @@
+import argparse
 import pandas as pd
 import numpy as np
 import cv2
 import os
 from tqdm import tqdm
 
-def run(path_to_images = None):
-    if path_to_images:
-        # Input for Images Folder
-        print("Please Enter The Path To Images Folder For Training")
-        path_to_images = input()
-        print("You Just Enter: " + path_to_images)
-
-        # check whether the path exists
-        while not os.path.exists(path_to_images):
-            print("Path does not exist")
-            print("Please Re-Enter The Path To Images For Training")
-            path_to_images = input()
-            print("You Just Enter: " + path_to_images)
-    
-    # Inputs for Text Files Folder
-    print("Please Enter The Path To Folder of Text Files With SUIT Location")
-    path_to_bbox = input()
-    print("You Just Enter: " + path_to_bbox)
+def run(args):
+    path_to_images = args.image_path
+    path_to_bbox = args.label_path
     
     # check whether the path exists
-    while not os.path.exists(path_to_bbox):
-        print("Path does not exist")
-        print("Please Re-Enter The Path To Folder of Text Files With SUIT Location")
-        path_to_bbox = input()
-        print("You Just Enter: " + path_to_bbox)
+    if path_to_images is None:
+        print("Please specify image path with '--image_path path_to_images'")
+        raise FileNotFoundError
+
+    if path_to_bbox is None:
+        print("Please specify label path with '--label_path path_to_bbox_label'")
+        raise FileNotFoundError
+
+    if not os.path.exists(path_to_images):
+        print("Label path does not exist")
+        raise FileNotFoundError
+
+    if not os.path.exists(path_to_bbox):
+        print("Label path does not exist")
+        raise FileNotFoundError
     
     directory = path_to_images
-    qr_df = pd.DataFrame(columns = ["id", "Location", "Camera", "File Name", "Image", "Image Width", "Image Height"])
+    qr_df = pd.DataFrame(columns = ["Location", "Camera", "File Name", "Image", "Image Width", "Image Height"])
   
     print("Getting Images Info")
     for loc_name in tqdm(os.listdir(directory)):
@@ -46,13 +42,12 @@ def run(path_to_images = None):
                             img_path = cam_path+"/"+filename
                             img = np.array(cv2.imread(img_path))
                             qr_df = qr_df.append({
-    #                             "id":idx,
                                 "Location":loc_name,
                                 "Camera":cam_name,
                                 "File Name":filename,
                                 "Image":img_name,
-                                "Image Width":img.shape[0],
-                                "Image Height":img.shape[1]
+                                "Image Width":img.shape[1],
+                                "Image Height":img.shape[0]
                             }, ignore_index = True)
     
     # this following may need to be modifed
@@ -74,30 +69,32 @@ def run(path_to_images = None):
         if img_name == 'DSC_6775':
             continue
 
+        if qr_df["Image"][qr_df["Image"] == img_name].count() == 0:
+            continue
+
         coord = np.loadtxt(txt_path)
 
         records = qr_df.loc[qr_df["Image"]==img_name]
 
-        image = cv2.imread(img_path)
-        hor_len = int(records['Image Height'])
-        vert_len = int(records['Image Width'])
+        width = int(records['Image Width'])
+        height = int(records['Image Height'])
 
-        xs = int(coord[1] * hor_len)
-        ys = int(coord[2] * vert_len)
+        xs = int(coord[1] * width)
+        ys = int(coord[2] * height)
 
-        h = int(coord[3] * hor_len)
-        w = int(coord[4] * vert_len)
+        w = int(coord[3] * width)
+        h = int(coord[4] * height)
 
-        x1 = xs -int(.5*h)
-        x2 = xs +int(.5*h)
+        x1 = xs -int(.5*w)
+        x2 = xs +int(.5*w)
 
-        y1= ys -int(.5*w)
-        y2 = ys+int(.5*w)
+        y1= ys -int(.5*h)
+        y2 = ys+int(.5*h)
 
         qr_df.loc[qr_df["Image"]==img_name, 'x'] = x1
         qr_df.loc[qr_df["Image"]==img_name, 'y'] = y1
-        qr_df.loc[qr_df["Image"]==img_name, 'w'] = h
-        qr_df.loc[qr_df["Image"]==img_name, 'h'] = w
+        qr_df.loc[qr_df["Image"]==img_name, 'w'] = w
+        qr_df.loc[qr_df["Image"]==img_name, 'h'] = h
                             
     train_qrdf = qr_df[qr_df["x"]!=-1]
     all_qrdf = qr_df
@@ -110,14 +107,8 @@ def run(path_to_images = None):
                             
                             
 if __name__ == "__main__":
-    run()                        
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--image_path', type=str)
+    parser.add_argument('--label_path', type=str)
+    args = parser.parse_args()
+    run(args)

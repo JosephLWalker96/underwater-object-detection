@@ -14,12 +14,13 @@ import os
 import pandas as pd
 import CSVGenerator
 from tqdm import tqdm
-from baseline_model import baseline_net
+from model import net
+import argparse
 
 class train:
     def __init__(self, model: nn.Module, optimizer: torch.optim, num_epochs: int, train_dataset: QRDatasets,
                  test_dataset: QRDatasets = None, batch_size: int = 4, valid_ratio: float = 0.2, early_stop: int = 2,
-                 lr_scheduler: torch.optim.lr_scheduler = None, model_dir_path: str = 'models'):
+                 lr_scheduler: torch.optim.lr_scheduler = None, model_path: str = 'models/faster-cnn'):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.model = model
         self.model.to(self.device)
@@ -28,7 +29,12 @@ class train:
         self.lr_scheduler = lr_scheduler
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
-        self.model_dir_path = model_dir_path
+
+        # getting where to store model
+        model_path = model_path.split('/')
+        self.model_dir_path = model_path[0]
+        self.model_filename = model_path[1]
+
         # This is required for early stopping, the number of epochs we will wait with no improvement before stopping
         self.early_stop = early_stop
         self.batch_size = batch_size
@@ -120,12 +126,14 @@ class train:
                 # gathering the iou scores into validation_image_precisions
                 validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
                                                                      validation_image_precisions, iou_thresholds)
-
+            print(validation_image_precisions)
             val_iou = np.mean(validation_image_precisions)
 #             print(val_iou)
             val_score_list.append(val_iou)
             val_loss = valid_loss_hist.value
             val_loss_list.append(val_loss)
+            if not os.path.exists(self.model_dir_path):
+                os.mkdir(self.model_dir_path)
             plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, self.model_dir_path)
             print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}", "Validation IOU: {0:.4f}".format(val_iou),
                   "Time taken :",
@@ -136,11 +144,9 @@ class train:
                 best_val = val_iou
                 best_loss = val_loss
                 print("Saving model")
-                if not os.path.exists(self.model_dir_path):
-                    os.mkdir(self.model_dir_path)
                 # Saving the model
-                with open(self.model_dir_path + "/" + "best_model", 'w') as f:
-                    torch.save(self.model, self.model_dir_path + "/" + "best_model")
+                with open(self.model_dir_path + "/" + self.model_filename, 'w') as f:
+                    torch.save(self.model, self.model_dir_path + "/" + self.model_filename)
                 best_model = copy.deepcopy(self.model)
                 # continue
 #           elif val_iou >= best_val:
@@ -151,8 +157,8 @@ class train:
                 # Resetting patience since we have new best validation accuracy
                 patience = self.early_stop
                 # Saving current best model
-                with open(self.model_dir_path + "/" + "best_model", 'w') as f:
-                    torch.save(self.model, self.model_dir_path + "/" + "best_model")
+                with open(self.model_dir_path + "/" + self.model_filename, 'w') as f:
+                    torch.save(self.model, self.model_dir_path + "/" + self.model_filename)
 
             else:
                 patience -= 1
@@ -208,53 +214,39 @@ class train:
             print("There is no defined dataset for testing")
             return None, None
 
-def main():        
+def main(args):
     # execute only if run as a script
-    print("Please Enter The Path To Images For Training")
-    path_to_images = input()
-    print("You Just Enter: " + path_to_images)
-    
+    path_to_images = args.image_path
+
+    if path_to_images is None:
+        print("Please specify image path with '--image_path path_to_images'")
+        raise FileNotFoundError
+
     # check whether the path exists
-    while not os.path.exists(path_to_images):
-        print("Path does not exist")
-        print("Please Re-Enter The Path To Images For Training")
-        path_to_images = input()
-        print("You Just Enter: " + path_to_images)
+    if not os.path.exists(path_to_images):
+        print("Train Image path does not exist")
+        raise FileNotFoundError
     
     if not os.path.exists(path_to_images+"/train_qr_labels.csv"):
-        CSVGenerator.run(path_to_images)
-    
+        CSVGenerator.run(args)
+
+    print("loading "+path_to_images+"/train_qr_labels.csv")
     train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
     train_tf = get_train_transform()
     train_dataset = QRDatasets(path_to_images, train_df, transforms=train_tf)
-    base_model = baseline_net(num_classes=2)
-    params = [p for p in base_model.parameters() if p.requires_grad]
+    model = net(num_classes=2, nn_type=args.model)
+    params = [p for p in model.parameters() if p.requires_grad]
+    # print(params.__len__())
     optimizer = torch.optim.SGD(params, lr=0.002, momentum=0.9, weight_decay=0.0005)
-    my_trainer = train(model=base_model, optimizer=optimizer, num_epochs=20, early_stop=3, train_dataset=train_dataset)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
+    my_trainer = train(model=model, optimizer=optimizer, num_epochs=20, early_stop=3,
+                       train_dataset=train_dataset, model_path = 'models/'+args.model, lr_scheduler=scheduler)
     my_trainer.mini_batch_training()
 
     
 if __name__ == "__main__":
-    main()
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--image_path', type=str)
+    parser.add_argument('--label_path', type=str)
+    parser.add_argument('--model', default='faster-rcnn', type=str)
+    main(parser.parse_args())
