@@ -21,5 +21,4 @@ Folder/
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image4.jpg 
 
 YOLOv5
-<br />need to check out https://github.com/ultralytics/yolov5 to run with yolov5
-<bbr />run ./run_yolo.sh
+<br />run ./run_yolo.sh
