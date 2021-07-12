@@ -43,6 +43,7 @@ def generate_test_csv(path_to_images):
     print("writting csv for testing data to " + path_to_images + "/test_qr_labels.csv")
     qr_df.to_csv(path_to_images + "/test_qr_labels.csv")
 
+
 def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
     print("iterating through the test images")
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -106,20 +107,19 @@ def run(args):
 
     # loading up the model
     model = None
-    if os.path.exists("models/"+args.model):
+    if os.path.exists("models/" + args.model):
         print("loading model")
-        with open("models/"+args.model, 'rb') as f:
-            model = torch.load("models/"+args.model)
+        with open("models/" + args.model, 'rb') as f:
+            model = torch.load("models/" + args.model)
     else:
         print("model does not exist")
         print("training a new model")
         args.image_path = args.train_image_path
         train.main(args)
         print("loading model")
-        with open("models/"+args.model, 'rb') as f:
-            model = torch.load("models/"+args.model)
+        with open("models/" + args.model, 'rb') as f:
+            model = torch.load("models/" + args.model)
     generate_image_with_bbox(model, test_dataset, qr_df, path_to_images)
-
 
 
 if __name__ == "__main__":
