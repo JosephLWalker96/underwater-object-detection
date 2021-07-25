@@ -6,7 +6,7 @@ Faster-RCNN
 The project is built on top of the tutorial
 in https://www.kaggle.com/havinath/object-detection-using-pytorch-training#Creating-Training-and-Validation-datasets
 <br />Running the following command line to run<br />
-cd src<br />
+cd RCNN/src<br />
 ./run.sh<br />
 <br />
 The Image Folder should look like:<br />
@@ -20,5 +20,6 @@ Folder/
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image3.png
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image4.jpg 
 
-YOLOv5
-<br />run ./run_yolo.sh
+YOLOv5<br />
+cd RCNN/src<br />
+run ./run_yolo.sh
