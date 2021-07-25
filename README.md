@@ -1,7 +1,7 @@
 # QR-Code-DL
 
 The datasets folder needs to be put in the root directory before running.
-<br />
+
 <br />
 The project directory should look like:<br />
 underwater-object-detection
@@ -9,8 +9,8 @@ underwater-object-detection
 <br />&nbsp;&nbsp;&nbsp;&nbsp;Image/
 <br />&nbsp;&nbsp;RCNN
 <br />&nbsp;&nbsp;YOLO_script
+<br />&nbsp;&nbsp;color-correction-tool
 
-<br />
 <br />
 The Image Folder should look like:<br />
 Folder/
@@ -36,4 +36,4 @@ cd RCNN<br />
 YOLOv5<br />
 git clone https://github.com/ultralytics/yolov5.git<br />
 cd YOLO_script<br />
-run ./run_yolo.sh
+run ./run_yolo.sh<br />
