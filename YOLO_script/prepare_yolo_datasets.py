@@ -11,7 +11,7 @@ def main():
     path_to_load_test_images = '../Datasets/test_images'
 
     if not (os.path.exists(train_csv) and os.path.exists(test_csv)):
-        os.system('python ../RCNN/split_data.py')
+        os.system('python plit_data.py')
 
     train_df = pd.read_csv(train_csv)
     test_df = pd.read_csv(test_csv)
