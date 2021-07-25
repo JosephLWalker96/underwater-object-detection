@@ -1,6 +1,6 @@
 # QR-Code-DL
 
-The datasets folder needs to be put in the root directory before running.
+The datasets folder needs to be put in the underwater-object-detection directory before running.
 
 <br />
 The project directory should look like:<br />
