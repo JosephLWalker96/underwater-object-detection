@@ -4,7 +4,7 @@ The datasets folder needs to be put in the underwater-object-detection directory
 
 <br />
 The project directory should look like:<br />
-underwater-object-detection
+underwater-object-detection/
 <br />&nbsp;&nbsp;Datasets/
 <br />&nbsp;&nbsp;&nbsp;&nbsp;Image/
 <br />&nbsp;&nbsp;RCNN
