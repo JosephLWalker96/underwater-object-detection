@@ -30,6 +30,7 @@ The project is built on top of the tutorial
 in https://www.kaggle.com/havinath/object-detection-using-pytorch-training#Creating-Training-and-Validation-datasets
 <br />Running the following command line to run<br />
 cd RCNN<br />
+mv qr_code.yaml ../yolov5/data/qr_code.yaml<br />
 ./run.sh<br />
 <br />
 
