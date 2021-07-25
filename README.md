@@ -1,7 +1,16 @@
 # QR-Code-DL
 
 The datasets folder needs to be put in the root directory before running.
+<br />
+<br />
+The project directory should look like:<br />
+underwater-object-detection
+<br />&nbsp;&nbsp;Datasets/
+<br />&nbsp;&nbsp;&nbsp;&nbsp;Image/
+<br />&nbsp;&nbsp;RCNN
+<br />&nbsp;&nbsp;YOLO_script
 
+<br />
 <br />
 The Image Folder should look like:<br />
 Folder/
