@@ -4,7 +4,8 @@ git clone https://github.com/ultralytics/yolov5
 cd yolov5 || exit
 pip install -r requirements.txt
 cd ..
-cd YOLO_script || exit
+cd YOLO_script 
+mv qr_code.yaml ../yolov5/data/qr_code.yaml|| exit
 
 test_image_path='../Datasets/test_images'
 path_to_yolov5='../yolov5'
