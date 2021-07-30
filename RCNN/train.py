@@ -126,7 +126,7 @@ class train:
                 # gathering the iou scores into validation_image_precisions
                 validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
                                                                      validation_image_precisions, iou_thresholds)
-            print(validation_image_precisions)
+#             print(validation_image_precisions)
             val_iou = np.mean(validation_image_precisions)
 #             print(val_iou)
             val_score_list.append(val_iou)
