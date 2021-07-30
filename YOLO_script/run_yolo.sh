@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ ! -d $test_directory ]; then
+if [ ! -d '../yolov5' ]; then
   cd ..
   git clone https://github.com/ultralytics/yolov5
   cd yolov5 || exit
