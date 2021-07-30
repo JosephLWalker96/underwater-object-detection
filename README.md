@@ -33,10 +33,7 @@ cd RCNN<br />
 <br />
 
 YOLOv5<br />
-git clone https://github.com/ultralytics/yolov5.git<br />
-cd YOLO_script<br />
-mv qr_code.yaml ../yolov5/data/qr_code.yaml<br />
-run ./run_yolo.sh<br />
+./run_yolo.sh<br />
 <br />
 Remember to change the path in qr_code.yaml accordingly. i.e. path should always be path/to/Datasets/YOLO
 <br />
