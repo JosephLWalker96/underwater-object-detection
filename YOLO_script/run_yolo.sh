@@ -6,7 +6,7 @@ if [ ! -d '../yolov5' ]; then
   pip install -r requirements.txt
   cd ..
   cd YOLO_script 
-  mv qr_code.yaml ../yolov5/data/qr_code.yaml|| exit
+  cp qr_code.yaml ../yolov5/data/qr_code.yaml|| exit
 fi
 
 test_image_path='../Datasets/test_images'
