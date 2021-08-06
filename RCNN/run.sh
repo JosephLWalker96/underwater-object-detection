@@ -4,18 +4,17 @@
 image_path='../Datasets/Image'
 label_path='../Datasets/bboxes_for_SUIT_images_2021-05-10-02-29-37'
 ratio=0.76
-test_directory='../Datasets/test_images'
-train_directory='../Datasets/train_images'
+directory='../Datasets/images'
+#train_directory='../Datasets/images'
 # if there is one or more args, remove the test and train datasets
 if [ $# -ge 1 ]; then
-  rm -r $test_directory
-  rm -r $train_directory
+  rm -r $directory
+  rm -r $directory
 fi
-if [ ! -d $test_directory ]; then
+if [ ! -d $directory ]; then
   python -W ignore split_data.py --image_path $image_path --label_path $label_path --train_ratio $ratio
+  python -W ignore prepare_yolo_format.py
 fi
-if [ ! -d $train_directory ]; then
-  python -W ignore split_data.py --image_path $image_path --label_path $label_path --train_ratio $ratio
-fi
-python -W ignore main.py --test_image_path $test_directory --train_image_path $train_directory --label_path $label_path
+
+python -W ignore main.py --image_path $directory --label_path $label_path
 

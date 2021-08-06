@@ -89,7 +89,7 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
 
 def run(args):
     # Input for Images Folder
-    path_to_images = args.test_image_path
+    path_to_images = args.image_path
 
     # check whether the path exists
     if not os.path.exists(path_to_images):
@@ -103,7 +103,7 @@ def run(args):
     print("loading " + path_to_images + "/test_qr_labels.csv")
     qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
     test_tf = get_test_transform()
-    test_dataset = QRDatasets(path_to_images, qr_df, transforms=test_tf)
+    test_dataset = QRDatasets(path_to_images+'/test', qr_df, transforms=test_tf)
 
     # loading up the model
     model = None
@@ -124,8 +124,8 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_image_path', type=str)
-    parser.add_argument('--train_image_path', type=str)
+    # parser.add_argument('--test_image_path', type=str)
+    parser.add_argument('--image_path', type=str)
     parser.add_argument('--label_path', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
     args = parser.parse_args()

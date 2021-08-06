@@ -23,8 +23,9 @@ class QRDatasets(Dataset):
     def __getitem__(self, idx: int):
         records = self.dataframe[self.dataframe.index == idx]
         # records = self.dataframe.iloc[idx]
-        img_path = self.image_dir + "/" + str(records["Location"].values[0]) + "/" + \
-                   str(records["Camera"].values[0]) + "/" + str(records["File Name"].values[0])
+        # img_path = self.image_dir + "/" + str(records["Location"].values[0]) + "/" + \
+        #            str(records["Camera"].values[0]) + "/" + str(records["File Name"].values[0])
+        img_path = self.image_dir + '/' + str(records["img_name"].values[0])
 
         img = np.array(cv2.imread(img_path)).astype(np.float32)
         img /= 255.0

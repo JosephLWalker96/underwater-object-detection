@@ -12,14 +12,14 @@ from utils import get_train_transform, collate_fn, plotting
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 import os
 import pandas as pd
-import CSVGenerator
+import split_data, prepare_yolo_format
 from tqdm import tqdm
 from model import net
 import argparse
 
 class train:
     def __init__(self, model: nn.Module, optimizer: torch.optim, num_epochs: int, train_dataset: QRDatasets,
-                 test_dataset: QRDatasets = None, batch_size: int = 4, valid_ratio: float = 0.2, early_stop: int = 2,
+                 val_dataset: QRDatasets = None, batch_size: int = 4, valid_ratio: float = 0.2, early_stop: int = 2,
                  lr_scheduler: torch.optim.lr_scheduler = None, model_path: str = 'models/faster-cnn'):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.model = model
@@ -28,7 +28,7 @@ class train:
         self.num_epochs = num_epochs
         self.lr_scheduler = lr_scheduler
         self.train_dataset = train_dataset
-        self.test_dataset = test_dataset
+        self.val_dataset = val_dataset
 
         # getting where to store model
         model_path = model_path.split('/')
@@ -42,16 +42,16 @@ class train:
 
     def mini_batch_training(self):
         # preparing dataloader
-        data_size = self.train_dataset.__len__()
-        train_indices = np.arange(data_size)
-        np.random.shuffle(train_indices)
-        valid_indices = train_indices[:int(self.valid_ratio * data_size)]
-        train_indices = train_indices[int(self.valid_ratio * data_size):]
-        train_set = torch.utils.data.Subset(self.train_dataset, train_indices)
-        valid_set = torch.utils.data.Subset(self.train_dataset, valid_indices)
-        train_data_loader = DataLoader(train_set, shuffle=True, batch_size=self.batch_size,
+        # data_size = self.train_dataset.__len__()
+        # train_indices = np.arange(data_size)
+        # np.random.shuffle(train_indices)
+        # valid_indices = train_indices[:int(self.valid_ratio * data_size)]
+        # train_indices = train_indices[int(self.valid_ratio * data_size):]
+        # train_set = torch.utils.data.Subset(self.train_dataset, train_indices)
+        # valid_set = torch.utils.data.Subset(self.train_dataset, valid_indices)
+        train_data_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
-        valid_data_loader = DataLoader(valid_set, shuffle=True, batch_size=self.batch_size,
+        valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=self.batch_size,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
 
         patience = self.early_stop
@@ -228,19 +228,24 @@ def main(args):
         raise FileNotFoundError
     
     if not os.path.exists(path_to_images+"/train_qr_labels.csv"):
-        CSVGenerator.run(args)
+        # CSVGenerator.run(args)
+        os.system('python split_data.py')
+        prepare_yolo_format.main()
 
     print("loading "+path_to_images+"/train_qr_labels.csv")
     train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
+    val_df = pd.read_csv(path_to_images+"/val_qr_labels.csv")
     train_tf = get_train_transform()
-    train_dataset = QRDatasets(path_to_images, train_df, transforms=train_tf)
+    train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf)
+    val_dataset = QRDatasets(path_to_images+'val', val_df, transforms=train_tf)
+
     model = net(num_classes=2, nn_type=args.model)
     params = [p for p in model.parameters() if p.requires_grad]
     # print(params.__len__())
     optimizer = torch.optim.SGD(params, lr=0.002, momentum=0.9, weight_decay=0.0005)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
-    my_trainer = train(model=model, optimizer=optimizer, num_epochs=20, early_stop=3,
-                       train_dataset=train_dataset, model_path = 'models/'+args.model, lr_scheduler=scheduler)
+    my_trainer = train(model=model, optimizer=optimizer, num_epochs=20, early_stop=3, train_dataset=train_dataset,
+                       val_dataset=val_dataset, model_path = 'models/'+args.model, lr_scheduler=scheduler)
     my_trainer.mini_batch_training()
 
     
