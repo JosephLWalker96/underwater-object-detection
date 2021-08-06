@@ -74,6 +74,18 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
                     continue
 
                 box = boxes[j]
+                
+                if not os.path.exists(path_to_images+'/labels'):
+                    os.system('mkdir '+path_to_images+'/labels')
+                
+                with open(path_to_images+'/labels/'+str(records["Image"].values[0])+'.txt', 'a') as f:
+                    xs = (box[0]+box[2])/2
+                    ys = (box[1]+box[3])/2
+                    w = box[2] - box[0]
+                    h = box[3] - box[1]
+                    line = '0 '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
+                    f.write(line)
+                
                 x1 = int(box[0] * img.shape[1])
                 y1 = int(box[1] * img.shape[0])
                 x2 = int(box[2] * img.shape[1])
