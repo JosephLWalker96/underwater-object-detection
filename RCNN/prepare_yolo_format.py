@@ -38,20 +38,25 @@ def main():
     # handling train
     os.system('mkdir ' + path_to_save_images + '/train')
     os.system('mkdir ' + path_to_save_labels + '/train')
-    save_to_path(train_df, path_to_load_train_images, path_to_save_images + '/train', path_to_save_labels + '/train')
+    train_df = save_to_path(train_df, path_to_load_train_images, path_to_save_images + '/train', path_to_save_labels + '/train')
+    train_df.to_csv(path_to_save_images+'/train_qr_labels.csv')
 
     # handling val
     os.system('mkdir ' + path_to_save_images + '/val')
     os.system('mkdir ' + path_to_save_labels + '/val')
-    save_to_path(val_df, path_to_load_train_images, path_to_save_images + '/val', path_to_save_labels + '/val')
+    val_df = save_to_path(val_df, path_to_load_train_images, path_to_save_images + '/val', path_to_save_labels + '/val')
+    val_df.to_csv(path_to_save_images + '/val_qr_labels.csv')
 
     # handling test
     os.system('mkdir ' + path_to_save_images + '/test')
     os.system('mkdir ' + path_to_save_labels + '/test')
-    save_to_path(test_df, path_to_load_test_images, path_to_save_images + '/test', path_to_save_labels + '/test')
+    test_df = save_to_path(test_df, path_to_load_test_images, path_to_save_images + '/test', path_to_save_labels + '/test')
+    test_df.to_csv(path_to_save_images + '/test_qr_labels.csv')
 
 
 def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labels, csv_filename=None):
+    new_df = pd.DataFrame(columns=["img_name", "x", "y", "w", "h"])
+
     if csv_filename:
         df.to_csv(path_to_save_images + '/' + csv_filename)
     for idx in tqdm.tqdm(range(df.__len__())):
@@ -62,6 +67,11 @@ def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labe
             records['Image'].values[0]) + '.txt'
         img_w_path = path_to_save_images + "/" + str(records["File Name"].values[0])
         txt_w_path = path_to_save_labels + "/" + str(records['Image'].values[0]) + '.txt'
+
+        new_df = new_df.append({"img_name": str(records["File Name"].values[0]), "x": float(records["x"].values[0]),
+                       "y": float(records["y"].values[0]), "w": float(records["w"].values[0]),
+                       "h": float(records["h"].values[0])}, ignore_index=True)
+
         os.system('mv ' + img_r_path + ' ' + img_w_path)
 
         if os.path.exists(txt_r_path):
@@ -73,6 +83,8 @@ def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labe
                 f.seek(0)
                 f.write(text)
                 f.truncate()
+
+    return new_df
 
 
 if __name__ == '__main__':
