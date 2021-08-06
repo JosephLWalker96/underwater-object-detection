@@ -173,7 +173,7 @@ def save_to_path(df, path_to_images, path_to_save, csv_filename):
                 path_to_save + "/" + str(records["Location"].values[0]) + "/" + str(records["Camera"].values[0])):
             os.system('mkdir ' + path_to_save + "/" + str(records["Location"].values[0]) + "/" + str(
                 records["Camera"].values[0]))
-        os.system('cp ' + img_r_path + ' ' + img_w_path)
+        os.system('mv ' + img_r_path + ' ' + img_w_path)
 
 
 if __name__ == '__main__':

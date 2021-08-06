@@ -15,18 +15,20 @@ def detect(path_to_yolov5, abs_path_to_yolo_model, abs_path_to_test_images, save
     test_cmd = test_cmd + ' --project ' + saved_proj_dir + ' --name ' + saved_proj_name + ' --line-thickness 10 ' + ' --exist-ok'
 
     directory = abs_path_to_test_images
-    for loc_name in tqdm(os.listdir(directory)):
-        loc_path = directory + "/" + loc_name
-        if os.path.isdir(loc_path):
-            for cam_name in os.listdir(loc_path):
-                cam_path = loc_path + "/" + cam_name
-                if os.path.isdir(cam_path):
-                    # for filename in os.listdir(cam_path):
-                    #     img_name, img_ext = os.path.splitext(filename)
-                    #     if img_ext == ".JPG" or img_ext == ".PNG":
-                    #         img_path = cam_path + "/" + filename
-                            # run the detection command
-                    os.system(test_cmd + ' --source ' + cam_path)
+    # for loc_name in tqdm(os.listdir(directory)):
+    #     loc_path = directory + "/" + loc_name
+    #     if os.path.isdir(loc_path):
+    #         for cam_name in os.listdir(loc_path):
+    #             cam_path = loc_path + "/" + cam_name
+    #             if os.path.isdir(cam_path):
+    #                 # for filename in os.listdir(cam_path):
+    #                 #     img_name, img_ext = os.path.splitext(filename)
+    #                 #     if img_ext == ".JPG" or img_ext == ".PNG":
+    #                 #         img_path = cam_path + "/" + filename
+    #                         # run the detection command
+    #                 os.system(test_cmd + ' --source ' + cam_path)
+    os.system(test_cmd + ' --source ' + directory)
+
     os.chdir(current_path)
 
 

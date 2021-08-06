@@ -24,31 +24,31 @@ def main():
     val_df.index = pd.RangeIndex(len(val_df.index))
 
     # remove if exists
-    if not os.path.exists('../Datasets/YOLO'):
+    # if not os.path.exists('../Datasets/YOLO'):
 #         os.system('rm -r ../Datasets/YOLO')
 
-        # create the place to store
-        path_to_yolo = '../Datasets/YOLO'
-        path_to_save_images = path_to_yolo + '/' + 'images'
-        path_to_save_labels = path_to_yolo + '/' + 'labels'
-        os.system('mkdir ' + path_to_yolo)
-        os.system('mkdir ' + path_to_save_images)
-        os.system('mkdir ' + path_to_save_labels)
+    # create the place to store
+    path_to_yolo = '../Datasets'
+    path_to_save_images = path_to_yolo + '/' + 'images'
+    path_to_save_labels = path_to_yolo + '/' + 'labels'
+    os.system('mkdir ' + path_to_yolo)
+    os.system('mkdir ' + path_to_save_images)
+    os.system('mkdir ' + path_to_save_labels)
 
-        # handling train
-        os.system('mkdir ' + path_to_save_images + '/train')
-        os.system('mkdir ' + path_to_save_labels + '/train')
-        save_to_path(train_df, path_to_load_train_images, path_to_save_images + '/train', path_to_save_labels + '/train')
+    # handling train
+    os.system('mkdir ' + path_to_save_images + '/train')
+    os.system('mkdir ' + path_to_save_labels + '/train')
+    save_to_path(train_df, path_to_load_train_images, path_to_save_images + '/train', path_to_save_labels + '/train')
 
-        # handling val
-        os.system('mkdir ' + path_to_save_images + '/val')
-        os.system('mkdir ' + path_to_save_labels + '/val')
-        save_to_path(val_df, path_to_load_train_images, path_to_save_images + '/val', path_to_save_labels + '/val')
+    # handling val
+    os.system('mkdir ' + path_to_save_images + '/val')
+    os.system('mkdir ' + path_to_save_labels + '/val')
+    save_to_path(val_df, path_to_load_train_images, path_to_save_images + '/val', path_to_save_labels + '/val')
 
-        # handling test
-        os.system('mkdir ' + path_to_save_images + '/test')
-        os.system('mkdir ' + path_to_save_labels + '/test')
-        save_to_path(test_df, path_to_load_test_images, path_to_save_images + '/test', path_to_save_labels + '/test')
+    # handling test
+    os.system('mkdir ' + path_to_save_images + '/test')
+    os.system('mkdir ' + path_to_save_labels + '/test')
+    save_to_path(test_df, path_to_load_test_images, path_to_save_images + '/test', path_to_save_labels + '/test')
 
 
 def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labels, csv_filename=None):
