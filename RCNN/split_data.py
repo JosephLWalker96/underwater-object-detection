@@ -113,14 +113,17 @@ def getTrainAndTest(train_ratio, qr_df, isRamdom=True):
         print("the testing size is " + str(qr_df.__len__() - train_size))
 
         trainable_qr_df = qr_df[qr_df["x"] != -1]
+#         print("the trainable data size is " + str(trainable_qr_df.__len__()))
         if train_size > trainable_qr_df.__len__():
             print("Please use smaller training size")
             raise ValueError
         train_df = trainable_qr_df[:train_size]
-        train_df.index = pd.RangeIndex(len(train_df.index))
         train_indices = train_df.index
         test_df = qr_df[~qr_df.index.isin(train_indices)]
+        
+        train_df.index = pd.RangeIndex(len(train_df.index))
         test_df.index = pd.RangeIndex(len(test_df.index))
+        
         return train_df, test_df
     else:
         regulars, bright_regulars, cyan, blue = split_data(qr_df)
@@ -130,8 +133,10 @@ def getTrainAndTest(train_ratio, qr_df, isRamdom=True):
         print("trainable size: "+str(trainable_regulars.__len__()))
         train_df = trainable_regulars
         test_df = pd.concat([untrainable_regulars,bright_regulars, cyan, blue])
+        
         train_df.index = pd.RangeIndex(len(train_df.index))
         test_df.index = pd.RangeIndex(len(test_df.index))
+        
         return train_df, test_df
 
 
@@ -146,7 +151,7 @@ def run(args):
     qr_df = generate_csv(path_to_images, path_to_bbox)
     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
 
-    train_df, test_df = getTrainAndTest(train_ratio, qr_df, isRamdom=False)
+    train_df, test_df = getTrainAndTest(train_ratio, qr_df, isRamdom=True)
 
     os.mkdir(path_to_train)
     os.mkdir(path_to_test)
@@ -164,9 +169,7 @@ def save_to_path(df, path_to_images, path_to_save, csv_filename):
                      str(records["Camera"].values[0]) + "/" + str(records["File Name"].values[0])
         img_w_path = path_to_save + "/" + str(records["Location"].values[0]) + "/" + \
                      str(records["Camera"].values[0]) + "/" + str(records["File Name"].values[0])
-        # img = cv2.imread(img_r_path)
-        # with open(img_w_path, 'wb') as f:
-        #     cv2.imwrite(img, img_w_path)
+
         if not os.path.exists(path_to_save + "/" + str(records["Location"].values[0])):
             os.system('mkdir ' + path_to_save + "/" + str(records["Location"].values[0]))
         if not os.path.exists(

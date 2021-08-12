@@ -22,24 +22,26 @@ class QRDatasets(Dataset):
     # getting the data given certain index
     def __getitem__(self, idx: int):
         records = self.dataframe[self.dataframe.index == idx]
-        # records = self.dataframe.iloc[idx]
-        # img_path = self.image_dir + "/" + str(records["Location"].values[0]) + "/" + \
-        #            str(records["Camera"].values[0]) + "/" + str(records["File Name"].values[0])
         img_path = self.image_dir + '/' + str(records["img_name"].values[0])
+        
+#         print(img_path)
 
         img = np.array(cv2.imread(img_path)).astype(np.float32)
         img /= 255.0
 
-#         print(records[['x', 'y', 'w', 'h']])
         boxes = records[['x', 'y', 'w', 'h']].values 
-        boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
-        boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
+        
+#         boxes[:, 2] = (boxes[:, 0] + boxes[:, 2])
+#         boxes[:, 3] = (boxes[:, 1] + boxes[:, 3])
+        
+        boxes[:, 2] = int((boxes[:, 0] + boxes[:, 2])*float(records['image width'].values[0]))
+        boxes[:, 3] = int((boxes[:, 1] + boxes[:, 3])*float(records['image height'].values[0]))
+        boxes[:, 0] = int(boxes[:, 0]*float(records['image width'].values[0]))
+        boxes[:, 1] = int(boxes[:, 1]*float(records['image height'].values[0]))
+        
+#         print(boxes)
+        
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
-#         print(img.shape)
-#         boxes[:, 0] *= img.shape[0]
-#         boxes[:, 1] *= img.shape[1]
-#         boxes[:, 2] *= img.shape[0]
-#         boxes[:, 3] *= img.shape[1]
 
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         area = torch.as_tensor(area, dtype=torch.float32)
@@ -53,7 +55,6 @@ class QRDatasets(Dataset):
         target = {}
         target['boxes'] = boxes
         target['labels'] = labels
-        # target['masks'] = None
         target['image_id'] = torch.tensor([idx])
         target['area'] = area
         target['iscrowd'] = iscrowd

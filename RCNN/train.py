@@ -51,7 +51,7 @@ class train:
         # valid_set = torch.utils.data.Subset(self.train_dataset, valid_indices)
         train_data_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
-        valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=self.batch_size,
+        valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=4,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
 
         patience = self.early_stop
@@ -237,7 +237,7 @@ def main(args):
     val_df = pd.read_csv(path_to_images+"/val_qr_labels.csv")
     train_tf = get_train_transform()
     train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf)
-    val_dataset = QRDatasets(path_to_images+'val', val_df, transforms=train_tf)
+    val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf)
 
     model = net(num_classes=2, nn_type=args.model)
     params = [p for p in model.parameters() if p.requires_grad]

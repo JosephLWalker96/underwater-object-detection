@@ -55,7 +55,7 @@ def main():
 
 
 def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labels, csv_filename=None):
-    new_df = pd.DataFrame(columns=["img_name", "x", "y", "w", "h"])
+    new_df = pd.DataFrame(columns=["img_name", "x", "y", "w", "h", "image width", "image height"])
 
     if csv_filename:
         df.to_csv(path_to_save_images + '/' + csv_filename)
@@ -68,9 +68,14 @@ def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labe
         img_w_path = path_to_save_images + "/" + str(records["File Name"].values[0])
         txt_w_path = path_to_save_labels + "/" + str(records['Image'].values[0]) + '.txt'
 
-        new_df = new_df.append({"img_name": str(records["File Name"].values[0]), "x": float(records["x"].values[0]),
-                       "y": float(records["y"].values[0]), "w": float(records["w"].values[0]),
-                       "h": float(records["h"].values[0])}, ignore_index=True)
+        new_df = new_df.append({"img_name": str(records["File Name"].values[0]), 
+                                "x": float(records["x"].values[0])/float(records["Image Width"].values[0]),
+                                "y": float(records["y"].values[0])/float(records["Image Height"].values[0]), 
+                                "w": float(records["w"].values[0])/float(records["Image Width"].values[0]),
+                                "h": float(records["h"].values[0])/float(records["Image Height"].values[0]), 
+                                "image width":int(records["Image Width"].values[0]),
+                                "image height":int(records["Image Height"].values[0])}, 
+                               ignore_index=True)
 
         os.system('mv ' + img_r_path + ' ' + img_w_path)
 

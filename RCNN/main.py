@@ -62,9 +62,8 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
             # obtaining the original images
             idx = image_ids[i]
             records = qr_df[qr_df.index == idx]
-            img_folder = path_to_images + "/" + str(records["Location"].values[0]) + "/" + str(
-                records["Camera"].values[0])
-            img_path = img_folder + "/" + str(records["File Name"].values[0])
+            img_path = path_to_images + "/" + str(records["img_name"].values[0])
+            
             img = cv2.imread(img_path)
 
             # fitting bbox location in the original images
@@ -78,7 +77,9 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
                 if not os.path.exists(path_to_images+'/labels'):
                     os.system('mkdir '+path_to_images+'/labels')
                 
-                with open(path_to_images+'/labels/'+str(records["Image"].values[0])+'.txt', 'a') as f:
+                img_exts = str(records["img_name"].values[0]).split('.')
+                
+                with open(path_to_images+'/labels/'+img_exts[0]+'.txt', 'a') as f:
                     xs = (box[0]+box[2])/2
                     ys = (box[1]+box[3])/2
                     w = box[2] - box[0]
@@ -92,10 +93,11 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
                 y2 = int(box[3] * img.shape[0])
                 cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 10)
 
-            path_to_bbox_images = img_folder + "/images_with_bbox"
+            path_to_bbox_images = path_to_images + "/images_with_bbox"
             if not os.path.exists(path_to_bbox_images):
                 os.mkdir(path_to_bbox_images)
-            filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
+            
+            filename = path_to_bbox_images + "/" + str(records["img_name"].values[0])
             cv2.imwrite(filename, img)
 
 
@@ -126,12 +128,12 @@ def run(args):
     else:
         print("model does not exist")
         print("training a new model")
-        args.image_path = args.train_image_path
+#         args.image_path = args.train_image_path 
         train.main(args)
         print("loading model")
         with open("models/" + args.model, 'rb') as f:
             model = torch.load("models/" + args.model)
-    generate_image_with_bbox(model, test_dataset, qr_df, path_to_images)
+    generate_image_with_bbox(model, test_dataset, qr_df, path_to_images+'/test')
 
 
 if __name__ == "__main__":
@@ -142,3 +144,4 @@ if __name__ == "__main__":
     parser.add_argument('--model', default='faster-rcnn', type=str)
     args = parser.parse_args()
     run(args)
+
