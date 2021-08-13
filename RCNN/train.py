@@ -51,7 +51,7 @@ class train:
         # valid_set = torch.utils.data.Subset(self.train_dataset, valid_indices)
         train_data_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
-        valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=4,
+        valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=self.batch_size,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
 
         patience = self.early_stop
@@ -241,11 +241,12 @@ def main(args):
 
     model = net(num_classes=2, nn_type=args.model)
     params = [p for p in model.parameters() if p.requires_grad]
-    # print(params.__len__())
-    optimizer = torch.optim.SGD(params, lr=0.002, momentum=0.9, weight_decay=0.0005)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
-    my_trainer = train(model=model, optimizer=optimizer, num_epochs=20, early_stop=3, train_dataset=train_dataset,
-                       val_dataset=val_dataset, model_path = 'models/'+args.model, lr_scheduler=scheduler)
+
+    optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+    my_trainer = train(model=model, optimizer=optimizer, num_epochs=args.num_epoch, early_stop=args.early_stop, 
+                       train_dataset=train_dataset, val_dataset=val_dataset, model_path = 'models/'+args.model, 
+                       lr_scheduler=scheduler, batch_size=args.batch_size)
     my_trainer.mini_batch_training()
 
     
@@ -254,4 +255,13 @@ if __name__ == "__main__":
     parser.add_argument('--image_path', type=str)
     parser.add_argument('--label_path', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
+    parser.add_argument('--lr', default=0.002, type=float)
+    parser.add_argument('--momentum', default=0.9, type=float)
+    parser.add_argument('--weight_decay', default=0.0005, type=float)
+    parser.add_argument('--step_size', default=8, type=int)
+    parser.add_argument('--gamma', default=0.1, type=float)
+    parser.add_argument('--num_epoch', default=20, type=int)
+    parser.add_argument('--early_stop', default=3, type=int)
+    parser.add_argument('--batch_size', default=4, type=int)
+    parser.add_argument('--valid_ratio', default=0.2, type=float)
     main(parser.parse_args())
