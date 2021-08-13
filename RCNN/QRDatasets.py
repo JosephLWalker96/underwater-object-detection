@@ -28,7 +28,7 @@ class QRDatasets(Dataset):
 
         img = np.array(cv2.imread(img_path)).astype(np.float32)
 
-        img /= 255.0
+        # img /= 255.0
 
         boxes = records[['x', 'y', 'w', 'h']].values 
         
