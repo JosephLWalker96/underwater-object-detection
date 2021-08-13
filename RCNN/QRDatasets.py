@@ -30,7 +30,6 @@ class QRDatasets(Dataset):
         # converting to grayscale
         img = np.array(cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2GRAY)).astype(np.float32)
         img /= 255.0
-        print(img)
 
         boxes = records[['x', 'y', 'w', 'h']].values 
         
@@ -72,5 +71,7 @@ class QRDatasets(Dataset):
             img = sample['image']
 
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
+
+        print(img)
 
         return img, target, idx
