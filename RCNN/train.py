@@ -16,6 +16,7 @@ import split_data, prepare_yolo_format
 from tqdm import tqdm
 from model import net
 import argparse
+import cv2
 
 class train:
     def __init__(self, model: nn.Module, optimizer: torch.optim, num_epochs: int, train_dataset: QRDatasets,
@@ -78,6 +79,8 @@ class train:
             for images, targets, image_ids in tqdm(train_data_loader):
                 self.model.train()
                 images = list(image.to(self.device) for image in images)
+                # converting to grayscale
+                images = list(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)/255.0 for img in images)
                 targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
                            for t in targets]
                 # [{k: v.double().to(device) if k =='boxes' else v.to(device) for k, v in t.items()} for t in targets]

@@ -27,9 +27,9 @@ class QRDatasets(Dataset):
 #         print(img_path)
 
         img = np.array(cv2.imread(img_path)).astype(np.float32)
-        # converting to grayscale
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        img /= 255.0
+        # # converting to grayscale
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # img /= 255.0
 
         boxes = records[['x', 'y', 'w', 'h']].values 
         
