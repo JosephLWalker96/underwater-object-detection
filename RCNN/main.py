@@ -142,6 +142,7 @@ if __name__ == "__main__":
     parser.add_argument('--image_path', type=str)
     parser.add_argument('--label_path', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
+#     parser.add_argument('--model', default='retinanet', type=str)
     parser.add_argument('--lr', default=0.002, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)

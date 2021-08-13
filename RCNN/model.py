@@ -21,7 +21,8 @@ class net(nn.Module):
             # replace the pre-trained head with a new one
             self.model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
         elif self.nn_type == "retinanet":
-            self.model = torchvision.models.detection.retinanet_resnet50_fpn(pretrained=True, num_classes=num_classes)
+            self.model = torchvision.models.detection.retinanet_resnet50_fpn(pretrained_backbone=True, num_classes=num_classes)
+#             print(self.model)
         else:
             print("Current choice of models are: faster-rcnn, retinanet")
             raise ValueError
