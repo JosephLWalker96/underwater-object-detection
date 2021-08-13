@@ -41,16 +41,11 @@ class train:
         self.early_stop = early_stop
         self.batch_size = batch_size
         self.valid_ratio = valid_ratio
+        
+        self.use_grayscale = use_grayscale
 
     def mini_batch_training(self):
         # preparing dataloader
-        # data_size = self.train_dataset.__len__()
-        # train_indices = np.arange(data_size)
-        # np.random.shuffle(train_indices)
-        # valid_indices = train_indices[:int(self.valid_ratio * data_size)]
-        # train_indices = train_indices[int(self.valid_ratio * data_size):]
-        # train_set = torch.utils.data.Subset(self.train_dataset, train_indices)
-        # valid_set = torch.utils.data.Subset(self.train_dataset, valid_indices)
         train_data_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size,
                                        pin_memory=True, collate_fn=collate_fn, num_workers=4)
         valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=self.batch_size,
@@ -80,9 +75,6 @@ class train:
             for images, targets, image_ids in tqdm(train_data_loader):
                 self.model.train()
                 images = list(image.to(self.device) for image in images)
-
-                # converting to grayscale
-                # images = list(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in images)
 
                 targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
                            for t in targets]
@@ -141,7 +133,7 @@ class train:
             if not os.path.exists(self.model_dir_path):
                 os.mkdir(self.model_dir_path)
             plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, self.model_dir_path)
-            print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}", "Validation IOU: {0:.4f}".format(val_iou),
+            print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}", "Validation Predicted Mean Score: {0:.4f}".format(val_iou),
                   "Time taken :",
                   str(datetime.timedelta(seconds=time.time() - start_time))[:7])
 #             if not best_val:
@@ -170,7 +162,7 @@ class train:
                 patience -= 1
                 if patience == 0:
                     print('Early stopping.')
-                    print('Best Validation IOU: {:.3f}'.format(best_val))
+                    print('Best Validation Predicted Mean Score: {:.3f}'.format(best_val))
                     print('Best Validation Loss: {:.3f}'.format(best_loss))
                     break
 
@@ -180,7 +172,8 @@ class train:
     def gather_iou_scores(self, predictions, targets, images: np.array, image_precisions, iou_thresholds):
         for i, image in enumerate(images):
               scores = np.array([prediction[i]['scores'].data.cpu().numpy() for prediction in predictions])
-              image_precisions.append(np.mean(scores))
+              if scores.shape[0] > 0:
+                  image_precisions.append(np.mean(scores))
         return image_precisions
 
     def predict(self):
@@ -242,8 +235,8 @@ def main(args):
     train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
     val_df = pd.read_csv(path_to_images+"/val_qr_labels.csv")
     train_tf = get_train_transform()
-    train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf)
-    val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf)
+    train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf, use_grayscale=args.use_grayscale)
+    val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf, use_grayscale=args.use_grayscale)
 
     model = net(num_classes=2, nn_type=args.model, use_grayscale=args.use_grayscale)
     params = [p for p in model.parameters() if p.requires_grad]

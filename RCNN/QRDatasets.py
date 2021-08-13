@@ -30,12 +30,22 @@ class QRDatasets(Dataset):
         img = None
         if self.gray_scale:
             # converting to grayscale
-            img = np.array([np.array(cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2GRAY))]).astype(np.float32)
-            img = img.reshape(img.shape[1], img.shape[2], img.shape[0])
+            img = cv2.imread(img_path)
+            gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            
+#             img = gray
+#             img = img.reshape(img.shape[0], img.shape[1], 1)
+            
+            # change it back to BGR format
+            img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
+            
+            img = np.array(img).astype(np.float32)
+#             print(img.shape)
         else:
             img = np.array(cv2.imread(img_path)).astype(np.float32)
             
         assert img is not None
+        
         img /= 255.0
 #         print(img.shape)
 

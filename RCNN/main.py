@@ -44,7 +44,7 @@ def generate_test_csv(path_to_images):
     qr_df.to_csv(path_to_images + "/test_qr_labels.csv")
 
 
-def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images):
+def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_grayscale):
     print("iterating through the test images")
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=4, pin_memory=True, collate_fn=collate_fn,
@@ -133,7 +133,7 @@ def run(args):
         print("loading model")
         with open("models/" + args.model, 'rb') as f:
             model = torch.load("models/" + args.model)
-    generate_image_with_bbox(model, test_dataset, qr_df, path_to_images+'/test')
+    generate_image_with_bbox(model, test_dataset, qr_df, path_to_images+'/test', args.use_grayscale)
 
 
 if __name__ == "__main__":
