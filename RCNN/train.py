@@ -21,7 +21,8 @@ import cv2
 class train:
     def __init__(self, model: nn.Module, optimizer: torch.optim, num_epochs: int, train_dataset: QRDatasets,
                  val_dataset: QRDatasets = None, batch_size: int = 4, valid_ratio: float = 0.2, early_stop: int = 2,
-                 lr_scheduler: torch.optim.lr_scheduler = None, model_path: str = 'models/faster-cnn'):
+                 lr_scheduler: torch.optim.lr_scheduler = None, model_path: str = 'models/faster-cnn', 
+                 use_grayscale: bool = False):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.model = model
         self.model.to(self.device)
@@ -244,14 +245,14 @@ def main(args):
     train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf)
     val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf)
 
-    model = net(num_classes=2, nn_type=args.model)
+    model = net(num_classes=2, nn_type=args.model, use_grayscale=args.use_grayscale)
     params = [p for p in model.parameters() if p.requires_grad]
 
     optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     my_trainer = train(model=model, optimizer=optimizer, num_epochs=args.num_epoch, early_stop=args.early_stop, 
                        train_dataset=train_dataset, val_dataset=val_dataset, model_path = 'models/'+args.model, 
-                       lr_scheduler=scheduler, batch_size=args.batch_size)
+                       lr_scheduler=scheduler, batch_size=args.batch_size, use_grayscale=args.use_grayscale)
     my_trainer.mini_batch_training()
 
     
@@ -269,4 +270,5 @@ if __name__ == "__main__":
     parser.add_argument('--early_stop', default=3, type=int)
     parser.add_argument('--batch_size', default=4, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
+    parser.add_argument('--use_grayscale',default=False, action='store_true')
     main(parser.parse_args())

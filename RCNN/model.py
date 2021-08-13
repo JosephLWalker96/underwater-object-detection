@@ -9,14 +9,15 @@ from torchvision.models.detection.rpn import AnchorGenerator
     The baseline model is based on fasterrcnn with a resnet50 as cnn
 '''
 class net(nn.Module):
-    def __init__(self, num_classes, nn_type = "faster-rcnn"):
+    def __init__(self, num_classes, nn_type = "faster-rcnn", use_grayscale = False):
         super(net, self).__init__()
         self.nn_type = nn_type
         if self.nn_type == "faster-rcnn":
             self.model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 
             # handling gray scale format
-            self.model.backbone.body.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+#             if use_grayscale:
+#                 self.model.backbone.body.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
             # get number of input features for the classifier
             in_features = self.model.roi_heads.box_predictor.cls_score.in_features

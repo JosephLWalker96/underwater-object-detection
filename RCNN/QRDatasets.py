@@ -7,13 +7,14 @@ from torch.utils.data import Dataset
 class QRDatasets(Dataset):
 
     # setting up member variable
-    def __init__(self, dir_to_image: str, df: pd.DataFrame, transforms=None):
+    def __init__(self, dir_to_image: str, df: pd.DataFrame, use_grayscale: bool = False,transforms=None):
         super().__init__()
 
         self.num_class = 2  # QR code + background
         self.image_dir = dir_to_image
         self.dataframe = df
         self.transforms = transforms
+        self.gray_scale = use_grayscale
 
     # returning the size of the data set
     def __len__(self) -> int:
@@ -26,10 +27,17 @@ class QRDatasets(Dataset):
         
 #         print(img_path)
 
-        img = np.array(cv2.imread(img_path)).astype(np.float32)
-        # converting to grayscale
-        img = np.array(cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2GRAY)).astype(np.float32)
+        img = None
+        if self.gray_scale:
+            # converting to grayscale
+            img = np.array([np.array(cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2GRAY))]).astype(np.float32)
+            img = img.reshape(img.shape[1], img.shape[2], img.shape[0])
+        else:
+            img = np.array(cv2.imread(img_path)).astype(np.float32)
+            
+        assert img is not None
         img /= 255.0
+#         print(img.shape)
 
         boxes = records[['x', 'y', 'w', 'h']].values 
         
@@ -69,9 +77,7 @@ class QRDatasets(Dataset):
             }
             sample = self.transforms(**sample)
             img = sample['image']
-
+            
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
-
-        print(img)
 
         return img, target, idx
