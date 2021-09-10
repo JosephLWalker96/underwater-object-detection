@@ -30,6 +30,54 @@ def get_test_transform():
         ToTensorV2(p=1.0)
     ])
 
+def get_iou_score(output_boxes, target, width, height):
+
+    output_boxes = output_boxes
+    
+    best_iou = 0
+    best_box = None
+    
+    target_area = target['area'].item()
+    target_box = target['boxes'][0]
+    # flag is -1 if the source does not have label
+    flag = target_box[0].item()
+    if flag < 0:
+        return output_boxes, -1
+    
+    target_x1 = target_box[0].item()/width
+    target_x2 = target_box[2].item()/width
+    target_y1 = target_box[1].item()/height
+    target_y2 = target_box[3].item()/height
+    target_area = (target_y2-target_y1)*(target_x2-target_x1)
+    
+    for box in output_boxes:
+        box_x1 = box[0].item()
+        box_y1 = box[1].item()
+        box_x2 = box[2].item()
+        box_y2 = box[3].item()
+        output_area = (box_y2-box_y1)*(box_x2-box_x1)
+        
+        merge_x1 = max([target_x1, box_x1])
+        merge_x2 = min([target_x2, box_x2])
+        merge_y1 = max([target_y1, box_y1])
+        merge_y2 = min([target_y2, box_y2])
+        
+        merge_area = 0
+        iou = 0.0
+        if merge_y2-merge_y1>0 and merge_x2-merge_x1>0:
+            merge_area = (merge_y2-merge_y1)*(merge_x2-merge_x1)
+            iou = merge_area / (output_area+target_area-merge_area)
+        
+        if iou > best_iou:
+            best_iou = iou
+            best_box = box
+    
+#     print([target_x1, target_y1, target_x2, target_y2])
+#     print(best_box)
+#     print(best_iou)
+    
+    return best_box, best_iou
+    
 
 def plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, model_path):
     df1 = pd.DataFrame(

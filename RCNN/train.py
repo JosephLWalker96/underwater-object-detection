@@ -8,7 +8,7 @@ import time
 import datetime
 from torch.utils.data import DataLoader
 from QRDatasets import QRDatasets
-from utils import get_train_transform, collate_fn, plotting
+from utils import get_train_transform, collate_fn, plotting, get_iou_score
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 import os
 import pandas as pd

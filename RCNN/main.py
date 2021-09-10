@@ -6,7 +6,7 @@ import cv2
 import os
 import torch
 from torch.utils.data import DataLoader
-from utils import collate_fn, get_test_transform
+from utils import collate_fn, get_test_transform, get_iou_score
 from QRDatasets import QRDatasets
 from tqdm import tqdm
 import train
@@ -46,9 +46,13 @@ def generate_test_csv(path_to_images):
 
 def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_grayscale):
     print("iterating through the test images")
+    
+    rslt_df = pd.DataFrame(columns=['img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=4, pin_memory=True, collate_fn=collate_fn,
                              num_workers=4)
+    
+    iou_scores = []
     for images, targets, image_ids in tqdm(data_loader):
         patch_size = image_ids.__len__()
         for i in range(patch_size):
@@ -65,42 +69,72 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
             img_path = path_to_images + "/" + str(records["img_name"].values[0])
             
             img = cv2.imread(img_path)
+            result_box, iou_score = get_iou_score(boxes, targets[i], img.shape[1], img.shape[0])
 
-            # fitting bbox location in the original images
-            for j in range(boxes.shape[0]):
-                score = scores[j].item()
-                if score < 0.5:
-                    continue
-
-                box = boxes[j]
-                
-                if not os.path.exists(path_to_images+'/labels'):
-                    os.system('mkdir '+path_to_images+'/labels')
-                
-                img_exts = str(records["img_name"].values[0]).split('.')
-                
-                with open(path_to_images+'/labels/'+img_exts[0]+'.txt', 'a') as f:
-                    xs = (box[0]+box[2])/2
-                    ys = (box[1]+box[3])/2
-                    w = box[2] - box[0]
-                    h = box[3] - box[1]
-                    line = '0 '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
-                    f.write(line)
-                
-                x1 = int(box[0] * img.shape[1])
-                y1 = int(box[1] * img.shape[0])
-                x2 = int(box[2] * img.shape[1])
-                y2 = int(box[3] * img.shape[0])
-                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 10)
-
+            if iou_score >= 0:
+                if result_box is not None:
+                    iou_scores.append(iou_score)
+                    img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df)
+            else:
+                for box in boxes:
+                    img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df)
+            
             path_to_bbox_images = path_to_images + "/images_with_bbox"
             if not os.path.exists(path_to_bbox_images):
                 os.mkdir(path_to_bbox_images)
-            
             filename = path_to_bbox_images + "/" + str(records["img_name"].values[0])
             cv2.imwrite(filename, img)
 
+    print('average test acc = '+str(np.mean(iou_scores)))
+    rslt_df.to_csv(path_to_images + "/labels/result_qr_labels.csv")
+                
 
+# fitting bbox location in the original images
+def draw_bbox(path_to_images, records, box, img, iou_score, df):
+    if not os.path.exists(path_to_images+'/labels'):
+        os.system('mkdir '+path_to_images+'/labels')
+
+    img_exts = str(records["img_name"].values[0]).split('.')
+
+    with open(path_to_images+'/labels/'+img_exts[0]+'.txt', 'a') as f:
+        xs = (box[0]+box[2])/2
+        ys = (box[1]+box[3])/2
+        w = box[2] - box[0]
+        h = box[3] - box[1]
+        line = '0 '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
+        f.write(line)
+        
+        df = df.append({
+                'img': str(records["img_name"].values[0]), 
+                'xs': xs.item(), 
+                'ys': ys.item(), 
+                'w': w.item(), 
+                'h': h.item(), 
+                'iou_score': iou_score
+                }, ignore_index=True)
+
+    x1 = int(box[0] * img.shape[1])
+    y1 = int(box[1] * img.shape[0])
+    x2 = int(box[2] * img.shape[1])
+    y2 = int(box[3] * img.shape[0])
+    # red
+    cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 10)
+  
+#     uncomment the following to get the original (target) box drawn with blue
+    boxes = records[['x', 'y', 'w', 'h']].values 
+    boxes[:, 2] = int((boxes[:, 0] + boxes[:, 2])*float(records['image width'].values[0]))
+    boxes[:, 3] = int((boxes[:, 1] + boxes[:, 3])*float(records['image height'].values[0]))
+    boxes[:, 0] = int(boxes[:, 0]*float(records['image width'].values[0]))
+    boxes[:, 1] = int(boxes[:, 1]*float(records['image height'].values[0]))
+    target_x1 = int(boxes[0][0])
+    target_y1 = int(boxes[0][1])
+    target_x2 = int(boxes[0][2])
+    target_y2 = int(boxes[0][3])
+    # blue
+    cv2.rectangle(img, (target_x1, target_y1), (target_x2, target_y2), (0, 0, 255), 10)
+    
+    return img, df
+                
 def run(args):
     # Input for Images Folder
     path_to_images = args.image_path
@@ -138,9 +172,9 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # parser.add_argument('--test_image_path', type=str)
-    parser.add_argument('--image_path', type=str)
-    parser.add_argument('--label_path', type=str)
+    parser.add_argument('--image_path', default='../Complete_SUIT_Dataset', type=str)
+#     parser.add_argument('--image_path', default='../Datasets/images', type=str)
+    parser.add_argument('--label_path', default='../Datasets/labels', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
 #     parser.add_argument('--model', default='retinanet', type=str)
     parser.add_argument('--lr', default=0.002, type=float)
@@ -152,7 +186,7 @@ if __name__ == "__main__":
     parser.add_argument('--early_stop', default=3, type=int)
     parser.add_argument('--batch_size', default=4, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
-    parser.add_argument('--use_grayscale',default=True, action='store_true')
+    parser.add_argument('--use_grayscale',default=False, action='store_true')
     args = parser.parse_args()
     run(args)
 
