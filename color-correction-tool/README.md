@@ -17,7 +17,7 @@ After the installation, set the PATH variable, and import the module and necessa
 ```python
 # Add the repo to PATH
 import sys
-sys.path.append('/home/c8wu/projects/object_detection/underwater-object-detection/color-correction-tool/src')
+sys.path.append('REPO_ROOT_DIR/underwater-object-detection')
 
 # Import color correction module
 import color_correction
