@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 Read in the image.
 ```python
 # Read the image
-img = cv2.imread(["SAMPEL_IMAGE_DIR")
+img = cv2.imread(["SAMPLE_IMAGE_DIR")
 
 # Use matplotlib to show the image in RGB color space
 plt.imshow(img)
