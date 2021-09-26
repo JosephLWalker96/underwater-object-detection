@@ -9,11 +9,10 @@ Use the [git clone command](https://pip.pypa.io/en/stable/) to clone the project
 ```bash
 git clone https://github.com/JosephLWalker96/underwater-object-detection
 ```
-After cloning the repo, set the PATH variable in your .py file and import the RandAugment module.
 
 ## Usage
 
-After the installation, set the PATH variable and import the module and necessary dependencies.
+After the installation, set the PATH variable, and import the module and necessary dependencies.
 
 ```python
 # Add the repo to PATH
