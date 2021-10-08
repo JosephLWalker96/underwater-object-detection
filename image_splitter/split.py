@@ -1,7 +1,5 @@
 import numpy as np
 import cv2
-import glob
-import matplotlib.pyplot as plt
 import pandas as pd
 
 ANNOTATION = pd.read_csv("../Datasets/labels.csv", header = None)
