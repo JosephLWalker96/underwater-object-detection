@@ -30,9 +30,10 @@ def get_test_transform():
         ToTensorV2(p=1.0)
     ])
 
-def get_iou_score(output_boxes, target, width, height):
+def get_iou_score(output, target, width, height):
 
-    output_boxes = output_boxes
+    output_boxes = output['boxes']
+    output_scores = output['scores']
     
     best_iou = 0
     best_box = None
@@ -50,7 +51,12 @@ def get_iou_score(output_boxes, target, width, height):
     target_y2 = target_box[3].item()/height
     target_area = (target_y2-target_y1)*(target_x2-target_x1)
     
-    for box in output_boxes:
+    for i in range(len(output_boxes)):
+        box = output_boxes[i]
+        score = output_scores[i]
+        if score < 0.5:
+            continue
+        
         box_x1 = box[0].item()
         box_y1 = box[1].item()
         box_x2 = box[2].item()

@@ -137,7 +137,7 @@ def draw_bbox(path_to_images, records, box, img, iou_score, df):
                 
 def run(args):
     # Input for Images Folder
-    path_to_images = args.image_path
+    path_to_images = args.dataset_path
 
     # check whether the path exists
     if not os.path.exists(path_to_images):
@@ -162,7 +162,8 @@ def run(args):
     else:
         print("model does not exist")
         print("training a new model")
-#         args.image_path = args.train_image_path 
+        args.image_path = args.dataset_path + '/images'
+        args.label_path = args.dataset_path + '/labels'
         train.main(args)
         print("loading model")
         with open("models/" + args.model, 'rb') as f:
@@ -172,9 +173,8 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--image_path', default='../Complete_SUIT_Dataset', type=str)
-#     parser.add_argument('--image_path', default='../Datasets/images', type=str)
-    parser.add_argument('--label_path', default='../Datasets/labels', type=str)
+    parser.add_argument('--dataset_path', default='../Complete_SUIT_Dataset', type=str)
+    parser.add_argument('--label_path', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
 #     parser.add_argument('--model', default='retinanet', type=str)
     parser.add_argument('--lr', default=0.002, type=float)

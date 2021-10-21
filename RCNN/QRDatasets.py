@@ -23,9 +23,9 @@ class QRDatasets(Dataset):
     # getting the data given certain index
     def __getitem__(self, idx: int):
         records = self.dataframe[self.dataframe.index == idx]
-        img_path = self.image_dir + '/' + str(records["img_name"].values[0])
+        img_path = self.image_dir + '/' + str(records["File Name"].values[0])
         
-#         print(img_path)
+#         print(img_path) 
 
         img = None
         if self.gray_scale:
@@ -54,10 +54,10 @@ class QRDatasets(Dataset):
 #         boxes[:, 2] = (boxes[:, 0] + boxes[:, 2])
 #         boxes[:, 3] = (boxes[:, 1] + boxes[:, 3])
         
-        boxes[:, 2] = int((boxes[:, 0] + boxes[:, 2])*float(records['image width'].values[0]))
-        boxes[:, 3] = int((boxes[:, 1] + boxes[:, 3])*float(records['image height'].values[0]))
-        boxes[:, 0] = int(boxes[:, 0]*float(records['image width'].values[0]))
-        boxes[:, 1] = int(boxes[:, 1]*float(records['image height'].values[0]))
+        boxes[:, 2] = int((boxes[:, 0] + boxes[:, 2]))
+        boxes[:, 3] = int((boxes[:, 1] + boxes[:, 3]))
+        boxes[:, 0] = int(boxes[:, 0])
+        boxes[:, 1] = int(boxes[:, 1])
         
 #         print(boxes)
         
