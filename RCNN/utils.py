@@ -5,14 +5,19 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import albumentations as A
 from albumentations.pytorch.transforms import ToTensorV2
+from color_correction import color_correction
 
 def collate_fn(batch):
     return tuple(zip(*batch))
 
-
 # Augmentations
+class Color_Correction(A.ImageOnlyTransform):
+    def apply(self, img, **params) -> np.ndarray:
+        return color_correction(pixels=img)
+
 def get_train_transform():
     return A.Compose([
+        Color_Correction(),
         A.Resize(512, 512),
         ToTensorV2(p=1.0)
     ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
@@ -26,6 +31,7 @@ def get_valid_transform():
 
 def get_test_transform():
     return A.Compose([
+        Color_Correction(),
         A.Resize(512, 512),
         ToTensorV2(p=1.0)
     ])
