@@ -39,14 +39,13 @@ class QRDatasets(Dataset):
             # change it back to BGR format
             img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
             
-            img = np.array(img).astype(np.float32)
+#             img = np.array(img).astype(np.float32)
 #             print(img.shape)
         else:
-            img = np.array(cv2.imread(img_path)).astype(np.float32)
+            img = cv2.imread(img_path)
             
         assert img is not None
         
-        img /= 255.0
 #         print(img.shape)
 
         boxes = records[['x', 'y', 'w', 'h']].values 
@@ -79,6 +78,7 @@ class QRDatasets(Dataset):
         target['area'] = area
         target['iscrowd'] = iscrowd
 
+        
         if self.transforms:
             sample = {
                 'image': img,
@@ -89,5 +89,8 @@ class QRDatasets(Dataset):
             img = sample['image']
             
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
+        
+#         img = img
+#         img /= 255.0
 
         return img, target, idx
