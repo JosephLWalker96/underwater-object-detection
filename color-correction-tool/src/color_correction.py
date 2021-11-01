@@ -141,7 +141,7 @@ def getColorFilterMatrix(pixels, x, y, adjustment_intensity = 1):
     
     # adjust x
     if x > 0:
-        res += x * np.array([
+        res += adjustment_intensity * x * np.array([
             [0,0,0,0,0],
             [0,0.208,0,0,-0.271],
             [0,0,0.063,0,0],
@@ -155,7 +155,7 @@ def getColorFilterMatrix(pixels, x, y, adjustment_intensity = 1):
             [0,0,0,0,0]
         ])
     # adjust y
-    res[0] += y * np.array([-0.2, -0.175, -0.125, 0, 0.325])
+    res[0] += adjustment_intensity * y * np.array([-0.2, -0.175, -0.125, 0, 0.325])
     return res
     
 
