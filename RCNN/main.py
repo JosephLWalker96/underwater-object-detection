@@ -61,11 +61,11 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
             print(targets)
             print(outputs)
 
-            for label in [0, 1]:
+            for label_idx in range(len(outputs)):
                 # converting bbox location into range (0, 1)
-                boxes = outputs[label]['boxes'] / 512
-                scores = outputs[label]['scores']
-                outputs['boxes'] = outputs[label]['boxes'] / 512
+                boxes = outputs[label_idx]['boxes'] / 512
+                scores = outputs[label_idx]['scores']
+                outputs['boxes'] = outputs[label_idx]['boxes'] / 512
 
                 # obtaining the original images
                 idx = image_ids[i]
@@ -73,7 +73,7 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                 img_path = path_to_images + "/" + str(records["File Name"].values[0])
 
                 img = cv2.imread(img_path)
-                result_box, iou_score = get_iou_score(outputs[label], targets[i], img.shape[1], img.shape[0])
+                result_box, iou_score = get_iou_score(outputs[label_idx], targets[i], img.shape[1], img.shape[0])
 
                 if iou_score >= 0:
                     if result_box is not None:
@@ -87,11 +87,11 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                             continue
                         img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df)
             
-            path_to_bbox_images = path_to_images + "/images_with_bbox"
-            if not os.path.exists(path_to_bbox_images):
-                os.mkdir(path_to_bbox_images)
-            filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
-            cv2.imwrite(filename, img)
+                path_to_bbox_images = path_to_images + "/images_with_bbox"
+                if not os.path.exists(path_to_bbox_images):
+                    os.mkdir(path_to_bbox_images)
+                filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
+                cv2.imwrite(filename, img)
 
     print('average test acc = '+str(np.mean(iou_scores)))
     rslt_df.to_csv(path_to_images + "/labels/result_qr_labels.csv")

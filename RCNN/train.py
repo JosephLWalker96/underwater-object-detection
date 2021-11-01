@@ -311,9 +311,9 @@ class train:
     # return the array storing the scores of each image from the given images array
     def gather_iou_scores(self, predictions, targets, images: np.array, image_precisions, iou_thresholds):
         for i, image in enumerate(images):
-#             print(predictions[i]['boxes']/512)
-#             print(predictions[i][0]['boxes']/512)
-#             print(targets)
+            print(predictions[i]['boxes']/512)
+            print(predictions[i][0]['boxes']/512)
+            print(targets)
             predictions[i]['boxes']=predictions[i]['boxes']/512
             result_box, iou_score = get_iou_score(predictions[i], targets[i], 512, 512)
             if iou_score >= 0:
