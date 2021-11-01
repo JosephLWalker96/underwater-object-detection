@@ -56,32 +56,36 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
         patch_size = image_ids.__len__()
         for i in range(patch_size):
             model.eval()
-            output = model([images[i].to(device)])
+            outputs = model([images[i].to(device)])
 
-            # converting bbox location into range (0, 1)
-            boxes = output[0]['boxes'] / 512
-            scores = output[0]['scores']
-            output[0]['boxes'] = output[0]['boxes'] / 512
+            print(targets)
+            print(outputs)
 
-            # obtaining the original images
-            idx = image_ids[i]
-            records = qr_df[qr_df.index == idx]
-            img_path = path_to_images + "/" + str(records["File Name"].values[0])
-            
-            img = cv2.imread(img_path)
-            result_box, iou_score = get_iou_score(output[0], targets[i], img.shape[1], img.shape[0])
+            for label in [0, 1]:
+                # converting bbox location into range (0, 1)
+                boxes = outputs[label]['boxes'] / 512
+                scores = outputs[label]['scores']
+                outputs['boxes'] = outputs[label]['boxes'] / 512
 
-            if iou_score >= 0:
-                if result_box is not None:
-                    iou_scores.append(iou_score)
-                    img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df)
-            else:
-                for i in range(len(boxes)):
-                    box = boxes[i]
-                    score = scores[i]
-                    if score < 0.5:
-                        continue
-                    img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df)
+                # obtaining the original images
+                idx = image_ids[i]
+                records = qr_df[qr_df.index == idx]
+                img_path = path_to_images + "/" + str(records["File Name"].values[0])
+
+                img = cv2.imread(img_path)
+                result_box, iou_score = get_iou_score(outputs[label], targets[i], img.shape[1], img.shape[0])
+
+                if iou_score >= 0:
+                    if result_box is not None:
+                        iou_scores.append(iou_score)
+                        img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df)
+                else:
+                    for i in range(len(boxes)):
+                        box = boxes[i]
+                        score = scores[i]
+                        if score < 0.5:
+                            continue
+                        img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df)
             
             path_to_bbox_images = path_to_images + "/images_with_bbox"
             if not os.path.exists(path_to_bbox_images):
