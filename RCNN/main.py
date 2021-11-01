@@ -220,7 +220,6 @@ def run(args):
     #         os.mkdir(model_path)
             main(path_to_images, path_to_labels, model_path, args.model, args.test)
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
