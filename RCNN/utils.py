@@ -15,12 +15,14 @@ class Color_Correction(A.ImageOnlyTransform):
     def apply(self, img, **params) -> np.ndarray:
         mu, sigma = 0, 1 # mean and standard deviation
         s1,s2 = np.random.normal(mu, sigma, 2)
-        return color_correction(pixels=img, x=s1, y=s2, adjustment_intensity = 1).astype(np.float32)/255.0
+        img = color_correction(pixels=img, x=s1, y=s2, adjustment_intensity = 1)
+        img = np.array(img).astype(np.float32)/255.0
+        return img
 
 def get_train_transform():
     return A.Compose([
         A.Resize(512, 512),
-        # Color_Correction(),
+#         Color_Correction(),
         ToTensorV2(p=1.0)
     ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
@@ -34,24 +36,29 @@ def get_valid_transform():
 def get_test_transform():
     return A.Compose([
         A.Resize(512, 512),
-        # Color_Correction(),
+#         Color_Correction(),
         ToTensorV2(p=1.0)
     ])
 
-def get_iou_score(output, target, width, height):
+def get_iou_score(output, target, width, height, target_idx):
 
     output_boxes = output['boxes']
     output_scores = output['scores']
+    output_labels = output['labels']
     
     best_iou = 0
     best_box = None
     
-    target_area = target['area'].item()
-    target_box = target['boxes'][0]
-    # flag is -1 if the source does not have label
-    flag = target_box[0].item()
-    if flag < 0:
-        return output_boxes, -1
+    target_area = target['area'][target_idx].item()
+    target_box = target['boxes'][target_idx]
+    target_label = target['labels'][target_idx]
+
+    # label==2 means no label
+    if target_label==2:
+        if len(output_boxes) == 0:
+            return None, 1
+        else:
+            return output_boxes, -1
     
     target_x1 = target_box[0].item()/width
     target_x2 = target_box[2].item()/width
@@ -62,7 +69,9 @@ def get_iou_score(output, target, width, height):
     for i in range(len(output_boxes)):
         box = output_boxes[i]
         score = output_scores[i]
-        if score < 0.5:
+        label = output_labels[i]
+        print(label)
+        if score < 0.5 or label != target_label:
             continue
         
         box_x1 = box[0].item()
@@ -89,6 +98,7 @@ def get_iou_score(output, target, width, height):
 #     print([target_x1, target_y1, target_x2, target_y2])
 #     print(best_box)
 #     print(best_iou)
+#     print(target_label)
     
     return best_box, best_iou
     

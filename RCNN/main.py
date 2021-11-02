@@ -57,27 +57,32 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
         for i in range(patch_size):
             model.eval()
             outputs = model([images[i].to(device)])
+            target = targets[i]
 
-            print(targets)
-            print(outputs)
+            # converting bbox location into range (0, 1)
+#             print('********************outputs********************')
+#             print(len(outputs))
+#             print('********************targets********************')
+#             print(targets)
+            outputs = outputs[0]
+            boxes = outputs['boxes']
+            scores = outputs['scores']
+            outputs['boxes'] = outputs['boxes'] / 512
 
-            for label_idx in range(len(outputs)):
-                # converting bbox location into range (0, 1)
-                boxes = outputs[label_idx]['boxes'] / 512
-                scores = outputs[label_idx]['scores']
-                outputs['boxes'] = outputs[label_idx]['boxes'] / 512
+            # obtaining the original images
+            idx = image_ids[i]
+            records = qr_df[qr_df.index == idx]
+            img_path = path_to_images + "/" + str(records["File Name"].values[0])
 
-                # obtaining the original images
-                idx = image_ids[i]
-                records = qr_df[qr_df.index == idx]
-                img_path = path_to_images + "/" + str(records["File Name"].values[0])
+            img = cv2.imread(img_path)
 
-                img = cv2.imread(img_path)
-                result_box, iou_score = get_iou_score(outputs[label_idx], targets[i], img.shape[1], img.shape[0])
+            target_n = len(target['labels'])
+            for j in range(target_n):
+                result_box, iou_score = get_iou_score(outputs, target, img.shape[1], img.shape[0], j)
 
                 if iou_score >= 0:
+                    iou_scores.append(iou_score)
                     if result_box is not None:
-                        iou_scores.append(iou_score)
                         img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df)
                 else:
                     for i in range(len(boxes)):
@@ -93,7 +98,7 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                 filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
                 cv2.imwrite(filename, img)
 
-    print('average test acc = '+str(np.mean(iou_scores)))
+    print('average test iou scores = '+str(np.mean(iou_scores)))
     rslt_df.to_csv(path_to_images + "/labels/result_qr_labels.csv")
                 
 

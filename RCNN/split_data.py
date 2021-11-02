@@ -191,14 +191,13 @@ def get_qr_df(path_to_images, path_to_bbox):
         img_name = row["Image"]
         suit_path = suit_dir + '/' + img_name + '.txt'
         target_path = target_dir + '/' + img_name + '.txt'
-        if os.path.exists(suit_path) or os.path.exists(target_path):
-            if os.path.exists(suit_path):
-                label, x, y, w, h = read_txt(suit_path)
-                out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
-            if os.path.exists(target_path):
-                label, x, y, w, h = read_txt(target_path)
-                out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
-        else:
+        if os.path.exists(suit_path):
+            label, x, y, w, h = read_txt(suit_path)
+            out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
+        if os.path.exists(target_path):
+            label, x, y, w, h = read_txt(target_path)
+            out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
+        if not (os.path.exists(suit_path) or os.path.exists(target_path)):
             # label 2 means no bbox available
             out_df = store_new_out_entry(2, -1, -1, -1, -1, row, out_df)
 
@@ -250,19 +249,23 @@ def get_df_by_name(df: pd.DataFrame, name_series:np.array):
 '''
 def random_sample(qr_df: pd.DataFrame, train_ratio):
     image_columns = qr_df['Image'].unique()
+    trainable_image_columns = qr_df[qr_df["Labels"] != 2]['Image'].unique()
+    no_label_images_columns = np.array([img for img in image_columns if img not in trainable_image_columns])
 
-    # getting the test df
-    indices = np.arange(len(image_columns))
-    train_size = int(float(train_ratio) * len(image_columns))
-
-    train_val_indices = np.random.choice(indices, train_size)
-    test_indices = np.array([idx for idx in indices if idx not in train_val_indices])
-    train_indices = np.random.choice(train_val_indices, int(len(train_val_indices)*train_ratio))
+    # getting train and validation df
+    indices = np.arange(len(trainable_image_columns))
+    train_size = int(float(train_ratio) * len(trainable_image_columns))
+    
+    train_val_indices = np.random.choice(indices, train_size, replace=False)
+    train_indices = np.random.choice(train_val_indices, int(len(train_val_indices)*train_ratio), replace=False)
     val_indices = np.array([idx for idx in train_val_indices if idx not in train_indices])
-
-    train_name_series = image_columns[train_indices]
-    test_name_series = image_columns[test_indices]
-    val_name_series = image_columns[val_indices]
+    
+    train_name_series = trainable_image_columns[train_indices]
+    val_name_series = trainable_image_columns[val_indices]
+    
+    # getting test indices
+    test_indices = np.array([idx for idx in indices if idx not in train_val_indices])
+    test_name_series = np.concatenate([trainable_image_columns[test_indices], no_label_images_columns], axis=None)
 
     train_df = get_df_by_name(qr_df, train_name_series)
     test_df = get_df_by_name(qr_df, test_name_series)
@@ -433,7 +436,7 @@ def run(args):
         os.mkdir(path_to_save)
 
     qr_df = get_qr_df(path_to_images, path_to_bbox)
-    qr_df = qr_df.sample(frac=1).reset_index(drop=True)
+#     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
     qr_df.to_csv(args.dataset_path + "/all_qr_labels.csv")
 
     if exp_num is None or exp_num == 'exp1' or exp_num == 'exp2':

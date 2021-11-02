@@ -10,7 +10,7 @@ class QRDatasets(Dataset):
     def __init__(self, dir_to_image: str, df: pd.DataFrame, use_grayscale: bool = False,transforms=None):
         super().__init__()
 
-        self.num_class = 2  # QR code + background
+        self.num_class = 2  # SUIT + target
         self.image_dir = dir_to_image
         self.dataframe = df
         self.transforms = transforms
@@ -32,7 +32,6 @@ class QRDatasets(Dataset):
         for idx, record in records.iterrows():
             img_path = self.image_dir + '/' + str(record["File Name"])
 
-    #         print(img_path)
             if self.gray_scale:
                 # converting to grayscale
                 img = cv2.imread(img_path)
@@ -44,19 +43,21 @@ class QRDatasets(Dataset):
                 img = cv2.imread(img_path)
 
         assert img is not None
-    #         print(img.shape)
 
         boxes = records[['x', 'y', 'w', 'h']].values
 
-#         boxes[:, 2] = (boxes[:, 0] + boxes[:, 2])
-#         boxes[:, 3] = (boxes[:, 1] + boxes[:, 3])
-
-        boxes[:, 2] = (boxes[:, 0] + boxes[:, 2])
-        boxes[:, 3] = (boxes[:, 1] + boxes[:, 3])
+        boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
+        boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
         boxes[:, 0] = boxes[:, 0]
         boxes[:, 1] = boxes[:, 1]
-#         print(boxes)
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
+#         for box in boxes:
+#             width = float(records['Image Width'].values[0])
+#             height = float(records['Image Height'].values[0])
+#             if box[3]<=box[1]:
+#                 print(img_name)
+#             if box[2]<=box[0]:
+#                 print(img_name)
 
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         area = torch.as_tensor(area, dtype=torch.float32)
@@ -67,8 +68,7 @@ class QRDatasets(Dataset):
 
         for label in labels:
             if label == 2:
-                labels = torch.as_tensor([])
-                boxes = torch.as_tensor([])
+                boxes = torch.as_tensor([[-2, -2, -1, -1]])
 
         # suppose all instances are not crowd
         iscrowd = torch.zeros((records.shape[0],), dtype=torch.int64)
@@ -83,12 +83,14 @@ class QRDatasets(Dataset):
         
         if self.transforms:
             sample = {
-                'image': img,
+#                 'image': img,
+                'image': np.array(img, dtype=np.float32)/255.0,
                 'bboxes': target['boxes'],
                 'labels': labels
             }
             sample = self.transforms(**sample)
             img = sample['image']
+#             print(img)
             
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
         
