@@ -60,13 +60,14 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
             target = targets[i]
 
             # converting bbox location into range (0, 1)
-#             print('********************outputs********************')
-#             print(len(outputs))
+            print('********************outputs********************')
+            print(outputs)
 #             print('********************targets********************')
 #             print(targets)
             outputs = outputs[0]
             boxes = outputs['boxes']
             scores = outputs['scores']
+            labels = outputs['labels']
             outputs['boxes'] = outputs['boxes'] / 512
 
             # obtaining the original images
@@ -83,14 +84,15 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                 if iou_score >= 0:
                     iou_scores.append(iou_score)
                     if result_box is not None:
-                        img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df)
+                        img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df, target['labels'][j])
                 else:
                     for i in range(len(boxes)):
                         box = boxes[i]
                         score = scores[i]
+                        label = labels[i]
                         if score < 0.5:
                             continue
-                        img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df)
+                        img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df, label)
             
                 path_to_bbox_images = path_to_images + "/images_with_bbox"
                 if not os.path.exists(path_to_bbox_images):
@@ -103,7 +105,7 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                 
 
 # fitting bbox location in the original images
-def draw_bbox(path_to_images, records, box, img, iou_score, df):
+def draw_bbox(path_to_images, records, box, img, iou_score, df, label):
     if not os.path.exists(path_to_images+'/labels'):
         os.system('mkdir '+path_to_images+'/labels')
 
@@ -114,7 +116,9 @@ def draw_bbox(path_to_images, records, box, img, iou_score, df):
         ys = (box[1]+box[3])/2
         w = box[2] - box[0]
         h = box[3] - box[1]
-        line = '0 '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
+        if label == 2:
+            print('here')
+        line = str(int(label))+' '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
         f.write(line)
         
         df = df.append({
@@ -123,7 +127,8 @@ def draw_bbox(path_to_images, records, box, img, iou_score, df):
                 'ys': ys.item(), 
                 'w': w.item(), 
                 'h': h.item(), 
-                'iou_score': iou_score
+                'iou_score': iou_score,
+                'label': label
                 }, ignore_index=True)
 
     x1 = int(box[0] * img.shape[1])
@@ -239,12 +244,12 @@ if __name__ == "__main__":
 #     parser.add_argument('--label_path', default='../Datasets/labels', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
 #     parser.add_argument('--model', default='retinanet', type=str)
-    parser.add_argument('--lr', default=0.002, type=float)
+    parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)
-    parser.add_argument('--step_size', default=8, type=int)
+    parser.add_argument('--step_size', default=5, type=int)
     parser.add_argument('--gamma', default=0.1, type=float)
-    parser.add_argument('--num_epoch', default=10, type=int)
+    parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=2, type=int)
     parser.add_argument('--batch_size', default=4, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)

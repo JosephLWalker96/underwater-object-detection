@@ -41,6 +41,7 @@ class QRDatasets(Dataset):
                 img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
             else:
                 img = cv2.imread(img_path)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         assert img is not None
 
@@ -67,7 +68,7 @@ class QRDatasets(Dataset):
         labels = torch.as_tensor(records['Labels'].values)
 
         for label in labels:
-            if label == 2:
+            if label == 0:
                 boxes = torch.as_tensor([[-2, -2, -1, -1]])
 
         # suppose all instances are not crowd

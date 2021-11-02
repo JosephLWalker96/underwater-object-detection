@@ -53,8 +53,8 @@ def get_iou_score(output, target, width, height, target_idx):
     target_box = target['boxes'][target_idx]
     target_label = target['labels'][target_idx]
 
-    # label==2 means no label
-    if target_label==2:
+    # label==0 means no label
+    if target_label==0:
         if len(output_boxes) == 0:
             return None, 1
         else:
@@ -70,7 +70,7 @@ def get_iou_score(output, target, width, height, target_idx):
         box = output_boxes[i]
         score = output_scores[i]
         label = output_labels[i]
-        print(label)
+#         print(label)
         if score < 0.5 or label != target_label:
             continue
         

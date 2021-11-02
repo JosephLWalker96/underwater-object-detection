@@ -25,8 +25,8 @@ def read_txt(txt_path):
         annot_p = rr = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", annot[0])
         label, x, y, w, h = int(annot_p[0]), float(annot_p[1]), float(annot_p[2]), float(annot_p[3]), float(annot_p[4])
 
-    # label is 0 or 1: 0 is SUIT, 1 is target
-    return label + 1, x, y, w, h
+    # label is 1 or 2: 1 is SUIT, 2 is target
+    return label + 2, x, y, w, h
 
 
 '''
@@ -74,7 +74,7 @@ def store_new_qr_entry(qr_df, cam_path, loc_name, cam_name, filename):
     
 '''
 def store_new_out_entry(label, x, y, w, h, row, out_df):
-    if not label == 2:
+    if not label == 0:
         width = int(row['Image Width'])
         height = int(row['Image Height'])
 
@@ -198,8 +198,8 @@ def get_qr_df(path_to_images, path_to_bbox):
             label, x, y, w, h = read_txt(target_path)
             out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
         if not (os.path.exists(suit_path) or os.path.exists(target_path)):
-            # label 2 means no bbox available
-            out_df = store_new_out_entry(2, -1, -1, -1, -1, row, out_df)
+            # label 0 means no bbox available
+            out_df = store_new_out_entry(0, -1, -1, -1, -1, row, out_df)
 
     # print("writting csv for testing data to " + path_to_images + "/test_qr_labels.csv")
     return out_df
@@ -249,12 +249,12 @@ def get_df_by_name(df: pd.DataFrame, name_series:np.array):
 '''
 def random_sample(qr_df: pd.DataFrame, train_ratio):
     image_columns = qr_df['Image'].unique()
-    trainable_image_columns = qr_df[qr_df["Labels"] != 2]['Image'].unique()
+    trainable_image_columns = qr_df[qr_df["Labels"] != 0]['Image'].unique()
     no_label_images_columns = np.array([img for img in image_columns if img not in trainable_image_columns])
 
     # getting train and validation df
     indices = np.arange(len(trainable_image_columns))
-    train_size = int(float(train_ratio) * len(trainable_image_columns))
+    train_size = int(float(train_ratio) * len(image_columns))
     
     train_val_indices = np.random.choice(indices, train_size, replace=False)
     train_indices = np.random.choice(train_val_indices, int(len(train_val_indices)*train_ratio), replace=False)

@@ -16,7 +16,7 @@ def color_correction(pixels, x = 0, y = 0, adjustment_intensity = 1, _filter = N
     :adjustment_intensity: scale the intensity of the adjustment from the identity matrix, in range of [0,+)
     :_filter: the customary matrix that the user may supply
     """
-    pixels = cv2.cvtColor(pixels, cv2.COLOR_BGR2RGB)
+#     pixels = cv2.cvtColor(pixels, cv2.COLOR_BGR2RGB)
     if _filter is None:
         _filter = getColorFilterMatrix(pixels, x, y, adjustment_intensity = adjustment_intensity)
     transform_matrix = np.transpose(np.array([
