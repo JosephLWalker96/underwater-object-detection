@@ -389,7 +389,7 @@ def main(args):
     train_datasets.append(train_dataset)
     val_datasets.append(val_dataset)
 
-    model = net(num_classes=2, nn_type=args.model, use_grayscale=args.use_grayscale)
+    model = net(num_classes=3, nn_type=args.model, use_grayscale=args.use_grayscale)
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)

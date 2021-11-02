@@ -10,7 +10,7 @@ class QRDatasets(Dataset):
     def __init__(self, dir_to_image: str, df: pd.DataFrame, use_grayscale: bool = False,transforms=None):
         super().__init__()
 
-        self.num_class = 2  # SUIT + target
+        self.num_class = 3  # SUIT + target + background
         self.image_dir = dir_to_image
         self.dataframe = df
         self.transforms = transforms
