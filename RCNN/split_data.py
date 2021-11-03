@@ -536,7 +536,8 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
             txt_r_paths = [suit_r_path, target_r_path]
             with open(txt_w_path + '/' + img_name + '.txt', 'a') as f:
                 is_modify = False
-                for label in [0, 1]:
+                for i in [0, 1]:
+                    label = i+1
                     if not os.path.exists(txt_r_paths[label]):
                         continue
                     _, x, y, w, h = read_txt(txt_r_paths[label])
