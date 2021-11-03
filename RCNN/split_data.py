@@ -538,9 +538,9 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
                 is_modify = False
                 for i in [0, 1]:
                     label = i+1
-                    if not os.path.exists(txt_r_paths[label]):
+                    if not os.path.exists(txt_r_paths[i]):
                         continue
-                    _, x, y, w, h = read_txt(txt_r_paths[label])
+                    _, x, y, w, h = read_txt(txt_r_paths[i])
                     if x < 0:
                         continue
                     else:
