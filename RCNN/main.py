@@ -60,8 +60,8 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
             target = targets[i]
 
             # converting bbox location into range (0, 1)
-            print('********************outputs********************')
-            print(outputs)
+#             print('********************outputs********************')
+#             print(outputs)
 #             print('********************targets********************')
 #             print(targets)
             outputs = outputs[0]
@@ -116,8 +116,8 @@ def draw_bbox(path_to_images, records, box, img, iou_score, df, label):
         ys = (box[1]+box[3])/2
         w = box[2] - box[0]
         h = box[3] - box[1]
-        if label == 2:
-            print('here')
+#         if label == 2:
+#             print('here')
         line = str(int(label))+' '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
         f.write(line)
         
