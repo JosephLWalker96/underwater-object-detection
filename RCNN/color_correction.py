@@ -45,7 +45,8 @@ def getColorFilterMatrix(pixels, x, y, adjustment_intensity = 1):
     thresholdLevel = numOfPixels / thresholdRatio
     minAvgRed = 60
     maxHueShift = 120
-    blueMagicValue = 1.2 # 0.3
+    # blueMagicValue = 1.2 # 0.3
+    blueMagicValue = 0.3
 
     # Objects:
     normalize = {"r":[], "g":[], "b":[]}

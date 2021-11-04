@@ -84,8 +84,8 @@ class QRDatasets(Dataset):
         
         if self.transforms:
             sample = {
-#                 'image': img,
-                'image': np.array(img, dtype=np.float32)/255.0,
+                'image': cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
+                # 'image': np.array(img, dtype=np.float32)/255.0,
                 'bboxes': target['boxes'],
                 'labels': labels
             }

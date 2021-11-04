@@ -13,7 +13,7 @@ def collate_fn(batch):
 # Augmentations
 class Color_Correction(A.ImageOnlyTransform):
     def apply(self, img, **params) -> np.ndarray:
-        mu, sigma = 0, 1 # mean and standard deviation
+        mu, sigma = 0, .1 # mean and standard deviation
         s1,s2 = np.random.normal(mu, sigma, 2)
         img = color_correction(pixels=img, x=s1, y=s2, adjustment_intensity = 1)
         img = np.array(img).astype(np.float32)/255.0
@@ -22,7 +22,7 @@ class Color_Correction(A.ImageOnlyTransform):
 def get_train_transform():
     return A.Compose([
         A.Resize(512, 512),
-#         Color_Correction(),
+        Color_Correction /(),
         ToTensorV2(p=1.0)
     ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
@@ -36,7 +36,7 @@ def get_valid_transform():
 def get_test_transform():
     return A.Compose([
         A.Resize(512, 512),
-#         Color_Correction(),
+        Color_Correction(),
         ToTensorV2(p=1.0)
     ])
 
