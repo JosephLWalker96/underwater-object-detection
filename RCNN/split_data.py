@@ -291,26 +291,15 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         new_data_df = qr_df[qr_df['Location'].str.contains("HUA|MOO|RAI|TAH|TTR")]
         old_data_df = qr_df[qr_df['Location'].str.contains("LL|PAL")]
 
-        train_and_val_df = new_data_df[new_data_df['x'] != -1]
-
-        untrainable_new_dataset_df = new_data_df[~new_data_df.index.isin(train_and_val_df.index)]
-        test_df = pd.concat([old_data_df, untrainable_new_dataset_df])
-        test_df.index = pd.RangeIndex(len(test_df.index))
-
-        train_and_val_df = train_and_val_df.sample(frac=1).reset_index(drop=True)  # shuffle
-        train_size = int(float(train_ratio) * train_and_val_df.__len__())
-        train_df = train_and_val_df[:train_size]
-        val_df = train_and_val_df[~train_and_val_df.index.isin(train_df.index)]
+        train_df1, val_df, train_df2 = random_sample(new_data_df, train_ratio)
+        train_df = pd.concat([train_df1, train_df2])
         train_df.index = pd.RangeIndex(len(train_df.index))
-        val_df.index = pd.RangeIndex(len(val_df.index))
 
-        print('train size = ' + str(len(train_df)))
-        print('val size = ' + str(len(val_df)))
-        print('test size = ' + str(len(test_df)))
+        test_df = pd.concat(random_sample(old_data_df, train_ratio))
+        test_df.index = pd.RangeIndex(len(test_df.index))
 
         return train_df, test_df, val_df
 
-    # Using leave-one-out cross validation, 
     # test on the image data from one environment and train on all the other images 
     # (for every environment, split 0.8:0.2 for training and testing)
     elif exp_num == 'exp3':
@@ -325,12 +314,11 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         for loc in selections:
             if not loc == test_on:
                 df = qr_df[qr_df['Location'].str.contains(loc)]
-                train_and_val_df = df[df['x'] != -1]
-                train_and_val_df = train_and_val_df.sample(frac=1).reset_index(drop=True)  # shuffle
-                train_size = int(float(train_ratio) * train_and_val_df.__len__())
-                curr_train_df = train_and_val_df[:train_size]
+                curr_train_df1, curr_val_df, curr_train_df2 = random_sample(df, train_ratio)
+                curr_train_df = pd.concat([curr_train_df1, curr_train_df2])
+                curr_train_df.index = pd.RangeIndex(len(curr_train_df.index))
                 train_df.append(curr_train_df)
-                val_df.append(train_and_val_df[~train_and_val_df.index.isin(curr_train_df.index)])
+                val_df.append(curr_val_df)
             else:
                 test_df = qr_df[qr_df['Location'].str.contains(loc)]
 
@@ -341,6 +329,8 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         val_df.index = pd.RangeIndex(len(val_df.index))
 
         return train_df, test_df, val_df
+    # train on the image data from one environment and test on all the other images
+    # (for every environment, split 0.8:0.2 for training and testing)
     elif exp_num == 'exp4':
         selections = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
 
@@ -355,12 +345,11 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
                 test_df = qr_df[qr_df['Location'].str.contains(loc)]
             else:
                 df = qr_df[qr_df['Location'].str.contains(loc)]
-                train_and_val_df = df[df['x'] != -1]
-                train_and_val_df = train_and_val_df.sample(frac=1).reset_index(drop=True)  # shuffle
-                train_size = int(float(train_ratio) * train_and_val_df.__len__())
-                curr_train_df = train_and_val_df[:train_size]
+                curr_train_df1, curr_val_df, curr_train_df2 = random_sample(df, train_ratio)
+                curr_train_df = pd.concat([curr_train_df1, curr_train_df2])
+                curr_train_df.index = pd.RangeIndex(len(curr_train_df.index))
                 train_df.append(curr_train_df)
-                val_df.append(train_and_val_df[~train_and_val_df.index.isin(curr_train_df.index)])
+                val_df.append(curr_val_df)
 
         train_df = pd.concat(train_df)
         val_df = pd.concat(val_df)
@@ -369,7 +358,7 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         val_df.index = pd.RangeIndex(len(val_df.index))
 
         return train_df, test_df, val_df
-    # cross validation
+    # cross validation with each environment as different patch (unused, not modified to fit target detection)
     elif exp_num == 'exp5':
         train_df = []
         test_df = []
@@ -435,9 +424,12 @@ def run(args):
         os.system('rm -r ' + path_to_save)
         os.mkdir(path_to_save)
 
-    qr_df = get_qr_df(path_to_images, path_to_bbox)
-#     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
-    qr_df.to_csv(args.dataset_path + "/all_qr_labels.csv")
+    if os.path.exists(args.dataset_path + "/all_qr_labels.csv"):
+        qr_df = pd.read_csv(args.dataset_path + "/all_qr_labels.csv")
+    else:
+        qr_df = get_qr_df(path_to_images, path_to_bbox)
+    #     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
+        qr_df.to_csv(args.dataset_path + "/all_qr_labels.csv")
 
     if exp_num is None or exp_num == 'exp1' or exp_num == 'exp2':
         if exp_num is not None:
@@ -452,7 +444,10 @@ def run(args):
         if not os.path.exists(path_to_label):
             os.mkdir(path_to_label)
 
-        train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, exp_num)
+        if exp_num is not None:
+            train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, exp_num=exp_num)
+        else:
+            train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df)
         save_to_path(train_df, path_to_images, path_to_bbox, path_to_save, 'train_qr_labels.csv', 'train')
         save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
         save_to_path(val_df, path_to_images, path_to_bbox, path_to_save, 'val_qr_labels.csv', 'val')
@@ -517,7 +512,7 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
         os.mkdir(path_to_save + "/labels/" + mode)
 
     df.to_csv(path_to_save + '/images/' + csv_filename)
-    for idx in range(df.__len__()):
+    for idx in tqdm(range(df.__len__()), desc = 'saving %s files'%mode):
         records = df[df.index == idx]
 
         img_name = str(records["Image"].values[0])
