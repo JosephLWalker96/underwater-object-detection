@@ -95,7 +95,6 @@ class QRDatasets(Dataset):
             
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
         
-#         img = img
-#         img /= 255.0
-
+        img = img.to(torch.float32)
+        img /= 255.0
         return img, target, idx

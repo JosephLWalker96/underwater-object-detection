@@ -16,7 +16,6 @@ class Color_Correction(A.ImageOnlyTransform):
         mu, sigma = 0, .1 # mean and standard deviation
         s1,s2 = np.random.normal(mu, sigma, 2)
         img = color_correction(pixels=img, x=s1, y=s2, adjustment_intensity = 1)
-        img = np.array(img).astype(np.float32)/255.0
         return img
 
 def get_train_transform():
