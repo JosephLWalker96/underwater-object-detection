@@ -22,7 +22,7 @@ class Color_Correction(A.ImageOnlyTransform):
 def get_train_transform():
     return A.Compose([
         A.Resize(512, 512),
-        Color_Correction /(),
+        Color_Correction(),
         ToTensorV2(p=1.0)
     ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
