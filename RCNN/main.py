@@ -44,7 +44,7 @@ def generate_test_csv(path_to_images):
     qr_df.to_csv(path_to_images + "/test_qr_labels.csv")
 
 
-def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_grayscale):
+def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images, use_grayscale):
     print("iterating through the test images")
     
     rslt_df = pd.DataFrame(columns=['img', 'xs', 'ys', 'w', 'h', 'iou_score'])
@@ -84,7 +84,7 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                 if iou_score >= 0:
                     iou_scores.append(iou_score)
                     if result_box is not None:
-                        img, rslt_df = draw_bbox(path_to_images, records, result_box, img, iou_score, rslt_df, target['labels'][j])
+                        img, rslt_df = draw_bbox(path_to_output, path_to_images, records, result_box, img, iou_score, rslt_df, target['labels'][j])
                 else:
                     for i in range(len(boxes)):
                         box = boxes[i]
@@ -92,32 +92,30 @@ def generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, use_gra
                         label = labels[i]
                         if score < 0.5:
                             continue
-                        img, rslt_df = draw_bbox(path_to_images, records, box, img, iou_score, rslt_df, label)
+                        img, rslt_df = draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, rslt_df, label)
             
-                path_to_bbox_images = path_to_images + "/images_with_bbox"
+                path_to_bbox_images = path_to_output + "/images_with_bbox"
                 if not os.path.exists(path_to_bbox_images):
                     os.mkdir(path_to_bbox_images)
                 filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
                 cv2.imwrite(filename, img)
 
     print('average test iou scores = '+str(np.mean(iou_scores)))
-    rslt_df.to_csv(path_to_images + "/labels/result_qr_labels.csv")
+    rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
                 
 
 # fitting bbox location in the original images
-def draw_bbox(path_to_images, records, box, img, iou_score, df, label):
+def draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, df, label):
     if not os.path.exists(path_to_images+'/labels'):
         os.system('mkdir '+path_to_images+'/labels')
 
     img_exts = str(records["File Name"].values[0]).split('.')
 
-    with open(path_to_images+'/labels/'+img_exts[0]+'.txt', 'a') as f:
+    with open(path_to_output+'/labels/'+img_exts[0]+'.txt', 'a') as f:
         xs = (box[0]+box[2])/2
         ys = (box[1]+box[3])/2
         w = box[2] - box[0]
         h = box[3] - box[1]
-#         if label == 2:
-#             print('here')
         line = str(int(label))+' '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
         f.write(line)
         
@@ -154,7 +152,7 @@ def draw_bbox(path_to_images, records, box, img, iou_score, df, label):
     
     return img, df
 
-def main(path_to_images, path_to_labels, model_path, model_name, is_test):
+def main(path_to_output, path_to_images, path_to_labels, model_path, model_name, is_test):
     if is_test:
         assert os.path.exists(model_path+'/'+model_name)
         assert os.path.exists(path_to_images)
@@ -166,7 +164,7 @@ def main(path_to_images, path_to_labels, model_path, model_name, is_test):
         print("loading model")
         with open(model_path + '/' + model_name, 'rb') as f:
             model = torch.load(model_path + '/' + model_name)  
-        generate_image_with_bbox(model, test_dataset, qr_df, path_to_images, args.use_grayscale)
+        generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images, args.use_grayscale)
         
     else:
         # Input for Images Folder
@@ -201,14 +199,15 @@ def main(path_to_images, path_to_labels, model_path, model_name, is_test):
             print("loading model from "+model_path + '/' + model_name)
             with open(model_path + '/' + model_name, 'rb') as f:
                 model = torch.load(model_path + '/' + model_name)
-        generate_image_with_bbox(model, test_dataset, qr_df, path_to_images+'/test', args.use_grayscale)
+        generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images + '/test', args.use_grayscale)
                 
 def run(args):
     if args.test:
         path_to_images = args.path_to_dataset
         path_to_labels = None
         model_path = args.path_to_model
-        main(path_to_images, path_to_labels, model_path, args.model, args.test)
+        path_to_output = args.path_to_dataset + '/rcnn'
+        main(path_to_output, path_to_images, path_to_labels, model_path, args.model, args.test)
     else:
         dirs_to_images = []
         dirs_to_labels = []
@@ -218,21 +217,24 @@ def run(args):
                 path_to_images = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/images'
                 path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/labels'
                 model_path = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/models'
+                path_to_output = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/rcnn'
     #             os.system('rm -r '+model_path)
     #             os.mkdir(model_path)
-                main(path_to_images, path_to_labels, model_path, args.model, args.test)
+                main(path_to_output, path_to_images, path_to_labels, model_path, args.model, args.test)
         else:
             if args.exp_num is None:
                 path_to_images = args.path_to_dataset + '/images'
                 path_to_labels = args.path_to_dataset + '/labels'
                 model_path = args.path_to_dataset + '/models'
+                path_to_output = args.path_to_dataset + '/rcnn'
             else:
                 path_to_images = args.path_to_dataset + '/' + args.exp_num + '/images'
                 path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/labels'
                 model_path = args.path_to_dataset + '/' + args.exp_num + '/models'
+                path_to_output = args.path_to_dataset + '/' + args.exp_num + '/rcnn'
     #         os.system('rm -r '+model_path)
     #         os.mkdir(model_path)
-            main(path_to_images, path_to_labels, model_path, args.model, args.test)
+            main(path_to_output, path_to_images, path_to_labels, model_path, args.model, args.test)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

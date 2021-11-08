@@ -512,8 +512,9 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
         os.mkdir(path_to_save + "/labels/" + mode)
 
     df.to_csv(path_to_save + '/images/' + csv_filename)
-    for idx in tqdm(range(df.__len__()), desc = 'saving %s files'%mode):
-        records = df[df.index == idx]
+    image_columns = df['Image'].unique()
+    for img_name in tqdm(image_columns, desc = 'saving %s files'%mode):
+        records = df.loc[df['Image'] == img_name]
 
         img_name = str(records["Image"].values[0])
         img_r_path = str(records["img_path"].values[0])
@@ -525,27 +526,28 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
         suit_r_path = path_to_bbox + '/SUIT/' + img_name + '.txt'
         target_r_path = path_to_bbox + '/target/' + img_name + '.txt'
         txt_w_path = path_to_save + '/labels/' + mode
-        #         txt_w_path = path_to_save + '/labels/' + mode +'/'+ img_name+'.txt'
-        if os.path.exists(suit_r_path) or os.path.exists(target_r_path):
-            os.system('touch ' + txt_w_path)
-            txt_r_paths = [suit_r_path, target_r_path]
+        txt_r_paths = [suit_r_path, target_r_path]
+        os.system('touch ' + txt_w_path)
+        is_modify = False
+        for idx, record in records.iterrows():
+            label = record["Labels"]
+            i = label - 1
+            txt_r_path = txt_r_paths[i]
+
             with open(txt_w_path + '/' + img_name + '.txt', 'a') as f:
-                is_modify = False
-                for i in [0, 1]:
-                    label = i+1
-                    if not os.path.exists(txt_r_paths[i]):
-                        continue
-                    _, x, y, w, h = read_txt(txt_r_paths[i])
-                    if x < 0:
-                        continue
-                    else:
-                        written_str = '%d, %f, %f, %f, %f \n' % (label, x, y, w, h)
-                        f.write(written_str)
-                        # f.truncate()
-                        is_modify = True
+                if not os.path.exists(txt_r_path):
+                    continue
+                _, x, y, w, h = read_txt(txt_r_path)
+                if x < 0:
+                    continue
+                else:
+                    written_str = '%d %f %f %f %f \n' % (label, x, y, w, h)
+                    f.write(written_str)
+                    # f.truncate()
+                    is_modify = True
                 f.close()
-            if not is_modify:
-                os.system('rm ' + txt_w_path)
+        if not is_modify:
+            os.system('rm ' + txt_w_path + '/' + img_name)
 
 
 if __name__ == '__main__':
