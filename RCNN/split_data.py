@@ -7,6 +7,17 @@ import cv2
 import glob, os
 from tqdm import tqdm
 
+
+'''
+    This function is coming from datasets.py in yolov5,
+    which is intended to get the corresponding txt position from given img_path
+'''
+def img2label_path(img_path):
+    # Define label paths as a function of image paths
+    sa, sb = os.sep + 'images' + os.sep, os.sep + 'labels' + os.sep  # /images/, /labels/ substrings
+    # print(sb.join(img_path.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt')
+    return sb.join(img_path.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt'
+
 '''
     This function is used to read the txt file.
     The txt file is one-line and the format for the txt should be:
@@ -44,7 +55,7 @@ def store_new_qr_entry(qr_df, cam_path, loc_name, cam_name, filename):
     #     print(cam_path+'/'+filename)
     img_name, img_ext = os.path.splitext(filename)
     if img_ext == ".JPG" or img_ext == ".PNG":
-        img_path = cam_path + "/" + filename
+        img_path = os.path.abspath(cam_path + "/" + filename)
         img = np.array(cv2.imread(img_path))
         qr_df = qr_df.append({
             "img_path": img_path,
@@ -161,16 +172,37 @@ def get_qr_df(path_to_images, path_to_bbox):
     qr_df = pd.DataFrame(columns=["Location", "Camera", "File Name", "Image", "Image Width", "Image Height"])
     ## iterating via directory
     directory = path_to_images
+
+    # getting the corresponding labels directory
+    # label_directory = path_to_images.replace('images', 'labels')
+    # if not os.path.exists(label_directory):
+    #     os.mkdir(label_directory)
+
     print("Getting Images Info")
     for loc_name in tqdm(os.listdir(directory)):
         loc_path = directory + "/" + loc_name
         if os.path.isdir(loc_path):
+
+            # creating the corresponding path for txt
+            # if not os.path.exists(label_directory + "/" + loc_name):
+            #     os.mkdir(label_directory + "/" + loc_name)
+
             for cam_name in os.listdir(loc_path):
                 cam_path = loc_path + "/" + cam_name
                 if os.path.isdir(cam_path):
+
+                    # creating the corresponding path for txt
+                    # if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name):
+                    #     os.mkdir(label_directory + "/" + loc_name + "/" + cam_name)
+
                     for f_len_or_filename in os.listdir(cam_path):
                         if os.path.isdir(cam_path + '/' + f_len_or_filename):
                             f_len = f_len_or_filename
+
+                            # creating the corresponding path for txt
+                            # if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len):
+                            #     os.mkdir(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len)
+
                             for filename in os.listdir(cam_path + '/' + f_len):
                                 qr_df = store_new_qr_entry(qr_df, cam_path + '/' + f_len, loc_name, cam_name, filename)
                         else:
@@ -506,26 +538,29 @@ def run(args):
 
 
 def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, mode):
-    if not os.path.exists(path_to_save + "/images/" + mode):
-        os.mkdir(path_to_save + "/images/" + mode)
+    # if not os.path.exists(path_to_save + "/images/" + mode):
+        # os.mkdir(path_to_save + "/images/" + mode)
     if not os.path.exists(path_to_save + "/labels/" + mode):
         os.mkdir(path_to_save + "/labels/" + mode)
 
     df.to_csv(path_to_save + '/images/' + csv_filename)
     image_columns = df['Image'].unique()
+
+    img_txt_path = path_to_save + '/' + mode + '.txt'
+    os.system('touch ' + img_txt_path)
+
     for img_name in tqdm(image_columns, desc = 'saving %s files'%mode):
         records = df.loc[df['Image'] == img_name]
+        img_path = str(records['img_path'].values[0])
 
-        img_name = str(records["Image"].values[0])
-        img_r_path = str(records["img_path"].values[0])
-        img_w_path = path_to_save + "/images/" + mode
-        #         img_w_path = path_to_save + "/images/" + mode +'/'+ str(records["File Name"].values[0])
+        with open(img_txt_path, 'a') as img_txt:
+            written_str = img_path +'\n'
+            img_txt.write(written_str)
 
-        os.system('cp ' + img_r_path + ' ' + img_w_path)
+        txt_w_path = img2label_path(img_path)
 
         suit_r_path = path_to_bbox + '/SUIT/' + img_name + '.txt'
         target_r_path = path_to_bbox + '/target/' + img_name + '.txt'
-        txt_w_path = path_to_save + '/labels/' + mode
         txt_r_paths = [suit_r_path, target_r_path]
         os.system('touch ' + txt_w_path)
         is_modify = False
@@ -534,7 +569,7 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
             i = label - 1
             txt_r_path = txt_r_paths[i]
 
-            with open(txt_w_path + '/' + img_name + '.txt', 'a') as f:
+            with open(txt_w_path, 'a') as f:
                 if not os.path.exists(txt_r_path):
                     continue
                 _, x, y, w, h = read_txt(txt_r_path)
@@ -547,7 +582,8 @@ def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, m
                     is_modify = True
                 f.close()
         if not is_modify:
-            os.system('rm ' + txt_w_path + '/' + img_name)
+            os.system('rm ' + txt_w_path)
+    img_txt.close()
 
 
 if __name__ == '__main__':

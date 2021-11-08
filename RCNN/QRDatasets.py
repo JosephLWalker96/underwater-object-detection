@@ -30,7 +30,7 @@ class QRDatasets(Dataset):
 
         img = None
         for idx, record in records.iterrows():
-            img_path = self.image_dir + '/' + str(record["File Name"])
+            img_path = str(record["img_path"])
 
             if self.gray_scale:
                 # converting to grayscale
@@ -52,13 +52,6 @@ class QRDatasets(Dataset):
         boxes[:, 0] = boxes[:, 0]
         boxes[:, 1] = boxes[:, 1]
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
-#         for box in boxes:
-#             width = float(records['Image Width'].values[0])
-#             height = float(records['Image Height'].values[0])
-#             if box[3]<=box[1]:
-#                 print(img_name)
-#             if box[2]<=box[0]:
-#                 print(img_name)
 
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         area = torch.as_tensor(area, dtype=torch.float32)
@@ -69,7 +62,7 @@ class QRDatasets(Dataset):
 
         for label in labels:
             if label == 0:
-                boxes = torch.as_tensor([[-2, -2, -1, -1]])
+                boxes = torch.as_tensor([[0, 0, 0.1, 0.1]])
 
         # suppose all instances are not crowd
         iscrowd = torch.zeros((records.shape[0],), dtype=torch.int64)
@@ -97,4 +90,5 @@ class QRDatasets(Dataset):
         
         img = img.to(torch.float32)
         img /= 255.0
+        
         return img, target, idx

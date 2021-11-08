@@ -35,9 +35,9 @@ def get_valid_transform():
 def get_test_transform():
     return A.Compose([
         A.Resize(512, 512),
-        Color_Correction(),
+#         Color_Correction(),
         ToTensorV2(p=1.0)
-    ])
+    ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
 
 def get_iou_score(output, target, width, height, target_idx):
 

@@ -73,13 +73,13 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
             # obtaining the original images
             idx = image_ids[i]
             records = qr_df[qr_df.index == idx]
-            img_path = path_to_images + "/" + str(records["File Name"].values[0])
+            img_path = str(records["img_path"].values[0])
 
             img = cv2.imread(img_path)
 
             target_n = len(target['labels'])
             for j in range(target_n):
-                result_box, iou_score = get_iou_score(outputs, target, img.shape[1], img.shape[0], j)
+                result_box, iou_score = get_iou_score(outputs, target, 512, 512, j)
 
                 if iou_score >= 0:
                     iou_scores.append(iou_score)
@@ -98,7 +98,7 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
                 if not os.path.exists(path_to_bbox_images):
                     os.mkdir(path_to_bbox_images)
                 filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
-                cv2.imwrite(filename, img)
+#                 cv2.imwrite(filename, img)
 
     print('average test iou scores = '+str(np.mean(iou_scores)))
     rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
@@ -106,27 +106,27 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
 
 # fitting bbox location in the original images
 def draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, df, label):
-    if not os.path.exists(path_to_images+'/labels'):
-        os.system('mkdir '+path_to_images+'/labels')
+    if not os.path.exists(path_to_output+'/labels'):
+        os.system('mkdir '+path_to_output+'/labels')
 
     img_exts = str(records["File Name"].values[0]).split('.')
 
     with open(path_to_output+'/labels/'+img_exts[0]+'.txt', 'a') as f:
-        xs = (box[0]+box[2])/2
-        ys = (box[1]+box[3])/2
-        w = box[2] - box[0]
-        h = box[3] - box[1]
+        xs = float((box[0]+box[2])/2)
+        ys = float((box[1]+box[3])/2)
+        w = float(box[2] - box[0])
+        h = float(box[3] - box[1])
         line = str(int(label))+' '+str(float(xs))+' '+str(float(ys))+' '+str(float(w))+' '+str(float(h))+'\n'
         f.write(line)
         
         df = df.append({
                 'img': str(records["File Name"].values[0]), 
-                'xs': xs.item(), 
-                'ys': ys.item(), 
-                'w': w.item(), 
-                'h': h.item(), 
+                'xs': xs, 
+                'ys': ys, 
+                'w': w, 
+                'h': h, 
                 'iou_score': iou_score,
-                'label': label
+                'label': int(label)
                 }, ignore_index=True)
 
     x1 = int(box[0] * img.shape[1])
@@ -153,6 +153,9 @@ def draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, df, 
     return img, df
 
 def main(path_to_output, path_to_images, path_to_labels, model_path, model_name, is_test):
+    if not os.path.exists(path_to_output):
+        os.mkdir(path_to_output)
+        
     if is_test:
         assert os.path.exists(model_path+'/'+model_name)
         assert os.path.exists(path_to_images)
@@ -253,7 +256,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=2, type=int)
-    parser.add_argument('--batch_size', default=4, type=int)
+    parser.add_argument('--batch_size', default=8, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale',default=False, action='store_true')
     args = parser.parse_args()

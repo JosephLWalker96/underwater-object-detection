@@ -12,7 +12,7 @@ from utils import get_train_transform, collate_fn, plotting, get_iou_score
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 import os
 import pandas as pd
-import split_data, prepare_yolo_format
+import split_data
 from tqdm import tqdm
 from model import net
 import argparse
