@@ -174,9 +174,9 @@ def get_qr_df(path_to_images, path_to_bbox):
     directory = path_to_images
 
     # getting the corresponding labels directory
-    # label_directory = path_to_images.replace('images', 'labels')
-    # if not os.path.exists(label_directory):
-    #     os.mkdir(label_directory)
+    label_directory = path_to_images.replace('images', 'labels')
+    if not os.path.exists(label_directory):
+        os.mkdir(label_directory)
 
     print("Getting Images Info")
     for loc_name in tqdm(os.listdir(directory)):
@@ -184,24 +184,24 @@ def get_qr_df(path_to_images, path_to_bbox):
         if os.path.isdir(loc_path):
 
             # creating the corresponding path for txt
-            # if not os.path.exists(label_directory + "/" + loc_name):
-            #     os.mkdir(label_directory + "/" + loc_name)
+            if not os.path.exists(label_directory + "/" + loc_name):
+                os.mkdir(label_directory + "/" + loc_name)
 
             for cam_name in os.listdir(loc_path):
                 cam_path = loc_path + "/" + cam_name
                 if os.path.isdir(cam_path):
 
                     # creating the corresponding path for txt
-                    # if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name):
-                    #     os.mkdir(label_directory + "/" + loc_name + "/" + cam_name)
+                    if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name):
+                        os.mkdir(label_directory + "/" + loc_name + "/" + cam_name)
 
                     for f_len_or_filename in os.listdir(cam_path):
                         if os.path.isdir(cam_path + '/' + f_len_or_filename):
                             f_len = f_len_or_filename
 
                             # creating the corresponding path for txt
-                            # if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len):
-                            #     os.mkdir(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len)
+                            if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len):
+                                os.mkdir(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len)
 
                             for filename in os.listdir(cam_path + '/' + f_len):
                                 qr_df = store_new_qr_entry(qr_df, cam_path + '/' + f_len, loc_name, cam_name, filename)
@@ -444,8 +444,8 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
 
 
 def run(args):
-    path_to_images = args.dataset_path + '/All_SUIT_images'
-    path_to_bbox = args.dataset_path + '/All_SUIT_annotations'
+    path_to_images = args.dataset_path + '/images'
+    path_to_bbox = args.dataset_path + '/labels'
     train_ratio = args.train_ratio
     exp_num = args.exp_num
 
