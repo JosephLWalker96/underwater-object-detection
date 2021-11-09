@@ -47,7 +47,7 @@ def generate_test_csv(path_to_images):
 def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images, use_grayscale):
     print("iterating through the test images")
     
-    rslt_df = pd.DataFrame(columns=['img', 'xs', 'ys', 'w', 'h', 'iou_score'])
+    rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=4, pin_memory=True, collate_fn=collate_fn,num_workers=4)
     
@@ -120,14 +120,15 @@ def draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, df, 
         f.write(line)
         
         df = df.append({
-                'img': str(records["File Name"].values[0]), 
-                'xs': xs, 
-                'ys': ys, 
-                'w': w, 
-                'h': h, 
-                'iou_score': iou_score,
-                'label': int(label)
-                }, ignore_index=True)
+            'img_path': str(records["img_path"].values[0]),
+            'img': str(records["File Name"].values[0]),
+            'xs': xs,
+            'ys': ys,
+            'w': w,
+            'h': h,
+            'iou_score': iou_score,
+            'label': int(label)
+        }, ignore_index=True)
 
     x1 = int(box[0] * img.shape[1])
     y1 = int(box[1] * img.shape[0])
@@ -175,10 +176,6 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name,
         args.label_path = path_to_labels
 
         # check whether the path exists
-        if not os.path.exists(path_to_images):
-            print("Test Image Path does not exist")
-            raise FileNotFoundError
-
         if not os.path.exists(path_to_images + "/test_qr_labels.csv"):
             print("getting csv for testing data")
             generate_test_csv(path_to_images)
