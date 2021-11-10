@@ -52,53 +52,52 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=4, pin_memory=True, collate_fn=collate_fn,num_workers=4)
     
     iou_scores = []
-    for images, targets, image_ids in tqdm(data_loader):
-        patch_size = image_ids.__len__()
-        for i in range(patch_size):
-            model.eval()
-            outputs = model([images[i].to(device)])
-            target = targets[i]
+    with torch.no_grad():
+        for images, targets, image_ids in tqdm(data_loader):
+            patch_size = image_ids.__len__()
+            for i in range(patch_size):
+                model.eval()
+                outputs = model([images[i].to(device)])
+                target = targets[i]
 
-            # converting bbox location into range (0, 1)
-#             print('********************outputs********************')
-#             print(outputs)
-#             print('********************targets********************')
-#             print(targets)
-            outputs = outputs[0]
-            boxes = outputs['boxes']
-            scores = outputs['scores']
-            labels = outputs['labels']
-            outputs['boxes'] = outputs['boxes'] / 512
+                # converting bbox location into range (0, 1)
+                outputs = outputs[0]
+                boxes = outputs['boxes']
+                scores = outputs['scores']
+                labels = outputs['labels']
+                outputs['boxes'] = outputs['boxes'] / 512
 
-            # obtaining the original images
-            idx = image_ids[i]
-            records = qr_df[qr_df.index == idx]
-            img_path = str(records["img_path"].values[0])
+                # obtaining the original images
+                idx = image_ids[i]
+                records = qr_df[qr_df.index == idx]
+                img_path = str(records["img_path"].values[0])
 
-            img = cv2.imread(img_path)
+                img = cv2.imread(img_path)
 
-            target_n = len(target['labels'])
-            for j in range(target_n):
-                result_box, iou_score = get_iou_score(outputs, target, 512, 512, j)
+                target_n = len(target['labels'])
+                if target_n >= 2:
+                    print(str(records["img_path"].values[0]))
+                for j in range(target_n):
+                    result_box, iou_score = get_iou_score(outputs, target, 512, 512, j)
 
-                if iou_score >= 0:
-                    iou_scores.append(iou_score)
-                    if result_box is not None:
-                        img, rslt_df = draw_bbox(path_to_output, path_to_images, records, result_box, img, iou_score, rslt_df, target['labels'][j])
-                else:
-                    for i in range(len(boxes)):
-                        box = boxes[i]
-                        score = scores[i]
-                        label = labels[i]
-                        if score < 0.5:
-                            continue
-                        img, rslt_df = draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, rslt_df, label)
-            
-                path_to_bbox_images = path_to_output + "/images_with_bbox"
-                if not os.path.exists(path_to_bbox_images):
-                    os.mkdir(path_to_bbox_images)
-                filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
-#                 cv2.imwrite(filename, img)
+                    if iou_score >= 0:
+                        iou_scores.append(iou_score)
+                        if result_box is not None:
+                            img, rslt_df = draw_bbox(path_to_output, path_to_images, records, result_box, img, iou_score, rslt_df, target['labels'][j])
+                    else:
+                        for i in range(len(boxes)):
+                            box = boxes[i]
+                            score = scores[i]
+                            label = labels[i]
+                            if score < 0.5:
+                                continue
+                            img, rslt_df = draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, rslt_df, label)
+
+                    path_to_bbox_images = path_to_output + "/images_with_bbox"
+                    if not os.path.exists(path_to_bbox_images):
+                        os.mkdir(path_to_bbox_images)
+                    filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
+    #                 cv2.imwrite(filename, img)
 
     print('average test iou scores = '+str(np.mean(iou_scores)))
     rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
@@ -246,14 +245,14 @@ if __name__ == "__main__":
 #     parser.add_argument('--label_path', default='../Datasets/labels', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
 #     parser.add_argument('--model', default='retinanet', type=str)
-    parser.add_argument('--lr', default=0.01, type=float)
+    parser.add_argument('--lr', default=0.02, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)
     parser.add_argument('--step_size', default=5, type=int)
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=2, type=int)
-    parser.add_argument('--batch_size', default=8, type=int)
+    parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale',default=False, action='store_true')
     args = parser.parse_args()

@@ -197,6 +197,7 @@ class train:
         val_loss_list = []
 
         print("start training")
+
         for epoch in range(self.num_epochs):
             print("Epoch "+str(epoch+1))
             train_loss_hist = Averager()
@@ -208,32 +209,33 @@ class train:
             train_loss_hist.reset()
             train_scores = []
             print("training")
-            for images, targets, image_ids in tqdm(train_data_loader):
-                self.model.train()
-                images = list(image.to(self.device) for image in images)
+            with torch.enable_grad():
+                for images, targets, image_ids in tqdm(train_data_loader):
+                    self.model.train()
+                    images = list(image.to(self.device) for image in images)
 
-                targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
-                           for t in targets]
-                # [{k: v.double().to(device) if k =='boxes' else v.to(device) for k, v in t.items()} for t in targets]
-                loss_dict = self.model(images, targets)
-                losses = sum(loss for loss in loss_dict.values())
-                loss_value = losses.item()
+                    targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
+                               for t in targets]
+                    # [{k: v.double().to(device) if k =='boxes' else v.to(device) for k, v in t.items()} for t in targets]
+                    loss_dict = self.model(images, targets)
+                    losses = sum(loss for loss in loss_dict.values())
+                    loss_value = losses.item()
 
-                train_loss_hist.send(loss_value)
+                    train_loss_hist.send(loss_value)
 
-                self.optimizer.zero_grad()
-                losses.backward()
-                self.optimizer.step()
+                    self.optimizer.zero_grad()
+                    losses.backward()
+                    self.optimizer.step()
 
-                # if itr % 50 == 0:
-                #     print(f"Iteration #{itr} loss: {loss_value}")
+                    # if itr % 50 == 0:
+                    #     print(f"Iteration #{itr} loss: {loss_value}")
 
-                itr += 1
-#                 predictions = make_ensemble_predictions(images, self.device, [self.model])
-                self.model.eval()
-                predictions = self.model(images)
-                train_image_precisions = self.gather_iou_scores(predictions, targets, images,
-                                                                train_image_precisions, iou_thresholds)
+                    itr += 1
+    #                 predictions = make_ensemble_predictions(images, self.device, [self.model])
+                    self.model.eval()
+                    predictions = self.model(images)
+                    train_image_precisions = self.gather_iou_scores(predictions, targets, images,
+                                                                    train_image_precisions, iou_thresholds)
 
             train_score_list.append(np.mean(train_image_precisions))
             train_loss_list.append(train_loss_hist.value)
@@ -245,25 +247,26 @@ class train:
             # At every epoch we will also calculate the validation IOU
             print("validation")
             validation_image_precisions = []
-            for images, targets, imageids in tqdm(valid_data_loader):  # return image, target, image_id
-                # model must be in train mode so that forward() would return losses
-                self.model.train()
-                images = list(image.to(self.device) for image in images)
-                targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
-                           for t in targets]
-                # outputs = model(images)
-                loss_dict = self.model(images, targets)
-                losses = sum(loss for loss in loss_dict.values())
-                loss_value = losses.item()
-                valid_loss_hist.send(loss_value)
+            with torch.no_grad():
+                for images, targets, imageids in tqdm(valid_data_loader):  # return image, target, image_id
+                    # model must be in train mode so that forward() would return losses
+                    self.model.train()
+                    images = list(image.to(self.device) for image in images)
+                    targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
+                               for t in targets]
+                    # outputs = model(images)
+                    loss_dict = self.model(images, targets)
+                    losses = sum(loss for loss in loss_dict.values())
+                    loss_value = losses.item()
+                    valid_loss_hist.send(loss_value)
 
-                # it is simply the combination of every output list from the model lists
-#                 predictions = make_ensemble_predictions(images, self.device, [self.model])
-                self.model.eval()
-                predictions = self.model(images)
-                # gathering the iou scores into validation_image_precisions
-                validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
-                                                                     validation_image_precisions, iou_thresholds)
+                    # it is simply the combination of every output list from the model lists
+    #                 predictions = make_ensemble_predictions(images, self.device, [self.model])
+                    self.model.eval()
+                    predictions = self.model(images)
+                    # gathering the iou scores into validation_image_precisions
+                    validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
+                                                                         validation_image_precisions, iou_thresholds)
 #             print(validation_image_precisions)
             val_iou = np.mean(validation_image_precisions)
 #             print(val_iou)

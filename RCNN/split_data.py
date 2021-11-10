@@ -540,14 +540,19 @@ def run(args):
 def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, mode):
     # if not os.path.exists(path_to_save + "/images/" + mode):
         # os.mkdir(path_to_save + "/images/" + mode)
-    if not os.path.exists(path_to_save + "/labels/" + mode):
-        os.mkdir(path_to_save + "/labels/" + mode)
+    # if not os.path.exists(path_to_save + "/labels/" + mode):
+    #     os.mkdir(path_to_save + "/labels/" + mode)
 
     df.to_csv(path_to_save + '/images/' + csv_filename)
     image_columns = df['Image'].unique()
 
     img_txt_path = path_to_save + '/' + mode + '.txt'
     os.system('touch ' + img_txt_path)
+
+    if not os.path.exists(img_txt_path):
+        os.system('touch ' + img_txt_path)
+    else:
+        os.system('rm ' + img_txt_path)
 
     for img_name in tqdm(image_columns, desc = 'saving %s files'%mode):
         records = df.loc[df['Image'] == img_name]
