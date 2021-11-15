@@ -1,0 +1,17 @@
+albumentations==1.1.0
+numpy==1.20.1
+opencv-contrib-python==4.5.2.52
+opencv-python==4.5.2.52
+opencv-python-headless==4.5.4.58
+pandas==1.2.4
+matplotlib==3.1.2
+notebook==6.0.2
+jupyter==1.0.0
+jupyter-client==5.3.4
+jupyter-console==6.4.0
+jupyter-core==4.6.1
+jupyterlab==1.2.4
+jupyterlab-server==1.0.6
+jupyterlab-widgets==1.0.0
+torchvision==0.9.1
+ensemble_boxes==1.0.7
