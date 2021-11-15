@@ -443,7 +443,7 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         return None, None, None
 
 
-def run(args):
+def run():
     path_to_images = args.dataset_path + '/images'
     path_to_bbox = args.dataset_path + '/labels'
     train_ratio = args.train_ratio
@@ -456,12 +456,12 @@ def run(args):
         os.system('rm -r ' + path_to_save)
         os.mkdir(path_to_save)
 
-    if os.path.exists(args.dataset_path + "/all_qr_labels.csv"):
-        qr_df = pd.read_csv(args.dataset_path + "/all_qr_labels.csv")
-    else:
-        qr_df = get_qr_df(path_to_images, path_to_bbox)
-    #     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
-        qr_df.to_csv(args.dataset_path + "/all_qr_labels.csv")
+    # if not args.rerun and os.path.exists(args.dataset_path + "/all_qr_labels.csv"):
+    #     qr_df = pd.read_csv(args.dataset_path + "/all_qr_labels.csv")
+    # else:
+    qr_df = get_qr_df(path_to_images, path_to_bbox)
+#     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
+    qr_df.to_csv(args.dataset_path + "/all_qr_labels.csv")
 
     if exp_num is None or exp_num == 'exp1' or exp_num == 'exp2':
         if exp_num is not None:
@@ -600,4 +600,4 @@ if __name__ == '__main__':
     parser.add_argument('--train_ratio', default=0.8, type=float)
     parser.add_argument('--exp_num', default=None, type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
     args = parser.parse_args()
-    run(args)
+    run()
