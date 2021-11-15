@@ -476,13 +476,16 @@ def run(args):
         if not os.path.exists(path_to_label):
             os.mkdir(path_to_label)
 
-        if exp_num is not None:
-            train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, exp_num=exp_num)
+        if train_ratio == 0:
+            save_to_path(qr_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
         else:
-            train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df)
-        save_to_path(train_df, path_to_images, path_to_bbox, path_to_save, 'train_qr_labels.csv', 'train')
-        save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
-        save_to_path(val_df, path_to_images, path_to_bbox, path_to_save, 'val_qr_labels.csv', 'val')
+            if exp_num is not None:
+                train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, exp_num=exp_num)
+            else:
+                train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df)
+            save_to_path(train_df, path_to_images, path_to_bbox, path_to_save, 'train_qr_labels.csv', 'train')
+            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
+            save_to_path(val_df, path_to_images, path_to_bbox, path_to_save, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp3':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         for loc in tqdm(name_ls):
