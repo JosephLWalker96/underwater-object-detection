@@ -45,10 +45,10 @@ def main():
         os.system('mkdir ' + path_to_save_labels + '/val')
         save_to_path(val_df, path_to_load_train_images, path_to_save_images + '/val', path_to_save_labels + '/val')
 
-        # handling test
-        os.system('mkdir ' + path_to_save_images + '/test')
-        os.system('mkdir ' + path_to_save_labels + '/test')
-        save_to_path(test_df, path_to_load_test_images, path_to_save_images + '/test', path_to_save_labels + '/test')
+        # handling transform_test
+        os.system('mkdir ' + path_to_save_images + '/transform_test')
+        os.system('mkdir ' + path_to_save_labels + '/transform_test')
+        save_to_path(test_df, path_to_load_test_images, path_to_save_images + '/transform_test', path_to_save_labels + '/transform_test')
 
 
 def save_to_path(df, path_to_load_images, path_to_save_images, path_to_save_labels, csv_filename=None):

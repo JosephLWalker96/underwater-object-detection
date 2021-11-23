@@ -13,7 +13,7 @@ def collate_fn(batch):
 # Augmentations
 class Color_Correction(A.ImageOnlyTransform):
     def apply(self, img, **params) -> np.ndarray:
-        mu, sigma = 0, .3 # mean and standard deviation
+        mu, sigma = 0, .1 # mean and standard deviation
         s1,s2 = np.random.normal(mu, sigma, 2)
         img = color_correction(pixels=img, x=s1, y=s2, adjustment_intensity = 1)
         return img

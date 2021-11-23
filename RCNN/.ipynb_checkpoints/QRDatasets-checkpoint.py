@@ -62,8 +62,7 @@ class QRDatasets(Dataset):
 
         for label in labels:
             if label == 0:
-                boxes = torch.as_tensor([[0, 0, 0.5, 0.5]])
-                labels = torch.as_tensor([[0]])
+                boxes = torch.as_tensor([[0, 0, 0.1, 0.1]])
 
         # suppose all instances are not crowd
         iscrowd = torch.zeros((records.shape[0],), dtype=torch.int64)
@@ -75,6 +74,7 @@ class QRDatasets(Dataset):
         target['area'] = area
         target['iscrowd'] = iscrowd
 
+        
         if self.transforms:
             sample = {
                 'image': img,
@@ -87,11 +87,8 @@ class QRDatasets(Dataset):
 #             print(img)
             
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
-
-        # print(img_name)
-        # print(img)
-        # print(target)
+        
         img = img.to(torch.float32)
         img /= 255.0
-
+        
         return img, target, idx
