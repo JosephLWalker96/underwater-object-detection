@@ -1,9 +1,14 @@
+import argparse
+from genericpath import exists
+
+from PIL.ImageDraw import Outline
 import numpy as np
 import math
 import glob
 import os
 import cv2
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 def color_correction(pixels, x = 0, y = 0, adjustment_intensity = 1, _filter = None):
     """
@@ -16,7 +21,7 @@ def color_correction(pixels, x = 0, y = 0, adjustment_intensity = 1, _filter = N
     :adjustment_intensity: scale the intensity of the adjustment from the identity matrix, in range of [0,+)
     :_filter: the customary matrix that the user may supply
     """
-    pixels = cv2.cvtColor(pixels, cv2.COLOR_BGR2RGB)
+    # pixels = cv2.cvtColor(pixels, cv2.COLOR_BGR2RGB)
     if _filter is None:
         _filter = getColorFilterMatrix(pixels, x, y, adjustment_intensity = adjustment_intensity)
     transform_matrix = np.transpose(np.array([
@@ -195,3 +200,39 @@ def normalizingInterval(normArray):
             low = normArray[i - 1]
 
     return { "low": low, "high": high }
+
+def transform(data_path, mu, sigma):
+    """
+    Color correct a whole directory
+    """
+    img_dirs = glob.glob(f"{data_path}/**/*.JPG", recursive=True)
+    print("color correcting...")
+    for img_dir in tqdm(img_dirs):
+        img = cv2.imread(img_dir)
+        s1,s2 = np.random.normal(mu, sigma, 2)
+        img = color_correction(pixels=img, x=s1, y=s2, adjustment_intensity = 1)
+        cv2.imwrite(img_dir, img)
+
+
+def main(args):
+    """
+    The main function that conducts the color correction
+    """
+    if not os.path.exists(args.out_path):
+        print("initializing the directory")
+        os.system(f"mkdir {args.out_path}")
+        os.system(f"mkdir {args.out_path}/images")
+        os.system(f"mkdir {args.out_path}/labels")
+        os.system(f"cp -r {args.dataset_path}/images {args.out_path}")
+        os.system(f"cp -r {args.dataset_path}/labels {args.out_path}")
+    transform(args.out_path, args.mu, args.sigma)
+    
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_path", default="../../Complete_SUIT_Dataset", type=str, help="path to the dataset")
+    parser.add_argument("--out_path", type=str, help="path to the output directory")
+    parser.add_argument("--mu", default=0.0, type=float, help="the mean of transformation after correction")
+    parser.add_argument("--sigma", default=0.33, type=float, help="the standard deviation of transformation after correction")
+    args = parser.parse_args()
+    main(args)
