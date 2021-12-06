@@ -7,16 +7,20 @@ import numpy as np
 import torch
 from PIL import Image
 import cv2
-from RandAugment.utils import *
-
+from utils import *
+import argparse
+from tqdm import tqdm
+import os
+import glob
 
 def ShearX(img, v, bbox):  # [-0.3, 0.3]
     assert -0.3 <= v <= 0.3
     if random.random() > 0.5:
         v = -v 
-    corners = bbox_to_corners(bbox).reshape(-1, 2)
-    updated_corners = np.vstack((corners[:,0] - v * corners[:,1], corners[:,1])).T.astype(int)
-    bbox = corners_to_bbox(updated_corners, img)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
+        updated_corners = np.vstack((corners[:,0] - v * corners[:,1], corners[:,1])).T.astype(int)
+        bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, v, 0, 0, 1, 0)), bbox
 
 
@@ -24,9 +28,10 @@ def ShearY(img, v, bbox):  # [-0.3, 0.3]
     assert -0.3 <= v <= 0.3
     if random.random() > 0.5:
         v = -v
-    corners = bbox_to_corners(bbox).reshape(-1,2)
-    updated_corners = np.vstack((corners[:,0], corners[:,1] - v * corners[:,0])).T.astype(int)
-    bbox = corners_to_bbox(updated_corners, img)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1,2)
+        updated_corners = np.vstack((corners[:,0], corners[:,1] - v * corners[:,0])).T.astype(int)
+        bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, v, 1, 0)), bbox
 
 
@@ -42,9 +47,10 @@ def TranslateXabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     assert 0 <= v
     if random.random() > 0.5:
         v = -v
-    corners = bbox_to_corners(bbox).reshape(-1,2)
-    updated_corners = np.vstack((corners[:,0] - v, corners[:,1])).T.astype(int)
-    bbox = corners_to_bbox(updated_corners, img)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1,2)
+        updated_corners = np.vstack((corners[:,0] - v, corners[:,1])).T.astype(int)
+        bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0)), bbox
 
 
@@ -60,9 +66,10 @@ def TranslateYabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     assert 0 <= v
     if random.random() > 0.5:
         v = -v
-    corners = bbox_to_corners(bbox).reshape(-1,2)
-    updated_corners = np.vstack((corners[:,0], corners[:,1] - v)).T.astype(int)
-    bbox = corners_to_bbox(updated_corners, img)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1,2)
+        updated_corners = np.vstack((corners[:,0], corners[:,1] - v)).T.astype(int)
+        bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
 
@@ -71,7 +78,8 @@ def Rotate(img, v, bbox):  # [-30, 30]
     if random.random() > 0.5:
         v = -v
     M = rotation_matrix(img, v)
-    bbox = rotate_update_bbox(bbox, M, img)
+    for i in range(len(bbox)):
+        bbox[i] = rotate_update_bbox(bbox[i], M, img)
     return img.rotate(v), bbox
 
 
@@ -292,3 +300,61 @@ class RandAugment:
             val = (float(self.m) / 30) * float(maxval - minval) + minval
             img, bbox = op(img, val, bbox)
         return img, bbox
+
+def augment(data_path, n, m):
+    """
+    Random Augment a whole directory
+    """
+    img_dirs = glob.glob(f"{data_path}/**/*.JPG", recursive=True)
+    print("RandAugmenting...")
+    for img_dir in tqdm(img_dirs):
+        img = cv2.imread(img_dir)
+        im = Image.fromarray(img)
+        label_dir = img_dir.replace("images", "labels").replace("JPG", "txt")
+        if os.path.exists(label_dir):
+            randaugment = RandAugment(n, m)
+            with open(label_dir, "r+") as f:
+                lines = list(set(f.readlines()))
+                bbox = []
+                for line in lines:
+                    line = line.split(" ")
+                    line[1] = int(float(line[1]) * img.shape[1])
+                    line[2] = int(float(line[2]) * img.shape[0])
+                    line[3] = int(float(line[3]) * img.shape[1])
+                    line[4] = int(float(line[4]) * img.shape[0])
+                    bbox.append([int(line[1]),int(line[2]),int(line[3]),int(line[4]),])
+                im, bbox = randaugment(im, bbox)
+                cv2.imwrite(img_dir, np.array(im))
+                res = []
+                for i in range(len(bbox)):
+                    line = lines[i].split(" ")
+                    line[1] = str(float(line[1]) / img.shape[1])
+                    line[2] = str(float(line[2]) / img.shape[0])
+                    line[3] = str(float(line[3]) / img.shape[1])
+                    line[4] = str(float(line[4]) / img.shape[0])
+                    res.append(" ".join(line))
+                f.truncate(0)
+                f.write("".join(res))
+
+
+def main(args):
+    """
+    The main function that conducts rand augmentation
+    """
+    if not os.path.exists(args.out_path):
+        print("initializing the directory")
+        os.system(f"mkdir {args.out_path}")
+        os.system(f"mkdir {args.out_path}/images")
+        os.system(f"mkdir {args.out_path}/labels")
+        os.system(f"cp -r {args.dataset_path}/images {args.out_path}")
+        os.system(f"cp -r {args.dataset_path}/labels {args.out_path}")
+    augment(args.out_path, args.n, args.m)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_path", default="../Complete_SUIT_Dataset_corrected", type=str, help="path to the dataset")
+    parser.add_argument("--out_path", type=str, help="path to the output directory")
+    parser.add_argument("--n", default=5, type=int, help="the mean of transformation after correction")
+    parser.add_argument("--m", default=2, type=int, help="the standard deviation of transformation after correction")
+    args = parser.parse_args()
+    main(args)
