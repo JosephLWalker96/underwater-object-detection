@@ -9,7 +9,7 @@ if [ ! -d '../yolov5' ]; then
   cp qr_code.yaml ../yolov5/data/qr_code.yaml|| exit
 fi
 
-test_image_path='../Datasets/images/test'
+test_image_path='../Datasets/images/transform_test'
 path_to_yolov5='../yolov5'
 path_to_yolo_model='../yolov5/runs/train/qr_model/weights/best.pt'
 path_to_saved_proj_dir="$test_image_path"

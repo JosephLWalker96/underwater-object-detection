@@ -45,11 +45,11 @@ def generate_test_csv(path_to_images):
 
 
 def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images, use_grayscale):
-    print("iterating through the test images")
+    print("iterating through the transform_test images")
     
     rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    data_loader = DataLoader(test_dataset, shuffle=True, batch_size=4, pin_memory=True, collate_fn=collate_fn,num_workers=4)
+    data_loader = DataLoader(test_dataset, shuffle=True, batch_size=1, pin_memory=True, collate_fn=collate_fn,num_workers=1)
     
     iou_scores = []
     with torch.no_grad():
@@ -99,7 +99,7 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
                     filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
     #                 cv2.imwrite(filename, img)
 
-    print('average test iou scores = '+str(np.mean(iou_scores)))
+    print('average transform_test iou scores = '+str(np.mean(iou_scores)))
     rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
                 
 
@@ -152,95 +152,75 @@ def draw_bbox(path_to_output, path_to_images, records, box, img, iou_score, df, 
     
     return img, df
 
-def main(path_to_output, path_to_images, path_to_labels, model_path, model_name, is_test):
+def main(path_to_output, path_to_images, path_to_labels, model_path, model_name):
     if not os.path.exists(path_to_output):
         os.mkdir(path_to_output)
         
-    if is_test:
-        assert os.path.exists(model_path+'/'+model_name)
-        assert os.path.exists(path_to_images)
-        
-        model = None
-        qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
-        test_tf = get_test_transform()
-        test_dataset = QRDatasets(path_to_images, qr_df, transforms=test_tf)
+    # Input for Images Folder
+    args.image_path = path_to_images
+    args.label_path = path_to_labels
+
+    # check whether the path exists
+    if not os.path.exists(path_to_images + "/test_qr_labels.csv"):
+        print("getting csv for testing data")
+        generate_test_csv(path_to_images)
+
+    print("loading " + path_to_images + "/test_qr_labels.csv")
+    qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
+    test_tf = get_test_transform()
+    test_dataset = QRDatasets(path_to_images+'/transform_test', qr_df, transforms=test_tf)
+
+    # loading up the model
+    model = None
+    print(model_path + '/' + model_name)
+    if os.path.exists(model_path + '/' + model_name):
         print("loading model")
         with open(model_path + '/' + model_name, 'rb') as f:
-            model = torch.load(model_path + '/' + model_name)  
-        generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images, args.use_grayscale)
-        
+            model = torch.load(model_path + '/' + model_name)
     else:
-        # Input for Images Folder
-        args.image_path = path_to_images
-        args.label_path = path_to_labels
-
-        # check whether the path exists
-        if not os.path.exists(path_to_images + "/test_qr_labels.csv"):
-            print("getting csv for testing data")
-            generate_test_csv(path_to_images)
-
-        print("loading " + path_to_images + "/test_qr_labels.csv")
-        qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
-        test_tf = get_test_transform()
-        test_dataset = QRDatasets(path_to_images+'/test', qr_df, transforms=test_tf)
-
-        # loading up the model
-        model = None
-        if os.path.exists(model_path + '/' + model_name):
-            print("loading model")
-            with open(model_path + '/' + model_name, 'rb') as f:
-                model = torch.load(model_path + '/' + model_name)
-        else:
-            print("model does not exist")
-            print("training a new model")
-    #         args.image_path = args.train_image_path 
-            train.main(args)
-            print("loading model from "+model_path + '/' + model_name)
-            with open(model_path + '/' + model_name, 'rb') as f:
-                model = torch.load(model_path + '/' + model_name)
-        generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images + '/test', args.use_grayscale)
+        print("model does not exist")
+        print("training a new model")
+#         args.image_path = args.train_image_path
+        train.main(args)
+        print("loading model from "+model_path + '/' + model_name)
+        with open(model_path + '/' + model_name, 'rb') as f:
+            model = torch.load(model_path + '/' + model_name)
+    generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images + '/transform_test', args.use_grayscale)
                 
 def run(args):
-    if args.test:
-        path_to_images = args.path_to_dataset
-        path_to_labels = None
-        model_path = args.path_to_model
-        path_to_output = args.path_to_dataset + '/rcnn'
-        main(path_to_output, path_to_images, path_to_labels, model_path, args.model, args.test)
+    dirs_to_images = []
+    dirs_to_labels = []
+    if args.exp_num == 'exp3' or args.exp_num == 'exp4':
+        name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
+        for loc in name_ls:
+            path_to_images = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/images'
+            path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/labels'
+            model_path = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/models'
+            path_to_output = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/rcnn'
+#             os.system('rm -r '+model_path)
+#             os.mkdir(model_path)
+            main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
     else:
-        dirs_to_images = []
-        dirs_to_labels = []
-        if args.exp_num == 'exp3' or args.exp_num == 'exp4':
-            name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
-            for loc in name_ls:
-                path_to_images = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/images'
-                path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/labels'
-                model_path = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/models'
-                path_to_output = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/rcnn'
-    #             os.system('rm -r '+model_path)
-    #             os.mkdir(model_path)
-                main(path_to_output, path_to_images, path_to_labels, model_path, args.model, args.test)
+        if args.exp_num is None:
+            path_to_images = args.path_to_dataset + '/images'
+            path_to_labels = args.path_to_dataset + '/labels'
+            model_path = args.path_to_model
+            path_to_output = args.path_to_dataset + '/rcnn'
         else:
-            if args.exp_num is None:
-                path_to_images = args.path_to_dataset + '/images'
-                path_to_labels = args.path_to_dataset + '/labels'
-                model_path = args.path_to_dataset + '/models'
-                path_to_output = args.path_to_dataset + '/rcnn'
-            else:
-                path_to_images = args.path_to_dataset + '/' + args.exp_num + '/images'
-                path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/labels'
-                model_path = args.path_to_dataset + '/' + args.exp_num + '/models'
-                path_to_output = args.path_to_dataset + '/' + args.exp_num + '/rcnn'
-    #         os.system('rm -r '+model_path)
-    #         os.mkdir(model_path)
-            main(path_to_output, path_to_images, path_to_labels, model_path, args.model, args.test)
+            path_to_images = args.path_to_dataset + '/' + args.exp_num + '/images'
+            path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/labels'
+            model_path = args.path_to_dataset + '/' + args.exp_num + '/models'
+            path_to_output = args.path_to_dataset + '/' + args.exp_num + '/rcnn'
+#         os.system('rm -r '+model_path)
+#         os.mkdir(model_path)
+        main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--path_to_model', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--exp_num', default=None, type=str)
-    parser.add_argument('--test',default=False, action='store_true')
+    parser.add_argument('--transform_test',default=False, action='store_true')
 #     parser.add_argument('--image_path', default='../Datasets/images', type=str)
 #     parser.add_argument('--label_path', default='../Datasets/labels', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
@@ -254,7 +234,7 @@ if __name__ == "__main__":
     parser.add_argument('--early_stop', default=2, type=int)
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
-    parser.add_argument('--use_grayscale',default=False, action='store_true')
+    parser.add_argument('--use_grayscale', default=False, action='store_true')
     args = parser.parse_args()
     run(args)
 

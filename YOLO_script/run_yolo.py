@@ -10,7 +10,7 @@ def detect(path_to_yolov5, abs_path_to_yolo_model, abs_path_to_test_images, save
     if os.path.exists(saved_proj_dir+"/"+saved_proj_name):
         os.system("rm -r "+saved_proj_dir+"/"+saved_proj_name)
 
-    # need to declare which images to test on later
+    # need to declare which images to transform_test on later
     test_cmd = 'python detect.py' + ' --img 640 ' + '--weights ' + abs_path_to_yolo_model
     test_cmd = test_cmd + ' --project ' + saved_proj_dir + ' --name ' + saved_proj_name + ' --line-thickness 10 ' + ' --exist-ok'
 

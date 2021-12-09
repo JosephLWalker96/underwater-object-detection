@@ -418,5 +418,5 @@ if __name__ == "__main__":
     parser.add_argument('--early_stop', default=2, type=int)
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
-    parser.add_argument('--use_grayscale',default=False, action='store_true')
+    parser.add_argument('--use_grayscale', default=False, action='store_true')
     main(parser.parse_args())
