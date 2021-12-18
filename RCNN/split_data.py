@@ -370,7 +370,7 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
 
         train_df = []
         val_df = []
-        test_df = []
+        test_df = pd.DataFrame()
 
         for loc in selections:
             if not loc == train_on:
