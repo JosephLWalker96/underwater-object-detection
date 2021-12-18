@@ -266,7 +266,7 @@ def get_df_by_name(df: pd.DataFrame, name_series:np.array):
 
 
 '''
-    This function divides the sample randomly by images names into train, transform_test and val
+    This function divides the sample randomly by images names into train, test and val
     @param qr_df: The Complete Dataframe that connects information of every required image to its every annotation
     @param train_ratio: The ratio for train/all_data 
     @return: train_df, test_df, val_df that contains:
@@ -295,7 +295,7 @@ def random_sample(qr_df: pd.DataFrame, train_ratio):
     train_name_series = trainable_image_columns[train_indices]
     val_name_series = trainable_image_columns[val_indices]
     
-    # getting transform_test indices
+    # getting test indices
     test_indices = np.array([idx for idx in indices if idx not in train_val_indices])
     test_name_series = np.concatenate([trainable_image_columns[test_indices], no_label_images_columns], axis=None)
 
@@ -306,7 +306,7 @@ def random_sample(qr_df: pd.DataFrame, train_ratio):
     return train_df, test_df, val_df
 
 '''
-    This function divides the sample into train, transform_test and val for different experiments
+    This function divides the sample into train, test and val for different experiments
 '''
 def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='exp1'):
     # Split Data Ramdomly
@@ -315,10 +315,10 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         train_df, test_df, val_df = random_sample(qr_df, train_ratio)
         print('train size = ' + str(len(train_df)))
         print('val size = ' + str(len(val_df)))
-        print('transform_test size = ' + str(len(test_df)))
+        print('test size = ' + str(len(test_df)))
 
         return train_df, test_df, val_df
-    # Train on (HUA, MOO, RAI,TAH, TTR) and transform_test on (LL,PAL).
+    # Train on (HUA, MOO, RAI,TAH, TTR) and test on (LL,PAL).
     elif exp_num == 'exp2':
         new_data_df = qr_df[qr_df['Location'].str.contains("HUA|MOO|RAI|TAH|TTR")]
         old_data_df = qr_df[qr_df['Location'].str.contains("LL|PAL")]
@@ -332,7 +332,7 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
 
         return train_df, test_df, val_df
 
-    # transform_test on the image data from one environment and train on all the other images
+    # test on the image data from one environment and train on all the other images
     # (for every environment, split 0.8:0.2 for training and testing)
     elif exp_num == 'exp3':
         selections = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
@@ -361,7 +361,7 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
         val_df.index = pd.RangeIndex(len(val_df.index))
 
         return train_df, test_df, val_df
-    # train on the image data from one environment and transform_test on all the other images
+    # train on the image data from one environment and test on all the other images
     # (for every environment, split 0.8:0.2 for training and testing)
     elif exp_num == 'exp4':
         selections = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
@@ -370,11 +370,11 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
 
         train_df = []
         val_df = []
-        test_df = None
+        test_df = []
 
         for loc in selections:
             if not loc == train_on:
-                test_df = qr_df[qr_df['Location'].str.contains(loc)]
+                test_df = pd.concat(test_df, qr_df[qr_df['Location'].str.contains(loc)])
             else:
                 df = qr_df[qr_df['Location'].str.contains(loc)]
                 curr_train_df1, curr_val_df, curr_train_df2 = random_sample(df, train_ratio)
@@ -477,14 +477,14 @@ def run():
             os.mkdir(path_to_label)
 
         if train_ratio == 0:
-            save_to_path(qr_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'transform_test')
+            save_to_path(qr_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
         else:
             if exp_num is not None:
                 train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, exp_num=exp_num)
             else:
                 train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df)
             save_to_path(train_df, path_to_images, path_to_bbox, path_to_save, 'train_qr_labels.csv', 'train')
-            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'transform_test')
+            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
             save_to_path(val_df, path_to_images, path_to_bbox, path_to_save, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp3':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
@@ -498,7 +498,7 @@ def run():
             train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, test_on=loc, exp_num=exp_num)
             save_to_path(train_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'train_qr_labels.csv',
                          'train')
-            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'transform_test')
+            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'test')
             save_to_path(val_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
@@ -512,7 +512,7 @@ def run():
             train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, train_on=loc, exp_num=exp_num)
             save_to_path(train_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'train_qr_labels.csv',
                          'train')
-            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'transform_test')
+            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'test')
             save_to_path(val_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp5':
         path_to_img = args.dataset_path + '/' + exp_num + '/images'
@@ -536,7 +536,7 @@ def run():
 
         test_df = pd.concat(test_df_ls)
         test_df.index = pd.RangeIndex(len(test_df.index))
-        save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'transform_test')
+        save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
         print('test_size = ' + str(len(test_df)))
 
 
@@ -598,6 +598,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--train_ratio', default=0.8, type=float)
-    parser.add_argument('--exp_num', default=None, type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
+    parser.add_argument('--exp_num', default='exp4', type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
     args = parser.parse_args()
     run()
