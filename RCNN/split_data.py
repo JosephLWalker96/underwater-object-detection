@@ -370,11 +370,11 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
 
         train_df = []
         val_df = []
-        test_df = pd.DataFrame()
+        test_df = []
 
         for loc in selections:
             if not loc == train_on:
-                test_df = pd.concat(test_df, qr_df[qr_df['Location'].str.contains(loc)])
+                test_df.append(qr_df[qr_df['Location'].str.contains(loc)])
             else:
                 df = qr_df[qr_df['Location'].str.contains(loc)]
                 curr_train_df1, curr_val_df, curr_train_df2 = random_sample(df, train_ratio)
@@ -384,6 +384,7 @@ def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='ex
                 val_df.append(curr_val_df)
 
         train_df = pd.concat(train_df)
+        test_df = pd.concat(test_df)
         val_df = pd.concat(val_df)
         test_df.index = pd.RangeIndex(len(test_df.index))
         train_df.index = pd.RangeIndex(len(train_df.index))
