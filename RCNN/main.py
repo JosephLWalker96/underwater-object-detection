@@ -75,8 +75,7 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
                 img = cv2.imread(img_path)
 
                 target_n = len(target['labels'])
-                if target_n >= 2:
-                    print(str(records["img_path"].values[0]))
+
                 for j in range(target_n):
                     result_box, iou_score = get_iou_score(outputs, target, 512, 512, j)
 
@@ -193,10 +192,12 @@ def run(args):
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         for loc in name_ls:
-            path_to_images = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/images'
-            path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/labels'
-            model_path = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/models'
-            path_to_output = args.path_to_dataset + '/' + args.exp_num + '/' + loc + '/rcnn'
+            path_to_dir = os.path.join(args.path_to_dataset, args.exp_num)
+            path_to_dir = os.path.join(path_to_dir, loc)
+            path_to_images = os.path.join(path_to_dir, 'images')
+            path_to_labels = os.path.join(path_to_dir, 'labels')
+            model_path = os.path.join(path_to_dir, 'models')
+            path_to_output = os.path.join(path_to_dir, 'rcnn')
 #             os.system('rm -r '+model_path)
 #             os.mkdir(model_path)
             main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
@@ -219,7 +220,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--path_to_model', default='../Complete_SUIT_Dataset', type=str)
-    parser.add_argument('--exp_num', default=None, type=str)
+    parser.add_argument('--exp_num', default='exp4', type=str)
     parser.add_argument('--transform_test',default=False, action='store_true')
 #     parser.add_argument('--image_path', default='../Datasets/images', type=str)
 #     parser.add_argument('--label_path', default='../Datasets/labels', type=str)
@@ -232,7 +233,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=2, type=int)
-    parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     args = parser.parse_args()

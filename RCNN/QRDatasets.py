@@ -60,12 +60,14 @@ class QRDatasets(Dataset):
         # labels = torch.ones((records.shape[0],), dtype=torch.int64)
         labels = torch.as_tensor(records['Labels'].values)
 
-        for label in labels:
-            if label == 0:
-                boxes = torch.as_tensor([[0, 0, 0.5, 0.5]])
-                labels = torch.as_tensor([[0]])
+        hasObject = True
 
-        # suppose all instances are not crowd
+        for label in labels:
+            # label 0 means no object in the image
+            if label == 0:
+                hasObject = False
+
+        # all instances are not crowd
         iscrowd = torch.zeros((records.shape[0],), dtype=torch.int64)
 
         target = {}
@@ -84,13 +86,13 @@ class QRDatasets(Dataset):
             }
             sample = self.transforms(**sample)
             img = sample['image']
-#             print(img)
-            
+
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
 
-        # print(img_name)
-        # print(img)
-        # print(target)
+        if not hasObject:
+            target['boxes'] = torch.as_tensor([[0,0,0.1,0.1]])
+            target['labels'] = torch.as_tensor([0])
+
         img = img.to(torch.float32)
         img /= 255.0
 

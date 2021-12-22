@@ -599,6 +599,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--train_ratio', default=0.8, type=float)
-    parser.add_argument('--exp_num', default='exp4', type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
+    parser.add_argument('--exp_num', default=None, type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
     args = parser.parse_args()
     run()
