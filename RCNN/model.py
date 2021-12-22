@@ -15,10 +15,6 @@ class net(nn.Module):
         if self.nn_type == "faster-rcnn":
             self.model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 
-            # handling gray scale format
-#             if use_grayscale:
-#                 self.model.backbone.body.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-
             # get number of input features for the classifier
             in_features = self.model.roi_heads.box_predictor.cls_score.in_features
 
@@ -27,6 +23,13 @@ class net(nn.Module):
         elif self.nn_type == "retinanet":
             self.model = torchvision.models.detection.retinanet_resnet50_fpn(pretrained_backbone=True, num_classes=num_classes)
 #             print(self.model)
+        elif self.nn_type == 'faster-rcnn-mobilenet':
+            self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_320_fpn(pretrained=True)
+            # get number of input features for the classifier
+            in_features = self.model.roi_heads.box_predictor.cls_score.in_features
+
+            # replace the pre-trained head with a new one
+            self.model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
         else:
             print("Current choice of models are: faster-rcnn, retinanet")
             raise ValueError
