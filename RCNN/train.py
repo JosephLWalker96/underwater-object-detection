@@ -390,8 +390,14 @@ def main(args):
 
     model = net(num_classes=3, nn_type=args.model, use_grayscale=args.use_grayscale)
     params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+
+    if args.adam:
+        optimizer = torch.optim.Adam(params, lr=args.lr)
+        scheduler = None
+    else:
+        optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+
     my_trainer = train(model=model, optimizer=optimizer, num_epochs=args.num_epoch, early_stop=args.early_stop, 
                        train_datasets=train_datasets, val_datasets=val_datasets, model_dir = args.image_path+'/../models',
                        model_name=args.model,lr_scheduler=scheduler, batch_size=args.batch_size, 
@@ -415,4 +421,5 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
+    parser.add_argument('--adam', default=False, action='store_true')
     main(parser.parse_args())

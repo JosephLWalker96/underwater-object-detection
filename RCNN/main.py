@@ -197,16 +197,16 @@ def run(args):
             path_to_images = os.path.join(path_to_dir, 'images')
             path_to_labels = os.path.join(path_to_dir, 'labels')
             model_path = os.path.join(path_to_dir, 'models')
-            path_to_output = os.path.join(path_to_dir, 'rcnn')
+            path_to_output = os.path.join(path_to_dir, args.model)
 #             os.system('rm -r '+model_path)
 #             os.mkdir(model_path)
             main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
     else:
         if args.exp_num is None:
-            path_to_images = args.path_to_dataset + '/images'
-            path_to_labels = args.path_to_dataset + '/labels'
-            model_path = args.path_to_model
-            path_to_output = args.path_to_dataset + '/rcnn'
+            path_to_images = os.path.join(args.path_to_dataset, 'images')
+            path_to_labels = os.path.join(args.path_to_dataset, 'labels')
+            model_path = os.path.join(args.path_to_dataset, 'models')
+            path_to_output = os.path.join(args.path_to_dataset, '/rcnn')
         else:
             path_to_images = args.path_to_dataset + '/' + args.exp_num + '/images'
             path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/labels'
@@ -219,14 +219,13 @@ def run(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
-    parser.add_argument('--path_to_model', default='../Complete_SUIT_Dataset', type=str)
-    parser.add_argument('--exp_num', default='exp4', type=str)
+    parser.add_argument('--exp_num', default=None, type=str)
     parser.add_argument('--transform_test',default=False, action='store_true')
 #     parser.add_argument('--image_path', default='../Datasets/images', type=str)
 #     parser.add_argument('--label_path', default='../Datasets/labels', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
 #     parser.add_argument('--model', default='retinanet', type=str)
-    parser.add_argument('--lr', default=0.02, type=float)
+    parser.add_argument('--lr', default=0.001, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)
     parser.add_argument('--step_size', default=5, type=int)
@@ -236,6 +235,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
+    parser.add_argument('--adam', default=True, action='store_true')
     args = parser.parse_args()
     run(args)
 
