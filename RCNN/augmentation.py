@@ -8,11 +8,11 @@ from color_correction import color_correction
 
 
 def get_train_val_transform(type:str = "color_correction"):
-    return generate_transform()
+    return generate_transform(type)
 
 
 def get_test_transform(type:str = "no_transform"):
-    return generate_transform()
+    return generate_transform(type)
 
 
 class Color_Correction(A.ImageOnlyTransform):
