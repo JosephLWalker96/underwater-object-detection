@@ -383,7 +383,7 @@ def main(args):
     print("loading "+path_to_images+"/train_qr_labels.csv")
     train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
     val_df = pd.read_csv(path_to_images+"/val_qr_labels.csv")
-    train_tf = get_train_val_transform()
+    train_tf = get_train_val_transform(args.train_transform)
     train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf, use_grayscale=args.use_grayscale)
     val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf, use_grayscale=args.use_grayscale)
     train_datasets.append(train_dataset)
@@ -412,6 +412,8 @@ if __name__ == "__main__":
     parser.add_argument('--label_path', type=str)
     parser.add_argument('--dataset_path', type=str)
     parser.add_argument('--model', default='faster-rcnn', type=str)
+    parser.add_argument('--train_transform', default='default', type=str,
+                        choices=['color_correction', 'default', 'intensive', 'no_transform'])
     parser.add_argument('--lr', default=0.002, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)

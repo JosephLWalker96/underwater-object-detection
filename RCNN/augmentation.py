@@ -1,3 +1,5 @@
+from abc import ABC
+
 import albumentations as A
 import numpy as np
 from albumentations.pytorch import ToTensorV2
@@ -13,7 +15,7 @@ def get_test_transform(type:str = "no_transform"):
     return generate_transform()
 
 
-class Color_Correction(A.ImageOnlyTransform):
+class Color_Correction(A.ImageOnlyTransform, ABC):
     def apply(self, img, **params) -> np.ndarray:
         mu, sigma = 0, .3  # mean and standard deviation
         s1, s2 = np.random.normal(mu, sigma, 2)

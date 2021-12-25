@@ -167,8 +167,8 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
 
     print("loading " + path_to_images + "/test_qr_labels.csv")
     qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
-    test_tf = get_test_transform()
-    test_dataset = QRDatasets(path_to_images+'/transform_test', qr_df, transforms=test_tf)
+    test_tf = get_test_transform(args.test_transform)
+    test_dataset = QRDatasets(path_to_images+'/test', qr_df, transforms=test_tf)
 
     # loading up the model
     model = None
@@ -185,7 +185,7 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
         print("loading model from "+model_path + '/' + model_name)
         with open(model_path + '/' + model_name, 'rb') as f:
             model = torch.load(model_path + '/' + model_name)
-    generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images + '/transform_test', args.use_grayscale)
+    generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images + '/test', args.use_grayscale)
                 
 def run(args):
     dirs_to_images = []
@@ -230,6 +230,12 @@ if __name__ == "__main__":
     parser.add_argument('--lr', default=0.001, type=float)
 
 #     parser.add_argument('--model', default='retinanet', type=str)
+
+    parser.add_argument('--train_transform', default='default', type=str,
+                        choices=['color_correction', 'default', 'intensive', 'no_transform'])
+    parser.add_argument('--test_transform', default='no_transform', type=str,
+                        choices=['color_correction', 'default', 'intensive', 'no_transform'])
+
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)
     parser.add_argument('--step_size', default=5, type=int)
