@@ -5,15 +5,11 @@ from albumentations.pytorch import ToTensorV2
 from RCNN.color_correction import color_correction
 
 
-def get_train_transform():
-    return generate_transform("color_correction")
+def get_train_val_transform(type:str = "color_correction"):
+    return generate_transform()
 
 
-def get_valid_transform():
-    return generate_transform("color_correction")
-
-
-def get_test_transform():
+def get_test_transform(type:str = "no_transform"):
     return generate_transform()
 
 

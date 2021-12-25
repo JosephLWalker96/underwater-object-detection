@@ -9,7 +9,7 @@ import datetime
 from torch.utils.data import DataLoader
 from QRDatasets import QRDatasets
 from utils import collate_fn, plotting, get_iou_score
-from RCNN.augmentation import get_train_transform
+from RCNN.augmentation import get_train_val_transform
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 import os
 import pandas as pd
@@ -383,7 +383,7 @@ def main(args):
     print("loading "+path_to_images+"/train_qr_labels.csv")
     train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
     val_df = pd.read_csv(path_to_images+"/val_qr_labels.csv")
-    train_tf = get_train_transform()
+    train_tf = get_train_val_transform()
     train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf, use_grayscale=args.use_grayscale)
     val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf, use_grayscale=args.use_grayscale)
     train_datasets.append(train_dataset)
