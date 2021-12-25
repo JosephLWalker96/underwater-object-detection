@@ -542,11 +542,6 @@ def run():
 
 
 def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, mode):
-    # if not os.path.exists(path_to_save + "/images/" + mode):
-        # os.mkdir(path_to_save + "/images/" + mode)
-    # if not os.path.exists(path_to_save + "/labels/" + mode):
-    #     os.mkdir(path_to_save + "/labels/" + mode)
-
     df.to_csv(path_to_save + '/images/' + csv_filename)
     image_columns = df['Image'].unique()
 
