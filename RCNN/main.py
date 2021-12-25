@@ -6,7 +6,8 @@ import cv2
 import os
 import torch
 from torch.utils.data import DataLoader
-from utils import collate_fn, get_test_transform, get_iou_score
+from utils import collate_fn, get_iou_score
+from RCNN.augmentation import get_test_transform
 from QRDatasets import QRDatasets
 from tqdm import tqdm
 import train
