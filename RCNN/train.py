@@ -9,7 +9,7 @@ import datetime
 from torch.utils.data import DataLoader
 from QRDatasets import QRDatasets
 from utils import collate_fn, plotting, get_iou_score
-from RCNN.augmentation import get_train_val_transform
+from augmentation import get_train_val_transform
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 import os
 import pandas as pd

@@ -7,7 +7,7 @@ import os
 import torch
 from torch.utils.data import DataLoader
 from utils import collate_fn, get_iou_score
-from RCNN.augmentation import get_test_transform
+from augmentation import get_test_transform
 from QRDatasets import QRDatasets
 from tqdm import tqdm
 import train
@@ -46,10 +46,9 @@ def generate_test_csv(path_to_images):
 
 
 def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images, use_grayscale):
-    print("iterating through the transform_test images")
+    print("iterating through the test images")
     
     rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=1, pin_memory=True, collate_fn=collate_fn,num_workers=1)
     
     iou_scores = []
@@ -99,7 +98,7 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
                     filename = path_to_bbox_images + "/" + str(records["File Name"].values[0])
     #                 cv2.imwrite(filename, img)
 
-    print('average transform_test iou scores = '+str(np.mean(iou_scores)))
+    print('average test iou scores = '+str(np.mean(iou_scores)))
     rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
                 
 
@@ -176,7 +175,7 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
     if os.path.exists(model_path + '/' + model_name):
         print("loading model")
         with open(model_path + '/' + model_name, 'rb') as f:
-            model = torch.load(model_path + '/' + model_name)
+            model = torch.load(model_path + '/' + model_name, map_location=device)
     else:
         print("model does not exist")
         print("training a new model")
@@ -184,7 +183,7 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
         train.main(args)
         print("loading model from "+model_path + '/' + model_name)
         with open(model_path + '/' + model_name, 'rb') as f:
-            model = torch.load(model_path + '/' + model_name)
+            model = torch.load(model_path + '/' + model_name, map_location=device)
     generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to_images + '/test', args.use_grayscale)
                 
 def run(args):
@@ -207,7 +206,7 @@ def run(args):
             path_to_images = os.path.join(args.path_to_dataset, 'images')
             path_to_labels = os.path.join(args.path_to_dataset, 'labels')
             model_path = os.path.join(args.path_to_dataset, 'models')
-            path_to_output = os.path.join(args.path_to_dataset, '/rcnn')
+            path_to_output = os.path.join(args.path_to_dataset, 'rcnn')
         else:
             path_to_images = args.path_to_dataset + '/' + args.exp_num + '/images'
             path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/labels'
@@ -221,13 +220,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--exp_num', default=None, type=str)
-    parser.add_argument('--transform_test',default=False, action='store_true')
 
-    # parser.add_argument('--model', default='faster-rcnn', type=str)
-    # parser.add_argument('--lr', default=0.001, type=float)
-
-    parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)
+    parser.add_argument('--model', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.001, type=float)
+
+    # parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)
+    # parser.add_argument('--lr', default=0.001, type=float)
 
 #     parser.add_argument('--model', default='retinanet', type=str)
 
@@ -235,6 +233,8 @@ if __name__ == "__main__":
                         choices=['color_correction', 'default', 'intensive', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'no_transform'])
+
+    parser.add_argument('--adam', default=True, action='store_true')
 
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)
@@ -245,8 +245,8 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
-    parser.add_argument('--adam', default=True, action='store_true')
     args = parser.parse_args()
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     run(args)
 
 

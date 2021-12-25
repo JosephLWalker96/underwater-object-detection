@@ -4,7 +4,7 @@ import albumentations as A
 import numpy as np
 from albumentations.pytorch import ToTensorV2
 
-from RCNN.color_correction import color_correction
+from color_correction import color_correction
 
 
 def get_train_val_transform(type:str = "color_correction"):
@@ -15,7 +15,7 @@ def get_test_transform(type:str = "no_transform"):
     return generate_transform()
 
 
-class Color_Correction(A.ImageOnlyTransform, ABC):
+class Color_Correction(A.ImageOnlyTransform):
     def apply(self, img, **params) -> np.ndarray:
         mu, sigma = 0, .3  # mean and standard deviation
         s1, s2 = np.random.normal(mu, sigma, 2)
