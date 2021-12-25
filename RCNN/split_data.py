@@ -7,16 +7,18 @@ import cv2
 import glob, os
 from tqdm import tqdm
 
-
 '''
     This function is coming from datasets.py in yolov5,
     which is intended to get the corresponding txt position from given img_path
 '''
+
+
 def img2label_path(img_path):
     # Define label paths as a function of image paths
     sa, sb = os.sep + 'images' + os.sep, os.sep + 'labels' + os.sep  # /images/, /labels/ substrings
     # print(sb.join(img_path.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt')
     return sb.join(img_path.rsplit(sa, 1)).rsplit('.', 1)[0] + '.txt'
+
 
 '''
     This function is used to read the txt file.
@@ -27,6 +29,8 @@ def img2label_path(img_path):
     @param txt_path: the path to the txt file
     @return: label, x, y, w, h    
 '''
+
+
 def read_txt(txt_path):
     x, y, w, h = -1, -1, -1, -1
     with open(txt_path, 'r') as f:
@@ -51,12 +55,14 @@ def read_txt(txt_path):
             "Image Width",
             "Image Height"
 '''
-def store_new_qr_entry(qr_df, cam_path, loc_name, cam_name, filename):
+
+
+def store_new_qr_entry(qr_df, path_to_dataset, img_dir, loc_name, cam_name, filename):
     #     print(cam_path+'/'+filename)
     img_name, img_ext = os.path.splitext(filename)
     if img_ext == ".JPG" or img_ext == ".PNG":
-        img_path = os.path.abspath(cam_path + "/" + filename)
-        img = np.array(cv2.imread(img_path))
+        img_path = os.path.join(img_dir, filename)
+        img = np.array(cv2.imread(os.path.join(path_to_dataset, img_path)))
         qr_df = qr_df.append({
             "img_path": img_path,
             "Location": loc_name,
@@ -84,6 +90,8 @@ def store_new_qr_entry(qr_df, cam_path, loc_name, cam_name, filename):
             "x", "y", "w", "h"
     
 '''
+
+
 def store_new_out_entry(label, x, y, w, h, row, out_df):
     if not label == 0:
         width = int(row['Image Width'])
@@ -168,7 +176,9 @@ def store_new_out_entry(label, x, y, w, h, row, out_df):
             "x", "y", "w", "h"
 
 '''
-def get_qr_df(path_to_images, path_to_bbox):
+
+
+def get_qr_df(path_to_dataset, path_to_images, path_to_bbox):
     qr_df = pd.DataFrame(columns=["Location", "Camera", "File Name", "Image", "Image Width", "Image Height"])
     ## iterating via directory
     directory = path_to_images
@@ -181,33 +191,35 @@ def get_qr_df(path_to_images, path_to_bbox):
     print("Getting Images Info")
     for loc_name in tqdm(os.listdir(directory)):
         loc_path = directory + "/" + loc_name
+        loc_img_dir = os.path.join("images", loc_name)
         if os.path.isdir(loc_path):
 
             # creating the corresponding path for txt
-            if not os.path.exists(label_directory + "/" + loc_name):
+            if not os.path.exists(label_directory + "/" + loc_name) and args.yolov5:
                 os.mkdir(label_directory + "/" + loc_name)
 
             for cam_name in os.listdir(loc_path):
                 cam_path = loc_path + "/" + cam_name
+                cam_img_dir = os.path.join(loc_img_dir, cam_name)
                 if os.path.isdir(cam_path):
-
                     # creating the corresponding path for txt
-                    if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name):
+                    if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name) and args.yolov5:
                         os.mkdir(label_directory + "/" + loc_name + "/" + cam_name)
 
                     for f_len_or_filename in os.listdir(cam_path):
                         if os.path.isdir(cam_path + '/' + f_len_or_filename):
                             f_len = f_len_or_filename
+                            f_len_img_dir = os.path.join(cam_img_dir, f_len)
 
                             # creating the corresponding path for txt
-                            if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len):
+                            if not os.path.exists(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len) and args.yolov5:
                                 os.mkdir(label_directory + "/" + loc_name + "/" + cam_name + '/' + f_len)
 
                             for filename in os.listdir(cam_path + '/' + f_len):
-                                qr_df = store_new_qr_entry(qr_df, cam_path + '/' + f_len, loc_name, cam_name, filename)
+                                qr_df = store_new_qr_entry(qr_df, path_to_dataset, f_len_img_dir, loc_name, cam_name, filename)
                         else:
                             filename = f_len_or_filename
-                            qr_df = store_new_qr_entry(qr_df, cam_path, loc_name, cam_name, filename)
+                            qr_df = store_new_qr_entry(qr_df, path_to_dataset, cam_img_dir, loc_name, cam_name, filename)
 
     #     print(len(qr_df))
     print("Getting SUIT and target Info")
@@ -243,7 +255,9 @@ def get_qr_df(path_to_images, path_to_bbox):
         {"Location", "Camera", "File Name", "Image", "Image Width", "Image Height", "x", "y", "w", "h", "Labels"}
     @param df: The Complete Dataframe that connects information of every images to every annotation
 '''
-def get_df_by_name(df: pd.DataFrame, name_series:np.array):
+
+
+def get_df_by_name(df: pd.DataFrame, name_series: np.array):
     out_df = pd.DataFrame(columns=df.columns)
     for img_name in name_series:
         records = df.loc[df['Image'] == img_name]
@@ -279,6 +293,8 @@ def get_df_by_name(df: pd.DataFrame, name_series:np.array):
             "Image Height",
             "x", "y", "w", "h"
 '''
+
+
 def random_sample(qr_df: pd.DataFrame, train_ratio):
     image_columns = qr_df['Image'].unique()
     trainable_image_columns = qr_df[qr_df["Labels"] != 0]['Image'].unique()
@@ -287,14 +303,14 @@ def random_sample(qr_df: pd.DataFrame, train_ratio):
     # getting train and validation df
     indices = np.arange(len(trainable_image_columns))
     train_size = int(float(train_ratio) * len(image_columns))
-    
+
     train_val_indices = np.random.choice(indices, train_size, replace=False)
-    train_indices = np.random.choice(train_val_indices, int(len(train_val_indices)*train_ratio), replace=False)
+    train_indices = np.random.choice(train_val_indices, int(len(train_val_indices) * train_ratio), replace=False)
     val_indices = np.array([idx for idx in train_val_indices if idx not in train_indices])
-    
+
     train_name_series = trainable_image_columns[train_indices]
     val_name_series = trainable_image_columns[val_indices]
-    
+
     # getting test indices
     test_indices = np.array([idx for idx in indices if idx not in train_val_indices])
     test_name_series = np.concatenate([trainable_image_columns[test_indices], no_label_images_columns], axis=None)
@@ -305,9 +321,12 @@ def random_sample(qr_df: pd.DataFrame, train_ratio):
 
     return train_df, test_df, val_df
 
+
 '''
     This function divides the sample into train, test and val for different experiments
 '''
+
+
 def getTrainTestVal(train_ratio, qr_df, train_on=None, test_on=None, exp_num='exp1'):
     # Split Data Ramdomly
     if exp_num is None or exp_num == 'exp1':
@@ -460,8 +479,8 @@ def run():
     # if not args.rerun and os.path.exists(args.dataset_path + "/all_qr_labels.csv"):
     #     qr_df = pd.read_csv(args.dataset_path + "/all_qr_labels.csv")
     # else:
-    qr_df = get_qr_df(path_to_images, path_to_bbox)
-#     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
+    qr_df = get_qr_df(args.dataset_path, path_to_images, path_to_bbox)
+    #     qr_df = qr_df.sample(frac=1).reset_index(drop=True)
     qr_df.to_csv(args.dataset_path + "/all_qr_labels.csv")
 
     if exp_num is None or exp_num == 'exp1' or exp_num == 'exp2':
@@ -478,15 +497,15 @@ def run():
             os.mkdir(path_to_label)
 
         if train_ratio == 0:
-            save_to_path(qr_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
+            save_to_path(qr_df, args.dataset_path, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
         else:
             if exp_num is not None:
                 train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, exp_num=exp_num)
             else:
                 train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df)
-            save_to_path(train_df, path_to_images, path_to_bbox, path_to_save, 'train_qr_labels.csv', 'train')
-            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
-            save_to_path(val_df, path_to_images, path_to_bbox, path_to_save, 'val_qr_labels.csv', 'val')
+            save_to_path(train_df, args.dataset_path, path_to_bbox, path_to_save, 'train_qr_labels.csv', 'train')
+            save_to_path(test_df, args.dataset_path, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
+            save_to_path(val_df, args.dataset_path, path_to_bbox, path_to_save, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp3':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         for loc in tqdm(name_ls):
@@ -497,10 +516,10 @@ def run():
             os.mkdir(path_to_img)
             os.mkdir(path_to_label)
             train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, test_on=loc, exp_num=exp_num)
-            save_to_path(train_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'train_qr_labels.csv',
+            save_to_path(train_df, args.dataset_path, path_to_bbox, path_to_save + "/" + loc, 'train_qr_labels.csv',
                          'train')
-            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'test')
-            save_to_path(val_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'val_qr_labels.csv', 'val')
+            save_to_path(test_df, args.dataset_path, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'test')
+            save_to_path(val_df, args.dataset_path, path_to_bbox, path_to_save + "/" + loc, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         for loc in tqdm(name_ls):
@@ -511,10 +530,10 @@ def run():
             os.mkdir(path_to_img)
             os.mkdir(path_to_label)
             train_df, test_df, val_df = getTrainTestVal(train_ratio, qr_df, train_on=loc, exp_num=exp_num)
-            save_to_path(train_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'train_qr_labels.csv',
+            save_to_path(train_df, args.dataset_path, path_to_bbox, path_to_save + "/" + loc, 'train_qr_labels.csv',
                          'train')
-            save_to_path(test_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'test')
-            save_to_path(val_df, path_to_images, path_to_bbox, path_to_save + "/" + loc, 'val_qr_labels.csv', 'val')
+            save_to_path(test_df, args.dataset_path, path_to_bbox, path_to_save + "/" + loc, 'test_qr_labels.csv', 'test')
+            save_to_path(val_df, args.dataset_path, path_to_bbox, path_to_save + "/" + loc, 'val_qr_labels.csv', 'val')
     elif exp_num == 'exp5':
         path_to_img = args.dataset_path + '/' + exp_num + '/images'
         path_to_label = args.dataset_path + '/' + exp_num + '/labels'
@@ -530,70 +549,76 @@ def run():
             train_df = pd.concat([train_df, val_df])
             train_df.index = pd.RangeIndex(len(train_df.index))
 
-            save_to_path(train_df, path_to_images, path_to_bbox, path_to_save, name + '_train_qr_labels.csv', 'train')
-            save_to_path(val_df, path_to_images, path_to_bbox, path_to_save, name + '_val_qr_labels.csv', 'val')
+            save_to_path(train_df, args.dataset_path, path_to_bbox, path_to_save, name + '_train_qr_labels.csv', 'train')
+            save_to_path(val_df, args.dataset_path, path_to_bbox, path_to_save, name + '_val_qr_labels.csv', 'val')
             print(name + '_train_size = ' + str(len(train_df)))
             print(name + '_val_size = ' + str(len(val_df)))
 
         test_df = pd.concat(test_df_ls)
         test_df.index = pd.RangeIndex(len(test_df.index))
-        save_to_path(test_df, path_to_images, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
+        save_to_path(test_df, args.dataset_path, path_to_bbox, path_to_save, 'test_qr_labels.csv', 'test')
         print('test_size = ' + str(len(test_df)))
 
 
-def save_to_path(df, path_to_images, path_to_bbox, path_to_save, csv_filename, mode):
+def save_to_path(df, path_to_dataset, path_to_bbox, path_to_save, csv_filename, mode):
     df.to_csv(path_to_save + '/images/' + csv_filename)
-    image_columns = df['Image'].unique()
 
-    img_txt_path = path_to_save + '/' + mode + '.txt'
-    os.system('touch ' + img_txt_path)
+    if args.yolov5:
+        image_columns = df['Image'].unique()
 
-    if not os.path.exists(img_txt_path):
+        img_txt_path = path_to_save + '/' + mode + '.txt'
+
+        if os.path.exists(img_txt_path):
+            os.remove(img_txt_path)
+
         os.system('touch ' + img_txt_path)
-    else:
-        os.system('rm ' + img_txt_path)
 
-    for img_name in tqdm(image_columns, desc = 'saving %s files'%mode):
-        records = df.loc[df['Image'] == img_name]
-        img_path = str(records['img_path'].values[0])
+        for img_name in tqdm(image_columns, desc='saving %s files' % mode):
+            records = df.loc[df['Image'] == img_name]
+            img_path = os.path.join(path_to_dataset, str(records['img_path'].values[0]))
 
-        with open(img_txt_path, 'a') as img_txt:
-            written_str = img_path +'\n'
-            img_txt.write(written_str)
+            with open(img_txt_path, 'a') as img_txt:
+                written_str = os.path.abspath(img_path) + '\n'
+                img_txt.write(written_str)
 
-        txt_w_path = img2label_path(img_path)
+            txt_w_path = img2label_path(img_path)
+            if os.path.exists(txt_w_path):
+                os.remove(txt_w_path)
+            os.system('touch ' + txt_w_path)
 
-        suit_r_path = path_to_bbox + '/SUIT/' + img_name + '.txt'
-        target_r_path = path_to_bbox + '/target/' + img_name + '.txt'
-        txt_r_paths = [suit_r_path, target_r_path]
-        os.system('touch ' + txt_w_path)
-        is_modify = False
-        for idx, record in records.iterrows():
-            label = record["Labels"]
-            i = label - 1
-            txt_r_path = txt_r_paths[i]
+            suit_r_path = path_to_bbox + '/SUIT/' + img_name + '.txt'
+            target_r_path = path_to_bbox + '/target/' + img_name + '.txt'
+            txt_r_paths = [suit_r_path, target_r_path]
+            is_modify = False
 
-            with open(txt_w_path, 'a') as f:
-                if not os.path.exists(txt_r_path):
-                    continue
-                _, x, y, w, h = read_txt(txt_r_path)
-                if x < 0:
-                    continue
-                else:
-                    written_str = '%d %f %f %f %f \n' % (label, x, y, w, h)
-                    f.write(written_str)
-                    # f.truncate()
-                    is_modify = True
-                f.close()
-        if not is_modify and os.path.exists(txt_w_path):
-            os.system('rm ' + txt_w_path)
-    img_txt.close()
+            for idx, record in records.iterrows():
+                label = record["Labels"]
+                i = label - 1
+                txt_r_path = txt_r_paths[i]
+
+                with open(txt_w_path, 'a') as f:
+                    if not os.path.exists(txt_r_path):
+                        continue
+                    _, x, y, w, h = read_txt(txt_r_path)
+                    if x < 0:
+                        continue
+                    else:
+                        written_str = '%d %f %f %f %f \n' % (label, x, y, w, h)
+                        f.write(written_str)
+                        # f.truncate()
+                        is_modify = True
+                    f.close()
+            if not is_modify and os.path.exists(txt_w_path):
+                os.remove(txt_w_path)
+        img_txt.close()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--train_ratio', default=0.8, type=float)
+    # this one is for preparing yolov5 layout
+    parser.add_argument('--yolov5', default=False, action='store_true')
     parser.add_argument('--exp_num', default=None, type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
     args = parser.parse_args()
     run()

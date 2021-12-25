@@ -70,7 +70,7 @@ def generate_image_with_bbox(path_to_output, model, test_dataset, qr_df, path_to
                 # obtaining the original images
                 idx = image_ids[i]
                 records = qr_df[qr_df.index == idx]
-                img_path = str(records["img_path"].values[0])
+                img_path = os.path.join(args.path_to_dataset, str(records["img_path"].values[0]))
 
                 img = cv2.imread(img_path)
 
@@ -167,7 +167,7 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
     print("loading " + path_to_images + "/test_qr_labels.csv")
     qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
     test_tf = get_test_transform(args.test_transform)
-    test_dataset = QRDatasets(path_to_images+'/test', qr_df, transforms=test_tf)
+    test_dataset = QRDatasets(args.path_to_dataset, qr_df, transforms=test_tf)
 
     # loading up the model
     model = None

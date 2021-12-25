@@ -184,9 +184,9 @@ class train:
     def mini_batch_training(self):
         # preparing dataloader
         train_data_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size,
-                                       pin_memory=True, collate_fn=collate_fn, num_workers=4)
+                                       pin_memory=True, collate_fn=collate_fn, num_workers=1)
         valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=self.batch_size,
-                                       pin_memory=True, collate_fn=collate_fn, num_workers=4)
+                                       pin_memory=True, collate_fn=collate_fn, num_workers=1)
 
         patience = self.early_stop
         best_val = None
@@ -384,8 +384,8 @@ def main(args):
     train_df = pd.read_csv(path_to_images+"/train_qr_labels.csv")
     val_df = pd.read_csv(path_to_images+"/val_qr_labels.csv")
     train_tf = get_train_val_transform(args.train_transform)
-    train_dataset = QRDatasets(path_to_images+'/train', train_df, transforms=train_tf, use_grayscale=args.use_grayscale)
-    val_dataset = QRDatasets(path_to_images+'/val', val_df, transforms=train_tf, use_grayscale=args.use_grayscale)
+    train_dataset = QRDatasets(args.path_to_dataset, train_df, transforms=train_tf, use_grayscale=args.use_grayscale)
+    val_dataset = QRDatasets(args.path_to_dataset, val_df, transforms=train_tf, use_grayscale=args.use_grayscale)
     train_datasets.append(train_dataset)
     val_datasets.append(val_dataset)
 

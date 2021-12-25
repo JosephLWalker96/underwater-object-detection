@@ -1,3 +1,5 @@
+import os.path
+
 import cv2
 import torch
 import numpy as np
@@ -7,11 +9,11 @@ from torch.utils.data import Dataset
 class QRDatasets(Dataset):
 
     # setting up member variable
-    def __init__(self, dir_to_image: str, df: pd.DataFrame, use_grayscale: bool = False,transforms=None):
+    def __init__(self, dir_to_dataset: str, df: pd.DataFrame, use_grayscale: bool = False,transforms=None):
         super().__init__()
 
         self.num_class = 3  # SUIT + target + background
-        self.image_dir = dir_to_image
+        self.dataset_dir = dir_to_dataset
         self.dataframe = df
         self.transforms = transforms
         self.gray_scale = use_grayscale
@@ -30,8 +32,7 @@ class QRDatasets(Dataset):
 
         img = None
         for idx, record in records.iterrows():
-            img_path = str(record["img_path"])
-
+            img_path = os.path.join(self.dataset_dir, str(record["img_path"]))
             if self.gray_scale:
                 # converting to grayscale
                 img = cv2.imread(img_path)
