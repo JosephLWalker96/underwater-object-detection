@@ -184,9 +184,9 @@ class train:
     def mini_batch_training(self):
         # preparing dataloader
         train_data_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=self.batch_size,
-                                       pin_memory=True, collate_fn=collate_fn, num_workers=1)
+                                       pin_memory=True, collate_fn=collate_fn, num_workers=4)
         valid_data_loader = DataLoader(self.val_dataset, shuffle=True, batch_size=self.batch_size,
-                                       pin_memory=True, collate_fn=collate_fn, num_workers=1)
+                                       pin_memory=True, collate_fn=collate_fn, num_workers=4)
 
         patience = self.early_stop
         best_val = None
