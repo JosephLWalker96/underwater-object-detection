@@ -52,7 +52,7 @@ def test(path_to_output, model, test_dataset, qr_df):
 
     rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=args.test_batch_size, pin_memory=True,
-                             collate_fn=collate_fn, num_workers=1)
+                             collate_fn=collate_fn, num_workers=4)
 
     iou_scores = []
     with torch.no_grad():
