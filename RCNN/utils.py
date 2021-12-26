@@ -134,6 +134,7 @@ def generate_txt(path_to_output, records, outputs, df):
                 'label': int(label)
             }, ignore_index=True)
 
+    f.close()
     return df
 
 
