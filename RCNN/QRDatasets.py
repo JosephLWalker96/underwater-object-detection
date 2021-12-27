@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 
+
 class QRDatasets(Dataset):
 
     # setting up member variable
@@ -76,7 +77,7 @@ class QRDatasets(Dataset):
             target['boxes'] = boxes
             target['labels'] = labels
         else:
-            target['boxes'] = torch.as_tensor([[0,0,0.1,0.1]])
+            target['boxes'] = torch.as_tensor([[0, 0, 0.1, 0.1]])
             target['labels'] = torch.as_tensor([0])
 
         target['image_id'] = torch.tensor([idx])
@@ -96,7 +97,7 @@ class QRDatasets(Dataset):
             target['boxes'] = torch.stack(tuple(map(torch.tensor, zip(*sample['bboxes'])))).permute(1, 0)
 
         if not hasObject:
-            target['boxes'] = torch.as_tensor([[0,0,0,0]])
+            target['boxes'] = torch.as_tensor([[0, 0, 0.1, 0.1]])
             target['labels'] = torch.as_tensor([0])
 
         img = img.to(torch.float32)

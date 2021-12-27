@@ -42,8 +42,7 @@ def get_iou_score(output, target, width, height, target_idx):
         box = output_boxes[i]
         score = output_scores[i]
         label = output_labels[i]
-        #         print(label)
-        if score < 0.5 or label != target_label:
+        if score < 0.5:
             continue
 
         box_x1 = box[0].item()
@@ -63,17 +62,15 @@ def get_iou_score(output, target, width, height, target_idx):
             merge_area = (merge_y2 - merge_y1) * (merge_x2 - merge_x1)
             iou = merge_area / (output_area + target_area - merge_area)
 
+        if output.__contains__('IoU'):
+            if label != target_label or iou == 0:
+                output['IoU'][i] = max(output['IoU'][i], -1)
+            else:
+                output['IoU'][i] = max(output['IoU'][i], iou)
+
         if iou > best_iou:
             best_iou = iou
             best_box = box
-
-        if output.__contains__('IoU'):
-            output['IoU'][i] = iou
-
-    #     print([target_x1, target_y1, target_x2, target_y2])
-    #     print(best_box)
-    #     print(best_iou)
-    #     print(target_label)
 
     return best_box, best_iou
 
@@ -101,7 +98,7 @@ def plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, m
     plt.close()
 
 
-def generate_txt(path_to_output, records, outputs, df):
+def check_bbox(path_to_output, records, outputs, df):
     if not os.path.exists(path_to_output + '/labels'):
         os.system('mkdir ' + path_to_output + '/labels')
 
@@ -113,28 +110,36 @@ def generate_txt(path_to_output, records, outputs, df):
         iou_score = outputs['IoU'][idx]
 
         img_exts = str(records["File Name"].values[0]).split('.')
+        xs = float((box[0] + box[2]) / 2)
+        ys = float((box[1] + box[3]) / 2)
+        w = float(box[2] - box[0])
+        h = float(box[3] - box[1])
 
-        with open(path_to_output + '/labels/' + img_exts[0] + '.txt', 'a') as f:
-            xs = float((box[0] + box[2]) / 2)
-            ys = float((box[1] + box[3]) / 2)
-            w = float(box[2] - box[0])
-            h = float(box[3] - box[1])
-            line = str(int(label)) + ' ' + str(float(xs)) + ' ' + str(float(ys)) + ' ' + str(float(w)) + ' ' + str(
-                float(h)) + '\n'
-            f.write(line)
+        write_txt(path_to_output, img_exts[0], label, xs, ys, w, h)
+        df = update_df(df, records, xs, ys, w, h, iou_score, label)
 
-            df = df.append({
-                'img_path': str(records["img_path"].values[0]),
-                'img': str(records["File Name"].values[0]),
-                'xs': xs,
-                'ys': ys,
-                'w': w,
-                'h': h,
-                'iou_score': iou_score,
-                'label': int(label)
-            }, ignore_index=True)
+    return df
 
+
+def write_txt(path_to_output, img_name, label, xs, ys, w, h):
+    with open(path_to_output + '/labels/' + img_name + '.txt', 'a') as f:
+        line = str(int(label)) + ' ' + str(float(xs)) + ' ' + str(float(ys)) + ' ' + str(float(w)) + ' ' + str(
+            float(h)) + '\n'
+        f.write(line)
     f.close()
+
+
+def update_df(df, records, xs, ys, w, h, iou_score, label):
+    df = df.append({
+        'img_path': str(records["img_path"].values[0]),
+        'img': str(records["File Name"].values[0]),
+        'xs': xs,
+        'ys': ys,
+        'w': w,
+        'h': h,
+        'iou_score': iou_score,
+        'label': int(label)
+    }, ignore_index=True)
     return df
 
 

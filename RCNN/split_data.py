@@ -619,6 +619,6 @@ if __name__ == '__main__':
     parser.add_argument('--train_ratio', default=0.8, type=float)
     # this one is for preparing yolov5 layout
     parser.add_argument('--yolov5', default=False, action='store_true')
-    parser.add_argument('--exp_num', default=None, type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
+    parser.add_argument('--exp_num', default='exp4', type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
     args = parser.parse_args()
     run()

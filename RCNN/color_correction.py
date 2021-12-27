@@ -30,8 +30,8 @@ def color_correction(pixels, x = 0, y = 0, adjustment_intensity = 1, _filter = N
     result[:,:,2] += _filter[2][4] * 255
     result = np.where(result < 0, 0, result)
     result = np.where(result > 255, 255, result)
-    result = np.float32(result)
-    return result.astype(int)
+    # result = np.float32(result)
+    return result.astype(np.uint8)
 
 def getColorFilterMatrix(pixels, x, y, adjustment_intensity = 1):
     """

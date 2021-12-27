@@ -31,6 +31,7 @@ class Color_Correction(A.ImageOnlyTransform):
 def generate_transform(type="default"):
     if type == "default":
         return A.Compose([
+            A.Resize(512, 512),
             A.Blur(p=0.01),
             A.MedianBlur(p=0.01),
             A.ToGray(p=0.01),
@@ -42,11 +43,14 @@ def generate_transform(type="default"):
         ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['labels']))
     elif type == "color_correction":
         return A.Compose([
+            A.Resize(512, 512),
             Color_Correction(),
             ToTensorV2(p=1.0)
         ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['labels']))
     elif type == 'intensive':
         return A.Compose([
+            A.Resize(512, 512),
+            Color_Correction(),
             A.CLAHE(p=0.5),
             A.RandomGamma(p=0.5),
             # A.OpticalDistortion(p=0.5),
@@ -54,9 +58,9 @@ def generate_transform(type="default"):
             A.RandomRotate90(p=0.5),
             A.RandomBrightness(p=0.5),
             # A.RandomCropNearBBox(p=0.5),
-            Color_Correction(),
             A.RandomToneCurve(p=0.5),
-            A.ImageCompression(quality_lower=75, p=0.1)
+            A.ImageCompression(quality_lower=75, p=0.1),
+            ToTensorV2(p=1.0)
         ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['labels']))
     else:
         return A.Compose([
