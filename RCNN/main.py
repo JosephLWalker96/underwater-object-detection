@@ -6,9 +6,11 @@ import cv2
 import os
 import torch
 from torch.utils.data import DataLoader
+from stats import StatsCollector
 
 from wbf_ensemble import make_ensemble_predictions, run_wbf
-from utils import collate_fn, get_iou_score, check_bbox, draw_bbox
+from utils import collate_fn, check_bbox, draw_bbox
+from RCNN.score_measure import get_iou_score
 from img_transform import get_test_transform
 from QRDatasets import QRDatasets
 from tqdm import tqdm
@@ -49,7 +51,8 @@ def generate_test_csv(path_to_images):
 
 def test(path_to_output, model, test_dataset, qr_df):
     print("iterating through the test images")
-
+    # iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
+    mAP50_stasts_collector = StatsCollector(iou_threshold=0.5)
     rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=args.test_batch_size, pin_memory=True,
                              collate_fn=collate_fn, num_workers=4)
@@ -63,16 +66,21 @@ def test(path_to_output, model, test_dataset, qr_df):
 
             for i, image in enumerate(images):
                 target = targets[i]
+                # filter out the low scores
                 boxes, scores, labels = run_wbf(predictions, image_index=i)
-                boxes = boxes.astype(np.int32).clip(min=0, max=512)/512
-                outputs = {'boxes': boxes, 'scores': scores, 'labels': labels, 'IoU': -1 * np.ones(len(boxes))}
+                boxes = boxes.astype(np.int32).clip(min=0, max=512) / 512
+                outputs = {'boxes': boxes, 'scores': scores, 'labels': labels, 'IoU': -3  * np.ones(len(boxes))}
 
                 target_n = len(target['labels'])
                 for j in range(target_n):
                     result_box, iou_score = get_iou_score(outputs, target, 512, 512, j)
 
-                    if iou_score > 0:
+                    if iou_score >= 0:
                         iou_scores.append(iou_score)
+                    elif iou_score == -1:
+                        mAP50_stasts_collector.update_confusion_matrix(0, 0)
+
+                mAP50_stasts_collector.update(outputs)
 
                 # obtaining the original images
                 idx = image_ids[i]
@@ -82,6 +90,7 @@ def test(path_to_output, model, test_dataset, qr_df):
                 draw_bbox(path_to_output, args.path_to_dataset, records, boxes)
 
     print('average test iou scores = ' + str(np.mean(iou_scores)))
+    print('mAP score = ' + str(mAP50_stasts_collector.get_mAP()))
     rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
 
 
@@ -125,7 +134,7 @@ def run(args):
     dirs_to_images = []
     dirs_to_labels = []
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
-        name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL"]
+        name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         for loc in name_ls:
             path_to_dir = os.path.join(args.path_to_dataset, args.exp_num)
             path_to_dir = os.path.join(path_to_dir, loc)
@@ -155,7 +164,7 @@ def run(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
-    parser.add_argument('--exp_num', default='exp4', type=str)
+    parser.add_argument('--exp_num', default=None, type=str)
 
     parser.add_argument('--model', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.0005, type=float)
@@ -165,7 +174,7 @@ if __name__ == "__main__":
 
     #     parser.add_argument('--model', default='retinanet', type=str)
 
-    parser.add_argument('--train_transform', default='intensive', type=str,
+    parser.add_argument('--train_transform', default='default', type=str,
                         choices=['color_correction', 'default', 'intensive', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'no_transform'])
@@ -178,7 +187,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=3, type=int)
-    parser.add_argument('--batch_size', default=4, type=int)
+    parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--test_batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')

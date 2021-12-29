@@ -8,7 +8,9 @@ import time
 import datetime
 from torch.utils.data import DataLoader
 from QRDatasets import QRDatasets
-from utils import collate_fn, plotting, get_iou_score
+from utils import collate_fn
+from stats import loss_and_acc_plot, StatsCollector
+from score_measure import get_iou_score
 from img_transform import get_train_val_transform
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 import os
@@ -50,6 +52,8 @@ class train:
         
         self.use_grayscale = use_grayscale
 
+        self.record_collector = StatsCollector()
+
     def cross_val_training(self):
         patience = self.early_stop
         best_val = None
@@ -59,7 +63,7 @@ class train:
         train_loss_list = []
         val_score_list = []
         val_loss_list = []
-        
+
         print("start training")
         for epoch in range(len(self.train_datasets)):
             print("Epoch "+str(epoch+1))
@@ -71,14 +75,14 @@ class train:
             iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
             train_loss_hist.reset()
             train_scores = []
-            
+
             train_dataset = torch.utils.data.ConcatDataset([*self.train_datasets[:epoch], *self.train_datasets[epoch+1:]])
             valid_dataset = self.train_datasets[epoch]
-            train_data_loader = DataLoader(train_dataset, shuffle=True, batch_size=self.batch_size, pin_memory=False, 
+            train_data_loader = DataLoader(train_dataset, shuffle=True, batch_size=self.batch_size, pin_memory=False,
                                            collate_fn=collate_fn, num_workers=4)
-            valid_data_loader = DataLoader(valid_dataset, shuffle=True, batch_size=self.batch_size, pin_memory=False, 
+            valid_data_loader = DataLoader(valid_dataset, shuffle=True, batch_size=self.batch_size, pin_memory=False,
                                            collate_fn=collate_fn, num_workers=4)
-            
+
             print("training")
             for images, targets, image_ids in tqdm(train_data_loader):
                 self.model.train()
@@ -105,7 +109,7 @@ class train:
                 self.model.eval()
                 predictions = self.model(images)
                 train_image_precisions = self.gather_iou_scores(predictions, targets, images,
-                                                                train_image_precisions, iou_thresholds)
+                                                                train_image_precisions)
 
             train_score_list.append(np.mean(train_image_precisions))
             train_loss_list.append(train_loss_hist.value)
@@ -135,7 +139,7 @@ class train:
                 predictions = self.model(images)
                 # gathering the iou scores into validation_image_precisions
                 validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
-                                                                     validation_image_precisions, iou_thresholds)
+                                                                     validation_image_precisions, True)
 #             print(validation_image_precisions)
             val_iou = np.mean(validation_image_precisions)
 #             print(val_iou)
@@ -144,7 +148,7 @@ class train:
             val_loss_list.append(val_loss)
             if not os.path.exists(self.model_dir_path):
                 os.mkdir(self.model_dir_path)
-            plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, self.model_dir_path)
+            loss_and_acc_plot(train_score_list, train_loss_list, val_score_list, val_loss_list, self.model_dir_path)
             print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}", "Validation Predicted Mean Score: {0:.4f}".format(val_iou),
                   "Time taken :",
                   str(datetime.timedelta(seconds=time.time() - start_time))[:7])
@@ -192,10 +196,6 @@ class train:
         best_val = None
         best_loss = None
         best_model = None
-        train_score_list = []
-        train_loss_list = []
-        val_score_list = []
-        val_loss_list = []
 
         print("start training")
 
@@ -206,9 +206,7 @@ class train:
             start_time = time.time()
             itr = 1
             train_image_precisions = []
-            iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
             train_loss_hist.reset()
-            train_scores = []
             print("training")
             with torch.enable_grad():
                 for images, targets, image_ids in tqdm(train_data_loader):
@@ -217,7 +215,6 @@ class train:
 
                     targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
                                for t in targets]
-                    # [{k: v.double().to(device) if k =='boxes' else v.to(device) for k, v in t.items()} for t in targets]
                     loss_dict = self.model(images, targets)
                     losses = sum(loss for loss in loss_dict.values())
                     loss_value = losses.item()
@@ -228,18 +225,11 @@ class train:
                     losses.backward()
                     self.optimizer.step()
 
-                    # if itr % 50 == 0:
-                    #     print(f"Iteration #{itr} loss: {loss_value}")
-
                     itr += 1
-    #                 predictions = make_ensemble_predictions(images, self.device, [self.model])
                     self.model.eval()
                     predictions = self.model(images)
                     train_image_precisions = self.gather_iou_scores(predictions, targets, images,
-                                                                    train_image_precisions, iou_thresholds)
-
-            train_score_list.append(np.mean(train_image_precisions))
-            train_loss_list.append(train_loss_hist.value)
+                                                                    train_image_precisions)
 
             # update the learning rate
             if self.lr_scheduler is not None:
@@ -255,35 +245,37 @@ class train:
                     images = list(image.to(self.device) for image in images)
                     targets = [{k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
                                for t in targets]
-                    # outputs = model(images)
                     loss_dict = self.model(images, targets)
                     losses = sum(loss for loss in loss_dict.values())
                     loss_value = losses.item()
                     valid_loss_hist.send(loss_value)
 
-                    # it is simply the combination of every output list from the model lists
-    #                 predictions = make_ensemble_predictions(images, self.device, [self.model])
                     self.model.eval()
                     predictions = self.model(images)
                     # gathering the iou scores into validation_image_precisions
                     validation_image_precisions = self.gather_iou_scores(predictions, targets, images,
-                                                                         validation_image_precisions, iou_thresholds)
-#             print(validation_image_precisions)
-            val_iou = np.mean(validation_image_precisions)
-#             print(val_iou)
-            val_score_list.append(val_iou)
-            val_loss = valid_loss_hist.value
-            val_loss_list.append(val_loss)
+                                                                         validation_image_precisions, True)
+
             if not os.path.exists(self.model_dir_path):
                 os.mkdir(self.model_dir_path)
-            plotting(train_score_list, train_loss_list, val_score_list, val_loss_list, self.model_dir_path)
-            print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}", "Validation Predicted Mean Score: {0:.4f}".format(val_iou),
+
+            train_score = np.mean(train_image_precisions)
+            train_loss = train_loss_hist.value
+            val_score = np.mean(validation_image_precisions)
+            val_loss = valid_loss_hist.value
+            self.record_collector.append_new_record(epoch+1, train_loss, train_score, val_loss, val_score)
+            self.record_collector.plot_loss_curve(self.model_dir_path)
+            self.record_collector.plot_acc_curve(self.model_dir_path)
+            self.record_collector.epoch_records.to_csv(os.path.join(self.model_dir_path, 'records.csv'))
+
+            print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}",
+                  "Validation Predicted Mean Score: {0:.4f}".format(val_score),
+                  "Validation mAP score: {0:.4f}".format(self.record_collector.get_mAP()),
                   "Time taken :",
                   str(datetime.timedelta(seconds=time.time() - start_time))[:7])
-#             if not best_val:
             if not best_loss:
                 # So any validation roc_auc we have is the best one for now
-                best_val = val_iou
+                best_val = val_score
                 best_loss = val_loss
                 print("Saving model")
                 # Saving the model
@@ -291,10 +283,9 @@ class train:
                     torch.save(self.model, self.model_dir_path + "/" + self.model_filename)
                 best_model = copy.deepcopy(self.model)
                 # continue
-#           elif val_iou >= best_val:
             elif val_loss <= best_loss:
                 print("Saving model")
-                best_val = val_iou
+                best_val = val_score
                 best_loss = val_loss
                 # Resetting patience since we have new best validation accuracy
                 patience = self.early_stop
@@ -310,55 +301,25 @@ class train:
                     print('Best Validation Loss: {:.3f}'.format(best_loss))
                     break
 
-        return best_model, train_score_list, train_loss_list, val_score_list, val_loss_list
+        return best_model
 
     # return the array storing the scores of each image from the given images array
-    def gather_iou_scores(self, predictions, targets, images: np.array, image_precisions, iou_thresholds):
+    def gather_iou_scores(self, predictions, targets, images: np.array, image_precisions, isVal:bool=False):
         for i, image in enumerate(images):
             predictions[i]['boxes']=predictions[i]['boxes']/512
-            
+            outputs = {'boxes': predictions[i]['boxes'],
+                       'scores': predictions[i]['scores'],
+                       'labels': predictions[i]['labels'],
+                       'IoU': -3 * np.ones(len(predictions[i]['boxes']))}
             target_n = len(targets[i]['labels'])
             for j in range(target_n):
-                result_box, iou_score = get_iou_score(predictions[i], targets[i], 512, 512, j)
+                result_box, iou_score = get_iou_score(outputs, targets[i], 512, 512, j)
                 image_precisions.append(max(0, iou_score))
+            # If it is validation, calculate the mAP
+            if isVal:
+                self.record_collector.update(outputs)
         return image_precisions
 
-    def predict(self):
-        if (self.test_dataset):
-            detection_threshold = 0.5
-            results = []
-            outputs = []
-            test_images = []
-            data_loader = DataLoader(self.test_dataset, shuffle=True, batch_size=self.test_dataset.__len__(),
-                                     pin_memory=True, collate_fn=collate_fn, num_workers=4)
-            self.model.eval()
-            for images, targets, image_ids in data_loader:
-                images = list(image.to(self.device) for image in images)
-                predictions = make_ensemble_predictions(images, self.device, [self.model])
-
-                for i, image in enumerate(images):
-                    test_images.append(image)  # Saving image values
-                    boxes, scores, labels = run_wbf(predictions, image_index=i)
-
-                    boxes = boxes.astype(np.int32).clip(min=0, max=1023)
-
-                    preds = boxes
-                    preds_sorted_idx = np.argsort(scores)[::-1]
-                    preds_sorted = preds[preds_sorted_idx]
-                    boxes = preds
-
-                    output = {
-                        'boxes': boxes,
-                        'scores': scores
-                    }
-
-                    outputs.append(output)  # Saving outputs and scores
-                    image_id = image_ids[i]
-
-            return outputs, test_images
-        else:
-            print("There is no defined dataset for testing")
-            return None, None
 
 def main(args):
     # execute only if run as a script
