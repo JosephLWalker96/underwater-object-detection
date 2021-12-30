@@ -2,25 +2,45 @@ from abc import ABC
 
 import albumentations as A
 import numpy as np
+from PIL import Image
 from albumentations.pytorch import ToTensorV2
 
 from color_correction import color_correction
+from RandAugment import RandAugment
+from typing import Union, Sequence, Optional, Tuple, List, Dict, Any
 
 
-def get_train_val_transform(type:str = "color_correction"):
+def get_train_val_transform(type: str = "color_correction"):
     return generate_transform(type)
 
 
-def get_test_transform(type:str = "no_transform"):
+def get_test_transform(type: str = "no_transform"):
     return generate_transform(type)
 
 
-class Color_Correction(A.ImageOnlyTransform):
+#TODO: Need to Refine the code
+class RandAugmentTransform(A.DualTransform):
+    def __init__(self):
+        super(RandAugmentTransform, self).__init__()
+        p = np.random.randint(low=0, high=30, size=2)
+        self.randAug = RandAugment(min(p), max(p))
+
+    def apply(self, img, **params) -> np.ndarray:
+        self.img = img
+        return np.array(self.randAug(Image.fromarray(self.img), [np.zeros(4)])[0])
+
+    def apply_to_bboxes(self, bbox, **params):
+        return (self.randAug(Image.fromarray(self.img), bbox))[1]
+
+
+class Color_Correction(A.DualTransform):
     def apply(self, img, **params) -> np.ndarray:
         mu, sigma = 0, .3  # mean and standard deviation
         s1, s2 = np.random.normal(mu, sigma, 2)
         img = color_correction(pixels=img, x=s1, y=s2, adjustment_intensity=1)
         return img
+    def apply_to_bbox(self, bbox, **params):
+        return bbox
 
 
 # there are three type of transform:
@@ -62,6 +82,13 @@ def generate_transform(type="default"):
             A.ImageCompression(quality_lower=75, p=0.1),
             ToTensorV2(p=1.0)
         ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['labels']))
+    elif type == 'RandAug':
+        return A.Compose([
+            A.Resize(512, 512),
+            Color_Correction(),
+            RandAugmentTransform(),
+            ToTensorV2(p=1.0)
+        ])
     else:
         return A.Compose([
             A.Resize(512, 512),

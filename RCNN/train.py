@@ -25,7 +25,7 @@ class train:
     def __init__(self, model: nn.Module, optimizer: torch.optim, num_epochs: int, train_datasets: list,
                  val_datasets: list, batch_size: int = 4, valid_ratio: float = 0.2, early_stop: int = 2,
                  lr_scheduler: torch.optim.lr_scheduler = None, model_dir: str = 'models', model_name:str = 'faster-cnn',
-                 use_grayscale: bool = False):
+                 use_grayscale: bool = False, exp_num:str = None, exp_env:str = None):
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.model = model
         self.model.to(self.device)
@@ -52,7 +52,7 @@ class train:
         
         self.use_grayscale = use_grayscale
 
-        self.record_collector = StatsCollector()
+        self.record_collector = StatsCollector(exp_num=exp_num, exp_env=exp_env)
 
     def cross_val_training(self):
         patience = self.early_stop
@@ -263,10 +263,7 @@ class train:
             train_loss = train_loss_hist.value
             val_score = np.mean(validation_image_precisions)
             val_loss = valid_loss_hist.value
-            self.record_collector.append_new_record(epoch+1, train_loss, train_score, val_loss, val_score)
-            self.record_collector.plot_loss_curve(self.model_dir_path)
-            self.record_collector.plot_acc_curve(self.model_dir_path)
-            self.record_collector.epoch_records.to_csv(os.path.join(self.model_dir_path, 'records.csv'))
+            self.record_collector.append_new_train_record(epoch + 1, train_loss, train_score, val_loss, val_score)
 
             print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}",
                   "Validation Predicted Mean Score: {0:.4f}".format(val_score),
@@ -300,6 +297,8 @@ class train:
                     print('Best Validation Predicted Mean Score: {:.3f}'.format(best_val))
                     print('Best Validation Loss: {:.3f}'.format(best_loss))
                     break
+
+        self.record_collector.save_result(isTrain=True)
 
         return best_model
 
@@ -363,7 +362,7 @@ def main(args):
     my_trainer = train(model=model, optimizer=optimizer, num_epochs=args.num_epoch, early_stop=args.early_stop, 
                        train_datasets=train_datasets, val_datasets=val_datasets, model_dir = args.image_path+'/../models',
                        model_name=args.model,lr_scheduler=scheduler, batch_size=args.batch_size, 
-                       use_grayscale=args.use_grayscale)
+                       use_grayscale=args.use_grayscale, exp_num=args.exp_num, exp_env=args.exp_env)
     
     my_trainer.mini_batch_training()
     
@@ -386,4 +385,7 @@ if __name__ == "__main__":
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     parser.add_argument('--adam', default=False, action='store_true')
+
+    parser.add_argument('--exp_num', default=None, type=str)
+    parser.add_argument('--exp_env', default=None, type=str)
     main(parser.parse_args())

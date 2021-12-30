@@ -49,10 +49,10 @@ def generate_test_csv(path_to_images):
     qr_df.to_csv(path_to_images + "/test_qr_labels.csv")
 
 
-def test(path_to_output, model, test_dataset, qr_df):
+def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
     print("iterating through the test images")
     # iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
-    mAP50_stasts_collector = StatsCollector(iou_threshold=0.5)
+    mAP50_stasts_collector = StatsCollector(iou_threshold=0.5, exp_num=args.exp_num, exp_env=args.exp_env)
     rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=args.test_batch_size, pin_memory=True,
                              collate_fn=collate_fn, num_workers=4)
@@ -89,8 +89,11 @@ def test(path_to_output, model, test_dataset, qr_df):
                 rslt_df = check_bbox(path_to_output, records, outputs, rslt_df)
                 draw_bbox(path_to_output, args.path_to_dataset, records, boxes)
 
-    print('average test iou scores = ' + str(np.mean(iou_scores)))
+    mean_iou = np.mean(iou_scores)
+    print('average test iou scores = ' + str(mean_iou))
     print('mAP score = ' + str(mAP50_stasts_collector.get_mAP()))
+    mAP50_stasts_collector.append_new_test_record(mean_iou)
+    mAP50_stasts_collector.save_result(isTrain=False)
     rslt_df.to_csv(path_to_output + "/labels/result_qr_labels.csv")
 
 
@@ -144,6 +147,7 @@ def run(args):
             path_to_output = os.path.join(path_to_dir, args.model)
             #             os.system('rm -r '+model_path)
             #             os.mkdir(model_path)
+            args.exp_env = loc
             main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
     else:
         if args.exp_num is None:
@@ -165,6 +169,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
     parser.add_argument('--exp_num', default=None, type=str)
+    parser.add_argument('--exp_env', default=None, type=str)
 
     parser.add_argument('--model', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.0005, type=float)
@@ -175,9 +180,9 @@ if __name__ == "__main__":
     #     parser.add_argument('--model', default='retinanet', type=str)
 
     parser.add_argument('--train_transform', default='default', type=str,
-                        choices=['color_correction', 'default', 'intensive', 'no_transform'])
+                        choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
-                        choices=['color_correction', 'default', 'intensive', 'no_transform'])
+                        choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
 
     parser.add_argument('--adam', default=True, action='store_true')
 
@@ -187,7 +192,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=3, type=int)
-    parser.add_argument('--batch_size', default=16, type=int)
+    parser.add_argument('--batch_size', default=8, type=int)
     parser.add_argument('--test_batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
