@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from ensemble_boxes import *
 
 '''
@@ -16,7 +17,7 @@ def make_ensemble_predictions(images, device, models):
 
 
 def run_wbf(predictions, image_index, image_size=512, iou_thr=0.5, skip_box_thr=0.5, weights=None):
-    boxes = np.array([prediction[image_index]['boxes'].data.cpu().numpy() / (image_size - 1) for prediction in predictions])
+    boxes = np.array([prediction[image_index]['boxes'].data.cpu().numpy() / image_size for prediction in predictions])
 #     boxes = [prediction[image_index]['boxes'].data.cpu().numpy() for prediction in predictions]
     scores = np.array([prediction[image_index]['scores'].data.cpu().numpy() for prediction in predictions])
 #     print(scores)

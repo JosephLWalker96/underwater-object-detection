@@ -5,14 +5,18 @@ import torch
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
+from RandAugment import RandAugment
+from PIL import Image
 
 
 class QRDatasets(Dataset):
 
     # setting up member variable
-    def __init__(self, dir_to_dataset: str, df: pd.DataFrame, use_grayscale: bool = False, transforms=None):
+    def __init__(self, dir_to_dataset: str, df: pd.DataFrame, use_grayscale: bool = False,
+                 transforms=None, isTrain:bool = True):
         super().__init__()
 
+        self.isTrain = isTrain
         self.num_class = 3  # SUIT + target + background
         self.dataset_dir = dir_to_dataset
         self.dataframe = df
@@ -45,9 +49,16 @@ class QRDatasets(Dataset):
                 img = cv2.imread(img_path)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        assert img is not None
 
+        assert img is not None
         boxes = records[['x', 'y', 'w', 'h']].values
+
+        # Doing RandAug Here
+        # n, m = np.random.randint(low=1, high=16, size=1)[0], np.random.randint(low=0, high=30, size=1)[0]
+        # randAug = RandAugment(n, m)
+        # if self.isTrain:
+        #     img, bbox = randAug(Image.fromarray(img), boxes)
+        #     img = np.array(img)
 
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]

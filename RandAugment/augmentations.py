@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from PIL import Image
 import cv2
-from .aug_utils import *
+from RandAugment.aug_utils import *
 import argparse
 from tqdm import tqdm
 import os
@@ -278,10 +278,11 @@ class RandAugment:
         self.n = n
         self.m = m      # [0, 30]
         self.augment_list = augment_list()
-        self.ops = random.choices(self.augment_list, k=self.n)
+        # self.ops = None
 
     def __call__(self, img, bbox):
-        for op, minval, maxval in self.ops:
+        ops = random.choices(self.augment_list, k=self.n)
+        for op, minval, maxval in ops:
             val = (float(self.m) / 30) * float(maxval - minval) + minval
             img, bbox = op(img, val, bbox)
 
