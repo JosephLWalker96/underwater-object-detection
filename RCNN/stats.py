@@ -28,7 +28,7 @@ class StatsCollector:
 
         self.test_records = None
         if os.path.exists(os.path.join(self.dir_path, 'test_record.csv')):
-            self.test_records = pd.read_csv(os.path.join(self.dir_path, 'epoch_record.csv'))
+            self.test_records = pd.read_csv(os.path.join(self.dir_path, 'test_record.csv'))
 
         # variable for mAP calculation
         self.recall_precision = dict()  # recall -> precision
@@ -158,7 +158,7 @@ class StatsCollector:
                 columns=['experiment number', 'experiment environment',
                          'epoch', 'train loss', 'train score', 'validation loss', 'validation score']
             )
-        self.epoch_records.append({
+        self.epoch_records = self.epoch_records.append({
             'experiment number': self.exp_num,
             'experiment environment': self.exp_env,
             'epoch': epoch,
@@ -183,11 +183,11 @@ class StatsCollector:
 
     def save_result(self, isTrain:bool = True):
         if isTrain and self.epoch_records is not None:
-            self.epoch_records.to_csv(os.path.join(self.dir_path, 'epoch_record.csv'))
-            self.plot_loss_curve()
-            self.plot_acc_curve()
+            self.epoch_records.to_csv(os.path.join(self.dir_path, 'epoch_record.csv'), index=False)
+            # self.plot_loss_curve()
+            # self.plot_acc_curve()
         if not isTrain and self.test_records is not None:
-            self.test_records.to_csv(os.path.join(self.dir_path, 'test_record.csv'))
+            self.test_records.to_csv(os.path.join(self.dir_path, 'test_record.csv'), index=False)
 
     def plot_loss_curve(self):
         filename = self.check_filename(filename='loss', ext='.png')
