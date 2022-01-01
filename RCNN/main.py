@@ -1,4 +1,5 @@
 import argparse
+import time
 
 import pandas as pd
 import numpy as np
@@ -64,21 +65,19 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
             images = list(image.to(device) for image in images)
             predictions = make_ensemble_predictions(images, device, [model])
 
+            st = time.time()
             for i, image in enumerate(images):
                 target = targets[i]
                 # filter out the low scores
-                boxes, scores, labels = run_wbf(predictions, image_index=i)
-                boxes = boxes.astype(np.int32).clip(min=0, max=512) / 512
-                outputs = {'boxes': boxes, 'scores': scores, 'labels': labels, 'IoU': -3  * np.ones(len(boxes))}
+                boxes, scores, labels = run_wbf(predictions, image_index=i, skip_box_thr=0.2)
+                boxes = boxes.type(torch.int32).clip(min=0, max=512) / 512
+                outputs = {'boxes': boxes, 'scores': scores, 'labels': labels, 'IoU': -3 * np.ones(len(boxes))}
 
-                target_n = len(target['labels'])
-                for j in range(target_n):
-                    result_box, iou_score = get_iou_score(outputs, target, 512, 512, j)
-
-                    if iou_score >= 0:
-                        iou_scores.append(iou_score)
-                    elif iou_score == -1:
-                        mAP50_stasts_collector.update_confusion_matrix(0, 0)
+                iou_score = get_iou_score(outputs, target, 512, 512)
+                if iou_score >= 0:
+                    iou_scores.append(iou_score)
+                elif iou_score == -1:
+                    mAP50_stasts_collector.update_confusion_matrix(0, 0)
 
                 mAP50_stasts_collector.update(outputs)
 
@@ -99,7 +98,7 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
 
 def main(path_to_output, path_to_images, path_to_labels, model_path, model_name):
     if not os.path.exists(path_to_output):
-        os.system('mkdir '+path_to_output)
+        os.system('mkdir ' + path_to_output)
 
     # Input for Images Folder
     args.image_path = path_to_images
@@ -113,7 +112,8 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
     print("loading " + path_to_images + "/test_qr_labels.csv")
     qr_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
     test_tf = get_test_transform(args.test_transform)
-    test_dataset = QRDatasets(args.path_to_dataset, qr_df, transforms=test_tf, use_grayscale=args.use_grayscale)
+    test_dataset = QRDatasets(args.path_to_dataset, qr_df, transforms=test_tf, use_grayscale=args.use_grayscale,
+                              isTrain=False)
 
     # loading up the model
     model = None
@@ -125,7 +125,7 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
     else:
         print("model does not exist")
         print("training a new model")
-        #         args.image_path = args.train_image_path
+        # args.image_path = args.train_image_path
         train.main(args)
         print("loading model from " + model_path + '/' + model_name)
         with open(model_path + '/' + model_name, 'rb') as f:
@@ -138,6 +138,8 @@ def run(args):
     dirs_to_labels = []
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
+        # name_ls = ["HUA", "MOO", "RAI", "TAH"]
+        # name_ls = ["TTR", "LL", "PAL"]
         for loc in name_ls:
             path_to_dir = os.path.join(args.path_to_dataset, args.exp_num)
             path_to_dir = os.path.join(path_to_dir, loc)
@@ -172,14 +174,15 @@ if __name__ == "__main__":
     parser.add_argument('--exp_env', default=None, type=str)
 
     parser.add_argument('--model', default='faster-rcnn', type=str)
-    parser.add_argument('--lr', default=0.0005, type=float)
+    parser.add_argument('--model_type', default='faster-rcnn', type=str)
+    parser.add_argument('--lr', default=0.0001, type=float)
 
     # parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)
     # parser.add_argument('--lr', default=0.001, type=float)
 
     #     parser.add_argument('--model', default='retinanet', type=str)
 
-    parser.add_argument('--train_transform', default='default', type=str,
+    parser.add_argument('--train_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
@@ -192,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=3, type=int)
-    parser.add_argument('--batch_size', default=8, type=int)
+    parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--test_batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
