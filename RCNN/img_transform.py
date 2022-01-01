@@ -18,20 +18,25 @@ def get_test_transform(type: str = "no_transform"):
     return generate_transform(type)
 
 
-#TODO: Need to Refine the code
-class RandAugmentTransform(A.DualTransform):
-    def __init__(self):
-        super(RandAugmentTransform, self).__init__()
-        p = np.random.randint(low=0, high=30, size=2)
-        self.randAug = RandAugment(min(p), max(p))
-
-    def apply(self, img, **params) -> np.ndarray:
-        self.img = img
-        return np.array(self.randAug(Image.fromarray(self.img), [np.zeros(4)])[0])
-
-    def apply_to_bboxes(self, bbox, **params):
-        return (self.randAug(Image.fromarray(self.img), bbox))[1]
-
+#TODO: Need to Refine the code (maybe revisit later)
+# class RandAugmentTransform(A.DualTransform):
+#     def __init__(self):
+#         super(RandAugmentTransform, self).__init__()
+#         self.img = None
+#         self.bbox = None
+#
+#     def apply(self, img, **params) -> np.ndarray:
+#         self.img, self.bbox = img
+#         return np.array(self.randAug(Image.fromarray(self.img), [np.zeros(4)])[0])
+#
+#     def apply_to_bboxes(self, bbox, **params):
+#         return (self.randAug(Image.fromarray(self.img), bbox))[1]
+#
+#     def random_augmentation(self):
+#         p = np.random.randint(low=0, high=30, size=2)
+#         randAug = RandAugment(min(p), max(p))
+#         if self.img is None and self.bbox is None:
+#             self.img, self.bbox = randAug()
 
 class Color_Correction(A.DualTransform):
     def apply(self, img, **params) -> np.ndarray:
@@ -86,7 +91,7 @@ def generate_transform(type="default"):
         return A.Compose([
             A.Resize(512, 512),
             Color_Correction(),
-            RandAugmentTransform(),
+            # RandAugmentTransform(),
             ToTensorV2(p=1.0)
         ])
     else:
