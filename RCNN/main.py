@@ -77,8 +77,9 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
                            'scores': scores,
                            'labels': labels,
                            'IoU': -3 * np.ones(len(boxes)),
-                           'matched_target': -1*np.ones(len(boxes)),
-                           'num_target': len(target)}
+                           'matched_target': -1 * np.ones(len(boxes)),
+                           'num_target': {0: 0, 1: 0, 2: 0},
+                           'm': len(target)}
 
                 iou_score = get_iou_score(outputs, target, 512, 512)
                 if iou_score >= 0:
@@ -145,7 +146,7 @@ def run(args):
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         # name_ls = ["HUA", "MOO", "RAI", "TAH"]
-        # name_ls = ["TTR", "LL", "PAL"]
+        # name_ls = ["PAL"]
         for loc in name_ls:
             path_to_dir = os.path.join(args.path_to_dataset, args.exp_num)
             path_to_dir = os.path.join(path_to_dir, loc)
@@ -179,7 +180,7 @@ if __name__ == "__main__":
     parser.add_argument('--exp_num', default='exp4', type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
-    parser.add_argument('--model', default='default-faster-rcnn-bs16', type=str)
+    parser.add_argument('--model', default='randaug-faster-rcnn-bs16', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.0001, type=float)
 
@@ -188,7 +189,7 @@ if __name__ == "__main__":
 
     #     parser.add_argument('--model', default='retinanet', type=str)
 
-    parser.add_argument('--train_transform', default='default', type=str,
+    parser.add_argument('--train_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])

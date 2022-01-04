@@ -130,6 +130,8 @@ def get_iou_score(output, target, width, height):
                 return -1
             else:
                 return -3
+        else:
+            output['num_target'][int(target_label)] += 1
 
     # getting union area
     target_area = (target_boxes[:, 3] - target_boxes[:, 1]) * (target_boxes[:, 2] - target_boxes[:, 0])
@@ -149,9 +151,8 @@ def get_iou_score(output, target, width, height):
     iou = torch.amax(iou_matrix, dim=1)
     output['IoU'] = iou
     output['matched_target'] = torch.argmax(iou_matrix, dim=1)
-    output['num_target'] = m
 
     if len(iou) > 0:
-        return torch.mean(torch.where(iou >= 0, iou.to(float), float(0)))
+        return torch.mean(torch.where(iou >= 0, abs(iou.to(float)), float(0)))
     else:
         return 0

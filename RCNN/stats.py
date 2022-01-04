@@ -30,13 +30,15 @@ class StatsCollector:
         if os.path.exists(os.path.join(self.dir_path, 'test_record.csv')):
             self.test_records = pd.read_csv(os.path.join(self.dir_path, 'test_record.csv'))
 
-        # variable for mAP calculation
-        self.recall_precision = dict()  # recall -> precision
+        # variable for mAP calculation\
+        self.mAP = 0
+        self.mAP_ready = False
+        self.recall_precision = {0: dict(), 1: dict(), 2: dict()}  # recall -> precision
         self.iou_threshold = iou_threshold
-        self.confidences = []
-        self.tp = []
-        self.fp = []
-        self.GTBox = 0
+        self.confidences = {0: [], 1: [], 2: []}
+        self.tp = {0: [], 1: [], 2: []}
+        self.fp = {0: [], 1: [], 2: []}
+        self.GTBox = {0: 0, 1: 0, 2: 0}
 
         # total number of predictions
         self.total = 0
@@ -73,8 +75,12 @@ class StatsCollector:
         labels = prediction['labels']
         match_targets = prediction['matched_target']
         num_target = prediction['num_target']
-        is_matched = np.zeros((num_pred, num_target))
-        self.GTBox += num_target
+        is_matched = np.zeros(prediction['m'])
+        for label in num_target.keys():
+            assert label == 1 or label == 2 or label == 0
+            if label == 0:  # background
+                continue
+            self.GTBox[label] += num_target[label]
 
         for idx in range(num_pred):
             measurement = ScoreMeasurer()
@@ -91,17 +97,17 @@ class StatsCollector:
                 else:
                     self.update_confusion_matrix(label, 0)
             else:
-                if is_matched[idx][matched_target] == 0:
+                if is_matched[matched_target] == 0:
                     measurement.true_positive = 1
-                    is_matched[idx][matched_target] = 1
+                    is_matched[matched_target] = 1
                     self.update_confusion_matrix(label, label)
                 else:
                     measurement.false_positive = 1
                     self.update_confusion_matrix(label, 0)
 
-            self.confidences.append(confidence)
-            self.tp.append(measurement.true_positive)
-            self.fp.append(measurement.false_positive)
+            self.confidences[label].append(confidence)
+            self.tp[label].append(measurement.true_positive)
+            self.fp[label].append(measurement.false_positive)
 
     def plot_PR_Curve(self, dir_path: str = None, filename: str = 'confusion'):
         pr_pairs = sorted(self.recall_precision.items())
@@ -112,50 +118,54 @@ class StatsCollector:
         plt.legend()
         plt.savefig(os.path.join(dir_path, filename + '.png'))
 
-    def setup_mAP(self):
+    def setup_mAP(self, label):
         # print(type(self.confidences[0]))
-        indices = np.argsort(self.confidences)
+        indices = np.argsort(self.confidences[label])
         # print(indices)
-        self.tp = np.cumsum(np.array(self.tp)[indices])
-        self.fp = np.cumsum(np.array(self.fp)[indices])
-        precisions = self.tp / (self.tp+self.fp)
-        recalls = self.tp / self.GTBox
+        self.tp[label] = np.cumsum(np.array(self.tp[label])[indices])
+        self.fp[label] = np.cumsum(np.array(self.fp[label])[indices])
+        precisions = np.array(self.tp[label]) / (self.tp[label] + self.fp[label])
+        recalls = np.array(self.tp[label]) / self.GTBox[label]
 
         for precision, recall in zip(precisions, recalls):
-            if self.recall_precision.__contains__(recall):
-                self.recall_precision[recall] = max(precision, self.recall_precision[recall])
+            if self.recall_precision[label].__contains__(recall):
+                self.recall_precision[label][recall] = max(precision, self.recall_precision[label][recall])
             else:
-                self.recall_precision[recall] = precision
+                self.recall_precision[label][recall] = precision
 
     def get_mAP(self):
-        self.setup_mAP()
+        if self.mAP_ready:
+            return self.mAP
+        for label in range(1, 3):
+            self.setup_mAP(label)
+            ap = 0
+            recalls = sorted(self.recall_precision[label].keys(), reverse=False)
+            if len(recalls) < 0:
+                continue
 
-        sum_precision = 0
-        cnt = 0
-        assert len(self.recall_precision.values()) > 0
-        for precision in self.recall_precision.values():
-            sum_precision += precision
-            cnt += 1
-        return sum_precision / cnt
+            for idx in range(len(recalls) - 1, 0, -1):
+                curr = recalls[idx]
+                prev = recalls[idx - 1]
+                self.recall_precision[label][prev] = \
+                    max(self.recall_precision[label][curr], self.recall_precision[label][prev])
 
-    def get_interpolated_mAP(self):
-        self.setup_mAP()
+            for idx in range(0, len(recalls) - 1):
+                curr = recalls[idx]
+                next = recalls[idx + 1]
+                ap += self.recall_precision[label][next] * (next - curr)
 
-        sum_precision = 0
-        cnt = 0
-        recalls = sorted(self.recall_precision.keys(), reverse=True)
-        assert len(recalls) > 0
-        increment_precision = self.recall_precision[recalls[0]]
-        for recall in recalls:
-            if self.recall_precision[recall] > increment_precision:
-                increment_precision = self.recall_precision[recall]
-            sum_precision += increment_precision
-            cnt += 1
-        return sum_precision / cnt
+            self.mAP += ap
+        self.mAP /= 2
+        self.mAP_ready = True
+        return self.mAP
 
     def clear_mAP(self):
-        self.tp = []
-        self.fp = []
+        self.confidences = {0: [], 1: [], 2: []}
+        self.tp = {0: [], 1: [], 2: []}
+        self.fp = {0: [], 1: [], 2: []}
+        self.GTBox = {0: 0, 1: 0, 2: 0}
+        self.mAP = 0
+        self.mAP_ready = False
 
     def update_confusion_matrix(self, predicted_label, target_label):
         self.total += 1
@@ -200,7 +210,8 @@ class StatsCollector:
             'train loss': train_loss,
             'train iou': train_score,
             'validation loss': val_loss,
-            'validation iou': val_score
+            'validation iou': val_score,
+            'validation mAP': self.get_mAP()
         }, ignore_index=True)
 
     def append_new_test_record(self, mean_iou_score):
@@ -212,11 +223,10 @@ class StatsCollector:
             'experiment number': self.exp_num,
             'experiment environment': self.exp_env,
             'mean iou': mean_iou_score,
-            'mAP': self.get_mAP(),
-            'interpolated mAP': self.get_interpolated_mAP()
+            'mAP': self.get_mAP()
         }, ignore_index=True)
 
-    def save_result(self, isTrain:bool = True):
+    def save_result(self, isTrain: bool = True):
         if isTrain and self.epoch_records is not None:
             self.epoch_records.to_csv(os.path.join(self.dir_path, 'epoch_record.csv'), index=False)
             # self.plot_loss_curve()

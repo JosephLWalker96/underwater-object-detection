@@ -317,9 +317,11 @@ class train:
                        'labels': predictions[i]['labels'].detach().cpu().numpy(),
                        'IoU': -3 * np.ones(len(predictions[i]['boxes'])),
                        'matched_target': -1 * np.ones(len(predictions[i]['boxes'])),
-                       'num_target': len(targets[i])}
+                       'num_target': {0: 0, 1: 0, 2: 0},
+                       'm': len(targets[i])}
             iou_score = get_iou_score(outputs, targets[i], 512, 512)
-            image_precisions.append(iou_score)
+            if iou_score >= 0:
+                image_precisions.append(iou_score)
 
             # If it is validation, calculate the mAP
             if isVal:

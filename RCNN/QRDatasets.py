@@ -1,3 +1,4 @@
+import copy
 import os.path
 
 import cv2
@@ -54,18 +55,18 @@ class QRDatasets(Dataset):
         boxes = records[['x', 'y', 'w', 'h']].values
 
         # Doing RandAug Here
-        # p = np.random.random(size=1)[0]
-        # if p > 0.7:
-        #     n, m = np.random.randint(low=1, high=2, size=1)[0], np.random.randint(low=1, high=30, size=1)[0]
-        #     randAug = RandAugment(n, m)
-        #     if self.isTrain:
-        #         img, boxes = randAug(Image.fromarray(img), boxes)
-        #         img = np.array(img)
+        p = np.random.random(size=1)[0]
+        if p > 0.7:
+            n, m = np.random.randint(low=1, high=2, size=1)[0], np.random.randint(low=0, high=2, size=1)[0]
+            randAug = RandAugment(n, m)
+            if self.isTrain:
+                img, boxes = randAug(Image.fromarray(copy.deepcopy(img)), copy.deepcopy(boxes))
+                img = np.array(img)
 
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
-        boxes[:, 0] = boxes[:, 0]
-        boxes[:, 1] = boxes[:, 1]
+        # boxes[:, 0] = boxes[:, 0]
+        # boxes[:, 1] = boxes[:, 1]
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
 
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
