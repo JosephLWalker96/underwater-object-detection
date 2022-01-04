@@ -312,10 +312,12 @@ class train:
     def gather_iou_scores(self, predictions, targets, images: np.array, image_precisions, isVal: bool = False):
         for i, image in enumerate(images):
             predictions[i]['boxes'] = predictions[i]['boxes'] / 512
-            outputs = {'boxes': predictions[i]['boxes'],
-                       'scores': predictions[i]['scores'],
-                       'labels': predictions[i]['labels'],
-                       'IoU': -3 * np.ones(len(predictions[i]['boxes']))}
+            outputs = {'boxes': predictions[i]['boxes'].detach().cpu().numpy(),
+                       'scores': predictions[i]['scores'].detach().cpu().numpy(),
+                       'labels': predictions[i]['labels'].detach().cpu().numpy(),
+                       'IoU': -3 * np.ones(len(predictions[i]['boxes'])),
+                       'matched_target': -1 * np.ones(len(predictions[i]['boxes'])),
+                       'num_target': len(targets[i])}
             iou_score = get_iou_score(outputs, targets[i], 512, 512)
             image_precisions.append(iou_score)
 

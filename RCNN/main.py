@@ -72,8 +72,12 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
                 # filter out the low scores
                 boxes, scores, labels = run_wbf(predictions, image_index=i, skip_box_thr=0.2)
                 boxes = boxes.astype(np.int32).clip(min=0, max=512) / 512
-                outputs = {'img_id': idx, 'boxes': boxes, 'scores': scores, 'labels': labels,
-                           'IoU': -3 * np.ones(len(boxes)), 'matched_target': -1*np.ones(len(boxes)),
+                outputs = {'img_id': idx,
+                           'boxes': boxes,
+                           'scores': scores,
+                           'labels': labels,
+                           'IoU': -3 * np.ones(len(boxes)),
+                           'matched_target': -1*np.ones(len(boxes)),
                            'num_target': len(target)}
 
                 iou_score = get_iou_score(outputs, target, 512, 512)
@@ -172,10 +176,10 @@ def run(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
-    parser.add_argument('--exp_num', default=None, type=str)
+    parser.add_argument('--exp_num', default='exp4', type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
-    parser.add_argument('--model', default='exp1-faster-rcnn', type=str)
+    parser.add_argument('--model', default='default-faster-rcnn-bs16', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.0001, type=float)
 
@@ -197,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=3, type=int)
-    parser.add_argument('--batch_size', default=8, type=int)
+    parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--test_batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')

@@ -113,6 +113,7 @@ class StatsCollector:
         plt.savefig(os.path.join(dir_path, filename + '.png'))
 
     def setup_mAP(self):
+        # print(type(self.confidences[0]))
         indices = np.argsort(self.confidences)
         # print(indices)
         self.tp = np.cumsum(np.array(self.tp)[indices])
