@@ -33,6 +33,10 @@ class StatsCollector:
         # variable for mAP calculation
         self.recall_precision = dict()  # recall -> precision
         self.iou_threshold = iou_threshold
+        self.confidences = []
+        self.tp = []
+        self.fp = []
+        self.GTBox = 0
 
         # total number of predictions
         self.total = 0
@@ -63,33 +67,41 @@ class StatsCollector:
         return matrix
 
     def update(self, prediction):
-        measurement = ScoreMeasurer()
         num_pred = len(prediction['labels'])
         ious = prediction['IoU']
+        confidences = prediction['scores']
         labels = prediction['labels']
+        match_targets = prediction['matched_target']
+        num_target = prediction['num_target']
+        is_matched = np.zeros((num_pred, num_target))
+        self.GTBox += num_target
+
         for idx in range(num_pred):
+            measurement = ScoreMeasurer()
             iou = ious[idx]
+            matched_target = match_targets[idx]
+
             label = labels[idx]
-            if iou < 0:
-                measurement.false_positive += 1
+            confidence = confidences[idx]
+            if iou < self.iou_threshold:
+                measurement.false_positive = 1
                 if iou == -2:
                     target_label = 1 if label == 2 else 2
                     self.update_confusion_matrix(label, target_label)
                 else:
                     self.update_confusion_matrix(label, 0)
-            elif iou < self.iou_threshold:
-                measurement.false_negative += 1
-                self.update_confusion_matrix(0, label)
             else:
-                measurement.true_positive += 1
-                self.update_confusion_matrix(label, label)
+                if is_matched[idx][matched_target] == 0:
+                    measurement.true_positive = 1
+                    is_matched[idx][matched_target] = 1
+                    self.update_confusion_matrix(label, label)
+                else:
+                    measurement.false_positive = 1
+                    self.update_confusion_matrix(label, 0)
 
-        precision = measurement.get_precision()
-        recall = measurement.get_recall()
-        if self.recall_precision.__contains__(recall):
-            self.recall_precision[recall] = max(precision, self.recall_precision[recall])
-        else:
-            self.recall_precision[recall] = precision
+            self.confidences.append(confidence)
+            self.tp.append(measurement.true_positive)
+            self.fp.append(measurement.false_positive)
 
     def plot_PR_Curve(self, dir_path: str = None, filename: str = 'confusion'):
         pr_pairs = sorted(self.recall_precision.items())
@@ -100,7 +112,23 @@ class StatsCollector:
         plt.legend()
         plt.savefig(os.path.join(dir_path, filename + '.png'))
 
+    def setup_mAP(self):
+        indices = np.argsort(self.confidences)
+        # print(indices)
+        self.tp = np.cumsum(np.array(self.tp)[indices])
+        self.fp = np.cumsum(np.array(self.fp)[indices])
+        precisions = self.tp / (self.tp+self.fp)
+        recalls = self.tp / self.GTBox
+
+        for precision, recall in zip(precisions, recalls):
+            if self.recall_precision.__contains__(recall):
+                self.recall_precision[recall] = max(precision, self.recall_precision[recall])
+            else:
+                self.recall_precision[recall] = precision
+
     def get_mAP(self):
+        self.setup_mAP()
+
         sum_precision = 0
         cnt = 0
         assert len(self.recall_precision.values()) > 0
@@ -110,6 +138,8 @@ class StatsCollector:
         return sum_precision / cnt
 
     def get_interpolated_mAP(self):
+        self.setup_mAP()
+
         sum_precision = 0
         cnt = 0
         recalls = sorted(self.recall_precision.keys(), reverse=True)

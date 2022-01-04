@@ -67,11 +67,14 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
 
             st = time.time()
             for i, image in enumerate(images):
+                idx = image_ids[i]
                 target = targets[i]
                 # filter out the low scores
                 boxes, scores, labels = run_wbf(predictions, image_index=i, skip_box_thr=0.2)
-                boxes = boxes.type(torch.int32).clip(min=0, max=512) / 512
-                outputs = {'boxes': boxes, 'scores': scores, 'labels': labels, 'IoU': -3 * np.ones(len(boxes))}
+                boxes = boxes.astype(np.int32).clip(min=0, max=512) / 512
+                outputs = {'img_id': idx, 'boxes': boxes, 'scores': scores, 'labels': labels,
+                           'IoU': -3 * np.ones(len(boxes)), 'matched_target': -1*np.ones(len(boxes)),
+                           'num_target': len(target)}
 
                 iou_score = get_iou_score(outputs, target, 512, 512)
                 if iou_score >= 0:
@@ -82,7 +85,6 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
                 mAP50_stasts_collector.update(outputs)
 
                 # obtaining the original images
-                idx = image_ids[i]
                 records = qr_df[qr_df.index == idx]
                 records = qr_df[qr_df['File Name'] == records['File Name'].values[0]]
                 rslt_df = check_bbox(path_to_output, records, outputs, rslt_df)
@@ -173,7 +175,7 @@ if __name__ == "__main__":
     parser.add_argument('--exp_num', default=None, type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
-    parser.add_argument('--model', default='faster-rcnn', type=str)
+    parser.add_argument('--model', default='exp1-faster-rcnn', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.0001, type=float)
 
@@ -182,7 +184,7 @@ if __name__ == "__main__":
 
     #     parser.add_argument('--model', default='retinanet', type=str)
 
-    parser.add_argument('--train_transform', default='no_transform', type=str,
+    parser.add_argument('--train_transform', default='default', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
@@ -195,7 +197,7 @@ if __name__ == "__main__":
     parser.add_argument('--gamma', default=0.1, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--early_stop', default=3, type=int)
-    parser.add_argument('--batch_size', default=16, type=int)
+    parser.add_argument('--batch_size', default=8, type=int)
     parser.add_argument('--test_batch_size', default=16, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')

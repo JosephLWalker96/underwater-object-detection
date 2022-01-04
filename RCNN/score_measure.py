@@ -145,9 +145,11 @@ def get_iou_score(output, target, width, height):
     merged_area = merged_wh[:, :, 0] * merged_wh[:, :, 1]
 
     iou_matrix = torch.multiply(merged_area / (union_area-merged_area), label_matching_matrix)
-    iou_matrix = torch.where(iou_matrix >= 0, iou_matrix.to(float), float(-2))
+    iou_matrix = torch.where(iou_matrix >= 0, abs(iou_matrix.to(float)), float(-2))
     iou = torch.amax(iou_matrix, dim=1)
     output['IoU'] = iou
+    output['matched_target'] = torch.argmax(iou_matrix, dim=1)
+    output['num_target'] = m
 
     if len(iou) > 0:
         return torch.mean(torch.where(iou >= 0, iou.to(float), float(0)))
