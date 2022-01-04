@@ -153,6 +153,10 @@ class StatsCollector:
             cnt += 1
         return sum_precision / cnt
 
+    def clear_mAP(self):
+        self.tp = []
+        self.fp = []
+
     def update_confusion_matrix(self, predicted_label, target_label):
         self.total += 1
         if predicted_label == target_label:

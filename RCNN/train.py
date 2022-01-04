@@ -276,6 +276,7 @@ class train:
                   "Validation mAP score: {0:.4f}".format(self.record_collector.get_mAP()),
                   "Time taken :",
                   str(datetime.timedelta(seconds=time.time() - start_time))[:7])
+            self.record_collector.clear_mAP()
             if not best_loss:
                 # So any validation roc_auc we have is the best one for now
                 best_val = val_score
@@ -295,7 +296,6 @@ class train:
                 # Saving current best model
                 with open(self.model_dir_path + "/" + self.model_filename, 'w') as f:
                     torch.save(self.model, self.model_dir_path + "/" + self.model_filename)
-
             else:
                 patience -= 1
                 if patience == 0:
