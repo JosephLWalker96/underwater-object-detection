@@ -13,13 +13,14 @@ from tqdm import tqdm
 import os
 import glob
 
+
 def ShearX(img, v, bbox):  # [-0.3, 0.3]
     assert -0.3 <= v <= 0.3
     if random.random() > 0.5:
-        v = -v 
+        v = -v
     for i in range(len(bbox)):
         corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
-        updated_corners = np.vstack((corners[:,0] - v * corners[:,1], corners[:,1])).T.astype(int)
+        updated_corners = np.vstack((corners[:, 0] - v * corners[:, 1], corners[:, 1])).T.astype(int)
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, v, 0, 0, 1, 0)), bbox
 
@@ -29,8 +30,8 @@ def ShearY(img, v, bbox):  # [-0.3, 0.3]
     if random.random() > 0.5:
         v = -v
     for i in range(len(bbox)):
-        corners = bbox_to_corners(bbox[i]).reshape(-1,2)
-        updated_corners = np.vstack((corners[:,0], corners[:,1] - v * corners[:,0])).T.astype(int)
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
+        updated_corners = np.vstack((corners[:, 0], corners[:, 1] - v * corners[:, 0])).T.astype(int)
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, v, 1, 0)), bbox
 
@@ -48,8 +49,8 @@ def TranslateXabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     if random.random() > 0.5:
         v = -v
     for i in range(len(bbox)):
-        corners = bbox_to_corners(bbox[i]).reshape(-1,2)
-        updated_corners = np.vstack((corners[:,0] - v, corners[:,1])).T.astype(int)
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
+        updated_corners = np.vstack((corners[:, 0] - v, corners[:, 1])).T.astype(int)
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0)), bbox
 
@@ -67,8 +68,8 @@ def TranslateYabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     if random.random() > 0.5:
         v = -v
     for i in range(len(bbox)):
-        corners = bbox_to_corners(bbox[i]).reshape(-1,2)
-        updated_corners = np.vstack((corners[:,0], corners[:,1] - v)).T.astype(int)
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
+        updated_corners = np.vstack((corners[:, 0], corners[:, 1] - v)).T.astype(int)
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
@@ -104,7 +105,7 @@ def Solarize(img, v, bbox):  # [0, 256]
     return PIL.ImageOps.solarize(img, v), bbox
 
 
-def SolarizeAdd(img, addition=0, bbox = None, threshold=128):
+def SolarizeAdd(img, addition=0, bbox=None, threshold=128):
     img_np = np.array(img).astype(np.int)
     img_np = img_np + addition
     img_np = np.clip(img_np, 0, 255)
@@ -182,7 +183,32 @@ def Identity(img, v, bbox):
     return img, bbox
 
 
-def augment_list():  # 16 oeprations and their ranges
+augment_map = {
+    'AutoContrast': (AutoContrast, 0, 1),
+    'Brightness': (Brightness, 0.1, 1.9),
+    'Contrast': (Contrast, 0.1, 1.9),
+    'Color': (Color, 0.1, 1.9),
+    'Cutout': (Cutout, 0, 0.2),
+    'CutoutAbs': (CutoutAbs, 0, 40),
+    'Equalize': (Equalize, 0, 1),
+    'Identity': (Identity, 0., 1.0),
+    'Invert': (Invert, 0, 1),
+    'Posterize': (Posterize, 0, 4),
+    'Rotate': (Rotate, 0, 30),
+    'Sharpness': (Sharpness, 0.1, 1.9),
+    'ShearX': (ShearX, 0., 0.3),
+    'ShearY': (ShearY, 0., 0.3),
+    'Solarize': (Solarize, 0, 256),
+    'SoloarizeAdd': (SolarizeAdd, 0, 110),
+    'TranslateX': (TranslateX, 0., 0.33),
+    'TranslateY': (TranslateY, 0., 0.33),
+    'TranslateXabs': (TranslateXabs, 0., 100),
+    'TranslateYabs': (TranslateYabs, 0., 100)
+}
+
+
+def augment_list(aug_ls=None):  # 16 oeprations and their ranges
+
     # https://github.com/google-research/uda/blob/master/image/randaugment/policies.py#L57
     # l = [
     #     (Identity, 0., 1.0),
@@ -205,24 +231,34 @@ def augment_list():  # 16 oeprations and their ranges
     # ]
 
     # https://github.com/tensorflow/tpu/blob/8462d083dd89489a79e3200bcc8d4063bf362186/models/official/efficientnet/autoaugment.py#L505
-    l = [
-        (AutoContrast, 0, 1),
-        (Equalize, 0, 1),
-        (Invert, 0, 1),
-        (Rotate, 0, 30),
-        (Posterize, 0, 4),
-        (Solarize, 0, 256),
-        (SolarizeAdd, 0, 110),
-        (Color, 0.1, 1.9),
-        (Contrast, 0.1, 1.9),
-        (Brightness, 0.1, 1.9),
-        (Sharpness, 0.1, 1.9),
-        (ShearX, 0., 0.3),
-        (ShearY, 0., 0.3),
-        (CutoutAbs, 0, 40),
-        (TranslateXabs, 0., 100),
-        (TranslateYabs, 0., 100),
-    ]
+    # l = [
+    #     (AutoContrast, 0, 1),
+    #     (Equalize, 0, 1),
+    #     # (Invert, 0, 1),
+    #     (Rotate, 0, 30),
+    #     (Posterize, 0, 4),
+    #     # (Solarize, 0, 256),
+    #     # (SolarizeAdd, 0, 110),
+    #     (Color, 0.1, 1.9),
+    #     (Contrast, 0.1, 1.9),
+    #     (Brightness, 0.1, 1.9),
+    #     (Sharpness, 0.1, 1.9),
+    #     (ShearX, 0., 0.3),
+    #     (ShearY, 0., 0.3),
+    #     (CutoutAbs, 0, 40),
+    #     (TranslateXabs, 0., 100),
+    #     (TranslateYabs, 0., 100),
+    # ]
+
+    if aug_ls is None:
+        aug_ls = [
+            'AutoContrast', 'Equalize', 'Rotate', 'Posterize', 'Color', 'Contrast',
+            'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs',
+            'TranslateYabs'
+        ]
+    l = []
+    for key in aug_ls:
+        l.append(augment_map[key])
 
     return l
 
@@ -252,6 +288,7 @@ class CutoutDefault(object):
     """
     Reference : https://github.com/quark0/darts/blob/master/cnn/utils.py
     """
+
     def __init__(self, length):
         self.length = length
 
@@ -274,10 +311,10 @@ class CutoutDefault(object):
 
 
 class RandAugment:
-    def __init__(self, n, m):
+    def __init__(self, n, m, _augment_list):
         self.n = n
-        self.m = m      # [0, 30]
-        self.augment_list = augment_list()
+        self.m = m  # [0, 30]
+        self.augment_list = augment_list(_augment_list)
         # self.ops = None
 
     def __call__(self, img, bbox):
@@ -302,6 +339,7 @@ class RandAugment:
             img, bbox = op(img, val, bbox)
         return img, bbox
 
+
 def augment(data_path, n, m):
     """
     Random Augment a whole directory
@@ -323,7 +361,7 @@ def augment(data_path, n, m):
                     line[2] = int(float(line[2]) * img.shape[0])
                     line[3] = int(float(line[3]) * img.shape[1])
                     line[4] = int(float(line[4]) * img.shape[0])
-                    bbox.append([int(line[1]),int(line[2]),int(line[3]),int(line[4]),])
+                    bbox.append([int(line[1]), int(line[2]), int(line[3]), int(line[4]), ])
                 im, bbox = randaugment(im, bbox)
                 cv2.imwrite(img_dir, np.array(im))
                 res = []
@@ -351,9 +389,11 @@ def main(args):
         os.system(f"cp -r {args.dataset_path}/labels {args.out_path}")
     augment(args.out_path, args.n, args.m)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", default="../Complete_SUIT_Dataset_corrected", type=str, help="path to the dataset")
+    parser.add_argument("--dataset_path", default="../Complete_SUIT_Dataset_corrected", type=str,
+                        help="path to the dataset")
     parser.add_argument("--out_path", type=str, help="path to the output directory")
     parser.add_argument("--n", default=5, type=int, help="the mean of transformation after correction")
     parser.add_argument("--m", default=2, type=int, help="the standard deviation of transformation after correction")

@@ -277,7 +277,7 @@ class train:
                   "Time taken :",
                   str(datetime.timedelta(seconds=time.time() - start_time))[:7])
             self.record_collector.clear_mAP()
-            if not best_loss:
+            if not best_val:
                 # So any validation roc_auc we have is the best one for now
                 best_val = val_score
                 best_loss = val_loss
@@ -287,7 +287,7 @@ class train:
                     torch.save(self.model, self.model_dir_path + "/" + self.model_filename)
                 best_model = copy.deepcopy(self.model)
                 # continue
-            elif val_loss <= best_loss:
+            elif val_score >= best_val:
                 print("Saving model")
                 best_val = val_score
                 best_loss = val_loss
@@ -353,8 +353,10 @@ def main(args):
     train_df = pd.read_csv(path_to_images + "/train_qr_labels.csv")
     val_df = pd.read_csv(path_to_images + "/val_qr_labels.csv")
     train_tf = get_train_val_transform(args.train_transform)
-    train_dataset = QRDatasets(args.path_to_dataset, train_df, transforms=train_tf, use_grayscale=args.use_grayscale)
-    val_dataset = QRDatasets(args.path_to_dataset, val_df, transforms=train_tf, use_grayscale=args.use_grayscale)
+    train_dataset = QRDatasets(args.path_to_dataset, train_df, transforms=train_tf, use_grayscale=args.use_grayscale,
+                               augment_list=args.augment_list)
+    val_dataset = QRDatasets(args.path_to_dataset, val_df, transforms=train_tf, use_grayscale=args.use_grayscale,
+                             augment_list=args.augment_list)
     train_datasets.append(train_dataset)
     val_datasets.append(val_dataset)
 
@@ -386,6 +388,8 @@ if __name__ == "__main__":
     parser.add_argument('--model', default='faster-rcnn', type=str)
     parser.add_argument('--train_transform', default='default', type=str,
                         choices=['color_correction', 'default', 'intensive', 'no_transform'])
+    parser.add_argument('--augment_list', default=[], action='append',
+                        dest='alist', type=str, nargs='*', help="Examples: -augment_list TranslateX ShearY")
     parser.add_argument('--lr', default=0.002, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.0005, type=float)

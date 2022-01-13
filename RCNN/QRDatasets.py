@@ -14,7 +14,7 @@ class QRDatasets(Dataset):
 
     # setting up member variable
     def __init__(self, dir_to_dataset: str, df: pd.DataFrame, use_grayscale: bool = False,
-                 transforms=None, isTrain:bool = True):
+                 transforms=None, isTrain:bool = True, augment_list:list = None):
         super().__init__()
 
         self.isTrain = isTrain
@@ -23,6 +23,7 @@ class QRDatasets(Dataset):
         self.dataframe = df
         self.transforms = transforms
         self.gray_scale = use_grayscale
+        self.augment_list = augment_list
 
         # image name series from df
         self.img_name_ls = self.dataframe['Image'].unique()
@@ -54,20 +55,8 @@ class QRDatasets(Dataset):
         assert img is not None
         boxes = records[['x', 'y', 'w', 'h']].values
 
-        # Doing RandAug Here
-        p = np.random.random(size=1)[0]
-        if p > 0.7:
-            n, m = np.random.randint(low=1, high=2, size=1)[0], np.random.randint(low=0, high=2, size=1)[0]
-            randAug = RandAugment(n, m)
-            if self.isTrain:
-                img, boxes = randAug(Image.fromarray(copy.deepcopy(img)), copy.deepcopy(boxes))
-                img = np.array(img)
-
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
-        # boxes[:, 0] = boxes[:, 0]
-        # boxes[:, 1] = boxes[:, 1]
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)
 
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         area = torch.as_tensor(area, dtype=torch.float32)
@@ -103,7 +92,8 @@ class QRDatasets(Dataset):
                 'image': img,
                 # 'image': np.array(img, dtype=np.float32)/255.0,
                 'bboxes': target['boxes'],
-                'labels': labels
+                'labels': labels,
+                'augment_list': self.augment_list # this is for RandAug Transform
             }
             sample = self.transforms(**sample)
             img = sample['image']

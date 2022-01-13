@@ -11,7 +11,7 @@ from stats import StatsCollector
 
 from wbf_ensemble import make_ensemble_predictions, run_wbf
 from utils import collate_fn, check_bbox, draw_bbox
-from RCNN.score_measure import get_iou_score
+from score_measure import get_iou_score
 from img_transform import get_test_transform
 from QRDatasets import QRDatasets
 from tqdm import tqdm
@@ -70,7 +70,7 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
                 idx = image_ids[i]
                 target = targets[i]
                 # filter out the low scores
-                boxes, scores, labels = run_wbf(predictions, image_index=i, skip_box_thr=0.2)
+                boxes, scores, labels = run_wbf(predictions, image_index=i, skip_box_thr=args.skip_confidence_thr)
                 boxes = boxes.astype(np.int32).clip(min=0, max=512) / 512
                 outputs = {'img_id': idx,
                            'boxes': boxes,
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     parser.add_argument('--exp_num', default='exp4', type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
-    parser.add_argument('--model', default='randaug-faster-rcnn-bs16', type=str)
+    parser.add_argument('--model', default='new-randaug-faster-rcnn-no_es', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
     parser.add_argument('--lr', default=0.0001, type=float)
 
@@ -189,21 +189,48 @@ if __name__ == "__main__":
 
     #     parser.add_argument('--model', default='retinanet', type=str)
 
-    parser.add_argument('--train_transform', default='no_transform', type=str,
+    parser.add_argument('--train_transform', default='RandAug', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
 
     parser.add_argument('--adam', default=True, action='store_true')
 
+    '''
+    selections for augmentation:
+        'AutoContrast': (AutoContrast, 0, 1),
+        'Brightness': (Brightness, 0.1, 1.9),
+        'Contrast': (Contrast, 0.1, 1.9),
+        'Color': (Color, 0.1, 1.9),
+        'Cutout': (Cutout, 0, 0.2),
+        'CutoutAbs': (CutoutAbs, 0, 40),
+        'Equalize': (Equalize, 0, 1),
+        'Identity': (Identity, 0., 1.0),
+        'Invert': (Invert, 0, 1),
+        'Posterize': (Posterize, 0, 4),
+        'Rotate': (Rotate, 0, 30),
+        'Sharpness': (Sharpness, 0.1, 1.9),
+        'ShearX': (ShearX, 0., 0.3),
+        'ShearY': (ShearY, 0., 0.3),
+        'Solarize': (Solarize, 0, 256),
+        'SoloarizeAdd': (SolarizeAdd, 0, 110),
+        'TranslateX': (TranslateX, 0., 0.33),
+        'TranslateY': (TranslateY, 0., 0.33),
+        'TranslateXabs': (TranslateXabs, 0., 100),
+        'TranslateYabs': (TranslateYabs, 0., 100)
+    '''
+    parser.add_argument('--augment_list', default=None, action='store',
+                         type=str, nargs='*', help="Examples: -augment_list TranslateX ShearY")
+    parser.add_argument('--skip_confidence_thr', default=0.2, type=float)
+
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.001, type=float)
     parser.add_argument('--step_size', default=5, type=int)
     parser.add_argument('--gamma', default=0.1, type=float)
-    parser.add_argument('--num_epoch', default=20, type=int)
-    parser.add_argument('--early_stop', default=3, type=int)
+    parser.add_argument('--num_epoch', default=30, type=int)
+    parser.add_argument('--early_stop', default=100, type=int)
     parser.add_argument('--batch_size', default=16, type=int)
-    parser.add_argument('--test_batch_size', default=16, type=int)
+    parser.add_argument('--test_batch_size', default=32, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     args = parser.parse_args()
