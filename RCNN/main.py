@@ -220,7 +220,7 @@ if __name__ == "__main__":
         'TranslateYabs': (TranslateYabs, 0., 100)
     '''
     parser.add_argument('--augment_list', default=None, action='store',
-                         type=str, nargs='*', help="Examples: -augment_list TranslateX ShearY")
+                         type=str, nargs='*', help="Examples: --augment_list TranslateX ShearY")
     parser.add_argument('--skip_confidence_thr', default=0.2, type=float)
 
     parser.add_argument('--momentum', default=0.9, type=float)
