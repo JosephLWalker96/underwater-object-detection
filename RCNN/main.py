@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 import os
 import torch
+import yaml
 from torch.utils.data import DataLoader
 from stats import StatsCollector
 
@@ -182,7 +183,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--model', default='new-randaug-faster-rcnn-no_es', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
-    parser.add_argument('--lr', default=0.0001, type=float)
+    parser.add_argument('--yaml', default='test.yaml', type=str)
 
     # parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)
     # parser.add_argument('--lr', default=0.001, type=float)
@@ -193,8 +194,7 @@ if __name__ == "__main__":
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
-
-    parser.add_argument('--adam', default=True, action='store_true')
+    parser.add_argument('--skip_confidence_thr', default=0.2, type=float)
 
     '''
     selections for augmentation:
@@ -219,11 +219,11 @@ if __name__ == "__main__":
         'TranslateXabs': (TranslateXabs, 0., 100),
         'TranslateYabs': (TranslateYabs, 0., 100)
     '''
-    # parser.add_argument('--augment_list', default=None, action='store',
-    #                      type=str, nargs='*', help="Examples: --augment_list TranslateX ShearY")
-    parser.add_argument('--augment_list', default='auglist.txt', type=str)
-    parser.add_argument('--skip_confidence_thr', default=0.2, type=float)
 
+    # hyperparameter settings
+    parser.add_argument('--augment_list', default='auglist.txt', type=str)
+    parser.add_argument('--adam', default=True, action='store_true')
+    parser.add_argument('--lr', default=0.0001, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)
     parser.add_argument('--weight_decay', default=0.001, type=float)
     parser.add_argument('--step_size', default=5, type=int)
@@ -235,7 +235,11 @@ if __name__ == "__main__":
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     args = parser.parse_args()
-
+    if args.yaml is not None:
+        with open(args.yaml, 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        for k in config.keys():
+            args.__setattr__(k, config[k])
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     args.augment_list = read_aug_txt(args.augment_list)
