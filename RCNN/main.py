@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from stats import StatsCollector
 
 from wbf_ensemble import make_ensemble_predictions, run_wbf
-from utils import collate_fn, check_bbox, draw_bbox
+from utils import collate_fn, check_bbox, draw_bbox, read_aug_txt
 from score_measure import get_iou_score
 from img_transform import get_test_transform
 from QRDatasets import QRDatasets
@@ -219,8 +219,9 @@ if __name__ == "__main__":
         'TranslateXabs': (TranslateXabs, 0., 100),
         'TranslateYabs': (TranslateYabs, 0., 100)
     '''
-    parser.add_argument('--augment_list', default=None, action='store',
-                         type=str, nargs='*', help="Examples: --augment_list TranslateX ShearY")
+    # parser.add_argument('--augment_list', default=None, action='store',
+    #                      type=str, nargs='*', help="Examples: --augment_list TranslateX ShearY")
+    parser.add_argument('--augment_list', default='auglist.txt', type=str)
     parser.add_argument('--skip_confidence_thr', default=0.2, type=float)
 
     parser.add_argument('--momentum', default=0.9, type=float)
@@ -234,5 +235,8 @@ if __name__ == "__main__":
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     args = parser.parse_args()
+
+
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    args.augment_list = read_aug_txt(args.augment_list)
     run(args)

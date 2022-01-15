@@ -10,6 +10,17 @@ def collate_fn(batch):
     return tuple(zip(*batch))
 
 
+def read_aug_txt(path):
+    aug_ls = []
+    with open(path, 'r') as f:
+        line = f.readline()
+        while line:
+            aug, min_val, max_val = line.split(',')
+            aug_ls.append((int(aug), float(min_val), float(max_val)))
+            line = f.readline()
+    return aug_ls
+
+
 def check_bbox(path_to_output, records, outputs, df):
     if not os.path.exists(path_to_output + '/labels'):
         os.system('mkdir ' + path_to_output + '/labels')
@@ -27,13 +38,13 @@ def check_bbox(path_to_output, records, outputs, df):
         w = float(box[2] - box[0])
         h = float(box[3] - box[1])
 
-        write_txt(path_to_output, img_exts[0], label, xs, ys, w, h)
+        write_rslt_txt(path_to_output, img_exts[0], label, xs, ys, w, h)
         df = update_df(df, records, xs, ys, w, h, iou_score, label)
 
     return df
 
 
-def write_txt(path_to_output, img_name, label, xs, ys, w, h):
+def write_rslt_txt(path_to_output, img_name, label, xs, ys, w, h):
     with open(path_to_output + '/labels/' + img_name + '.txt', 'a') as f:
         line = str(int(label)) + ' ' + str(float(xs)) + ' ' + str(float(ys)) + ' ' + str(float(w)) + ' ' + str(
             float(h)) + '\n'

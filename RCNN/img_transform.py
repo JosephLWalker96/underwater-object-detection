@@ -32,7 +32,6 @@ class Color_Correction(A.DualTransform):
 
 
 def RandAug(image, bboxes, labels, augment_list):
-    print(augment_list)
     img = image
     boxes = bboxes
     boxes[:, 2] = boxes[:, 2] - boxes[:, 0]

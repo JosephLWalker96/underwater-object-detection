@@ -184,28 +184,33 @@ def Identity(img, v, bbox):
 
 
 augment_map = {
-    'AutoContrast': (AutoContrast, 0, 1),
-    'Brightness': (Brightness, 0.1, 1.9),
-    'Contrast': (Contrast, 0.1, 1.9),
-    'Color': (Color, 0.1, 1.9),
-    'Cutout': (Cutout, 0, 0.2),
-    'CutoutAbs': (CutoutAbs, 0, 40),
-    'Equalize': (Equalize, 0, 1),
-    'Identity': (Identity, 0., 1.0),
-    'Invert': (Invert, 0, 1),
-    'Posterize': (Posterize, 0, 4),
-    'Rotate': (Rotate, 0, 30),
-    'Sharpness': (Sharpness, 0.1, 1.9),
-    'ShearX': (ShearX, 0., 0.3),
-    'ShearY': (ShearY, 0., 0.3),
-    'Solarize': (Solarize, 0, 256),
-    'SoloarizeAdd': (SolarizeAdd, 0, 110),
-    'TranslateX': (TranslateX, 0., 0.33),
-    'TranslateY': (TranslateY, 0., 0.33),
-    'TranslateXabs': (TranslateXabs, 0., 100),
-    'TranslateYabs': (TranslateYabs, 0., 100)
+    'AutoContrast': AutoContrast,
+    'Brightness': Brightness,
+    'Contrast': Contrast,
+    'Color': Color,
+    'Cutout': Cutout,
+    'CutoutAbs': CutoutAbs,
+    'Equalize': Equalize,
+    'Identity': Identity,
+    'Invert': Invert,
+    'Posterize': Posterize,
+    'Rotate': Rotate,
+    'Sharpness': Sharpness,
+    'ShearX': ShearX,
+    'ShearY': ShearY,
+    'Solarize': Solarize,
+    'SoloarizeAdd': SolarizeAdd,
+    'TranslateX': TranslateX,
+    'TranslateY': TranslateY,
+    'TranslateXabs': TranslateXabs,
+    'TranslateYabs': TranslateYabs
 }
 
+aug_sel = [
+    'AutoContrast', 'Equalize', 'Rotate', 'Posterize', 'Color', 'Contrast',
+    'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs',
+    'TranslateYabs'
+]
 
 def augment_list(aug_ls=None):  # 16 oeprations and their ranges
 
@@ -251,16 +256,29 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
     # ]
 
     if aug_ls is None:
-        aug_ls = [
-            'AutoContrast', 'Equalize', 'Rotate', 'Posterize', 'Color', 'Contrast',
-            'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs',
-            'TranslateYabs'
+        ls = [
+            (AutoContrast, 0, 1),
+            (Equalize, 0, 1),
+            # (Invert, 0, 1),
+            (Rotate, 0, 30),
+            (Posterize, 0, 4),
+            # (Solarize, 0, 256),
+            # (SolarizeAdd, 0, 110),
+            (Color, 0.1, 1.9),
+            (Contrast, 0.1, 1.9),
+            (Brightness, 0.1, 1.9),
+            (Sharpness, 0.1, 1.9),
+            (ShearX, 0., 0.3),
+            (ShearY, 0., 0.3),
+            (CutoutAbs, 0, 40),
+            (TranslateXabs, 0., 100),
+            (TranslateYabs, 0., 100),
         ]
-    l = []
-    for key in aug_ls:
-        l.append(augment_map[key])
-
-    return l
+    else:
+        ls = []
+        for aug, minval, maxval in aug_ls:
+            ls.append((augment_map[aug_sel[aug]], minval, maxval))
+    return ls
 
 
 class Lighting(object):
