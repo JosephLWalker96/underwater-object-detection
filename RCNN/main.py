@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from stats import StatsCollector
 
 from wbf_ensemble import make_ensemble_predictions, run_wbf
-from utils import collate_fn, check_bbox, draw_bbox, read_aug_txt
+from utils import collate_fn, check_bbox, draw_bbox, update_attrib
 from score_measure import get_iou_score
 from img_transform import get_test_transform
 from QRDatasets import QRDatasets
@@ -144,6 +144,7 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
 def run(args):
     dirs_to_images = []
     dirs_to_labels = []
+    yaml_name = args.yaml
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         # name_ls = ["HUA", "MOO", "RAI", "TAH"]
@@ -154,12 +155,17 @@ def run(args):
             path_to_images = os.path.join(path_to_dir, 'images')
             path_to_labels = os.path.join(path_to_dir, 'labels')
             model_path = os.path.join(path_to_dir, 'models')
+            if args.yaml is not None:
+                args.yaml = os.path.join(path_to_dir, yaml_name)
+                update_attrib(args)
+
             path_to_output = os.path.join(path_to_dir, args.model)
-            #             os.system('rm -r '+model_path)
-            #             os.mkdir(model_path)
             args.exp_env = loc
             main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
     else:
+        if args.yaml is not None:
+            update_attrib(args)
+
         if args.exp_num is None:
             path_to_images = os.path.join(args.path_to_dataset, 'images')
             path_to_labels = os.path.join(args.path_to_dataset, 'labels')
@@ -170,8 +176,6 @@ def run(args):
             path_to_labels = args.path_to_dataset + '/' + args.exp_num + '/labels'
             model_path = args.path_to_dataset + '/' + args.exp_num + '/models'
             path_to_output = args.path_to_dataset + '/' + args.exp_num + '/rcnn'
-        #         os.system('rm -r '+model_path)
-        #         os.mkdir(model_path)
         main(path_to_output, path_to_images, path_to_labels, model_path, args.model)
 
 
@@ -183,7 +187,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--model', default='new-randaug-faster-rcnn-no_es', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
-    parser.add_argument('--yaml', default='test.yaml', type=str)
+    parser.add_argument('--yaml', default='example.yaml', type=str)
 
     # parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)
     # parser.add_argument('--lr', default=0.001, type=float)
@@ -235,12 +239,5 @@ if __name__ == "__main__":
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     args = parser.parse_args()
-    if args.yaml is not None:
-        with open(args.yaml, 'r') as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
-        for k in config.keys():
-            args.__setattr__(k, config[k])
-
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    args.augment_list = read_aug_txt(args.augment_list)
     run(args)

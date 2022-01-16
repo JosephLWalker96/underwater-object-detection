@@ -69,7 +69,7 @@ def RandAug(image, bboxes, labels, augment_list):
 
     transform = A.Compose([
         A.Resize(512, 512),
-        Color_Correction(),
+        # Color_Correction(),
         # RandAugmentTransform(),
         ToTensorV2(p=1.0)
     ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['labels']))

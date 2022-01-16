@@ -2,6 +2,7 @@ import os
 
 import cv2
 import matplotlib
+import yaml
 
 matplotlib.use('Agg')
 
@@ -10,16 +11,20 @@ def collate_fn(batch):
     return tuple(zip(*batch))
 
 
-def read_aug_txt(path):
+def read_aug(input_ls):
     aug_ls = []
-    with open(path, 'r') as f:
-        line = f.readline()
-        while line:
-            aug, min_val, max_val = line.split(',')
-            aug_ls.append((int(aug), float(min_val), float(max_val)))
-            line = f.readline()
+    for line in input_ls:
+        aug, min_val, max_val = line.split(',')
+        aug_ls.append((int(aug), float(min_val), float(max_val)))
     return aug_ls
 
+def update_attrib(args):
+    with open(args.yaml, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    for k in config.keys():
+        args.__setattr__(k, config[k])
+
+    args.augment_list = read_aug(args.augment_list)
 
 def check_bbox(path_to_output, records, outputs, df):
     if not os.path.exists(path_to_output + '/labels'):
