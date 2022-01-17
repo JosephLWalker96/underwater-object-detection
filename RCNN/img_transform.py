@@ -32,8 +32,8 @@ class Color_Correction(A.DualTransform):
 
 
 def RandAug(image, bboxes, labels, augment_list):
-    img = image
-    boxes = bboxes
+    img = np.array(image)
+    boxes = np.array(bboxes)
     boxes[:, 2] = boxes[:, 2] - boxes[:, 0]
     boxes[:, 3] = boxes[:, 3] - boxes[:, 1]
 
@@ -70,7 +70,6 @@ def RandAug(image, bboxes, labels, augment_list):
     transform = A.Compose([
         A.Resize(512, 512),
         # Color_Correction(),
-        # RandAugmentTransform(),
         ToTensorV2(p=1.0)
     ], bbox_params=A.BboxParams(format='pascal_voc', label_fields=['labels']))
     sample = {

@@ -364,6 +364,7 @@ def main(args):
     params = [p for p in model.parameters() if p.requires_grad]
 
     if args.adam:
+        # optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         optimizer = torch.optim.Adam(params, lr=args.lr)
         scheduler = None
     else:

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 class StatsCollector:
-    def __init__(self, iou_threshold=0.5, dir_path: str = '../ExperimentRecords', exp_num: str = None,
+    def __init__(self, iou_threshold=0.5, dir_path: str = '../ExperimentRecords', transform_type=None, exp_num: str = None,
                  exp_env: str = None):
         if exp_num == 'exp3' or exp_num == 'exp4':
             assert exp_env is not None
@@ -29,6 +29,8 @@ class StatsCollector:
         self.test_records = None
         if os.path.exists(os.path.join(self.dir_path, 'test_record.csv')):
             self.test_records = pd.read_csv(os.path.join(self.dir_path, 'test_record.csv'))
+
+        self.transform_type = 'NAN' if transform_type is None else transform_type
 
         # variable for mAP calculation\
         self.mAP = 0
@@ -221,6 +223,7 @@ class StatsCollector:
             )
         self.test_records = self.test_records.append({
             'experiment number': self.exp_num,
+            'transform': self.transform_type,
             'experiment environment': self.exp_env,
             'mean iou': mean_iou_score,
             'mAP': self.get_mAP()

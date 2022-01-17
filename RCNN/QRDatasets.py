@@ -104,6 +104,8 @@ class QRDatasets(Dataset):
             target['boxes'] = torch.as_tensor([[0, 0, 0.1, 0.1]])
             target['labels'] = torch.as_tensor([0])
 
+        ##TODO: Normalize
+
         img = img.to(torch.float32)
         img /= 255.0
 

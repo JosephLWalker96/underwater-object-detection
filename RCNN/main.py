@@ -54,7 +54,8 @@ def generate_test_csv(path_to_images):
 def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
     print("iterating through the test images")
     # iou_thresholds = [x for x in np.arange(0.5, 0.76, 0.05)]
-    mAP50_stasts_collector = StatsCollector(iou_threshold=0.5, exp_num=args.exp_num, exp_env=args.exp_env)
+    mAP50_stasts_collector = StatsCollector(iou_threshold=0.5, exp_num=args.exp_num, exp_env=args.exp_env,
+                                            transform_type=args.transform_name)
     rslt_df = pd.DataFrame(columns=['img_path', 'img', 'xs', 'ys', 'w', 'h', 'iou_score'])
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=args.test_batch_size, pin_memory=True,
                              collate_fn=collate_fn, num_workers=4)
@@ -156,7 +157,7 @@ def run(args):
             path_to_labels = os.path.join(path_to_dir, 'labels')
             model_path = os.path.join(path_to_dir, 'models')
             if args.yaml is not None:
-                args.yaml = os.path.join(path_to_dir, yaml_name)
+                # args.yaml = os.path.join(path_to_dir, yaml_name)
                 update_attrib(args)
 
             path_to_output = os.path.join(path_to_dir, args.model)
@@ -185,9 +186,9 @@ if __name__ == "__main__":
     parser.add_argument('--exp_num', default='exp4', type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
-    parser.add_argument('--model', default='new-randaug-faster-rcnn-no_es', type=str)
+    parser.add_argument('--model', default='AutoContrast-faster-rcnn-no_es', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
-    parser.add_argument('--yaml', default='example.yaml', type=str)
+    parser.add_argument('--yaml', default=None, type=str)
 
     # parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)
     # parser.add_argument('--lr', default=0.001, type=float)
@@ -198,7 +199,8 @@ if __name__ == "__main__":
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
-    parser.add_argument('--skip_confidence_thr', default=0.2, type=float)
+    parser.add_argument('--skip_confidence_thr', default=0.5, type=float)
+    parser.add_argument('--transform_name', default=None, type=str)
 
     '''
     selections for augmentation:
@@ -225,7 +227,7 @@ if __name__ == "__main__":
     '''
 
     # hyperparameter settings
-    parser.add_argument('--augment_list', default='auglist.txt', type=str)
+    parser.add_argument('--augment_list', default=None, type=str)
     parser.add_argument('--adam', default=True, action='store_true')
     parser.add_argument('--lr', default=0.0001, type=float)
     parser.add_argument('--momentum', default=0.9, type=float)

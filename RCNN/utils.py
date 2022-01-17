@@ -12,6 +12,8 @@ def collate_fn(batch):
 
 
 def read_aug(input_ls):
+    if input_ls is None:
+        return None
     aug_ls = []
     for line in input_ls:
         aug, min_val, max_val = line.split(',')
