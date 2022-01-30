@@ -64,6 +64,7 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
     with torch.no_grad():
         for images, targets, image_ids in tqdm(data_loader):
             model.eval()
+
             images = list(image.to(device) for image in images)
             predictions = make_ensemble_predictions(images, device, [model])
 
@@ -195,7 +196,7 @@ if __name__ == "__main__":
 
     #     parser.add_argument('--model', default='retinanet', type=str)
 
-    parser.add_argument('--train_transform', default='RandAug', type=str,
+    parser.add_argument('--train_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
     parser.add_argument('--test_transform', default='no_transform', type=str,
                         choices=['color_correction', 'default', 'intensive', 'RandAug', 'no_transform'])
@@ -224,6 +225,24 @@ if __name__ == "__main__":
         'TranslateY': (TranslateY, 0., 0.33),
         'TranslateXabs': (TranslateXabs, 0., 100),
         'TranslateYabs': (TranslateYabs, 0., 100)
+        
+        #     (Identity, 0., 1.0),
+        #     (ShearX, 0., 0.3),  # 0
+        #     (ShearY, 0., 0.3),  # 1
+        #     (TranslateX, 0., 0.33),  # 2
+        #     (TranslateY, 0., 0.33),  # 3
+        #     (Rotate, 0, 30),  # 4
+        #     (AutoContrast, 0, 1),  # 5
+        #     (Invert, 0, 1),  # 6
+        #     (Equalize, 0, 1),  # 7
+        #     (Solarize, 0, 110),  # 8
+        #     (Posterize, 4, 8),  # 9
+        #     # (Contrast, 0.1, 1.9),  # 10
+        #     (Color, 0.1, 1.9),  # 11
+        #     (Brightness, 0.1, 1.9),  # 12
+        #     (Sharpness, 0.1, 1.9),  # 13
+        #     # (Cutout, 0, 0.2),  # 14
+        #     # (SamplePairing(imgs), 0, 0.4),  # 15
     '''
 
     # hyperparameter settings

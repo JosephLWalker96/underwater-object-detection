@@ -54,6 +54,24 @@ def TranslateXabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0)), bbox
 
+def TranslateXBBoxSafe(img, v, bbox):  # [0, 1]
+    assert 0 <= v
+    if random.random() > 0.5:
+        v = -v
+
+    max_dist = img.size[1]
+    for box in bbox:
+        if v < 0:
+            max_dist = min(max_dist, img.size[0]-box[0]-box[2])
+        else:
+            max_dist = min(max_dist, box[0])
+
+    v = float(v*max_dist)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
+        updated_corners = np.vstack((corners[:, 0] - v, corners[:, 1])).T.astype(int)
+        bbox[i] = corners_to_bbox(updated_corners, img)
+    return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0)), bbox
 
 def TranslateY(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     assert -0.45 <= v <= 0.45
@@ -73,6 +91,25 @@ def TranslateYabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
+
+def TranslateYBboxSafe(img, v, bbox):  # [0, 1]
+    assert 0 <= v
+    if random.random() > 0.5:
+        v = -v
+
+    max_dist = img.size[0]
+    for box in bbox:
+        if v < 0:
+            max_dist = min(max_dist, img.size[1]-box[1]-box[3])
+        else:
+            max_dist = min(max_dist, box[1])
+
+    v = float(v*max_dist)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
+        updated_corners = np.vstack((corners[:, 0], corners[:, 1] - v)).T.astype(int)
+        bbox[i] = corners_to_bbox(updated_corners, img)
+    return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
 def Rotate(img, v, bbox):  # [-30, 30]
     assert -30 <= v <= 30
@@ -146,7 +183,7 @@ def Cutout(img, v, bbox):  # [0, 60] => percentage: [0, 0.2]
         return img
 
     v = v * img.size[0]
-    return CutoutAbs(img, v), bbox
+    return CutoutAbs(img, v, bbox)
 
 
 def CutoutAbs(img, v, bbox):  # [0, 60] => percentage: [0, 0.2]
@@ -169,6 +206,40 @@ def CutoutAbs(img, v, bbox):  # [0, 60] => percentage: [0, 0.2]
     PIL.ImageDraw.Draw(img).rectangle(xy, color)
     return img, bbox
 
+def CutoutBboxSafe(img, v, bbox):  # [0, 1] => [0, 1 * the precentage of maximum cutout without cutting out bbox]
+    # assert 0 <= v <= 20
+    if v < 0:
+        return img
+
+    img_w, img_h = img.size
+
+    while True:
+        img_x0 = np.random.uniform(img_w)
+        img_y0 = np.random.uniform(img_h)
+        img_x0 = int(max(0, img_x0 - v / 2.))
+        img_y0 = int(max(0, img_y0 - v / 2.))
+        img_x1 = min(img_w, img_x0 + v)
+        img_y1 = min(img_h, img_y0 + v)
+        isValid = True
+        for box in bbox:
+            if (img_x0 <= box[0] and img_x1 >= box[0]) or \
+                (img_x0 <= box[0]+box[2] and img_x1 >= box[0]+box[2]) or \
+                (img_x0 >= box[0] and img_x1 <= box[0]+box[2]) or \
+                (img_y0 <= box[1] and img_y1 >= box[1]) or \
+                (img_y0 <= box[1]+box[3] and img_y1 >= box[1]+box[3]) or \
+                (img_y0 >= box[1] and img_y1 <= box[1]+box[3]):
+                    isValid = False
+                    break
+        if isValid:
+            break
+
+    xy = (img_x0, img_y0, img_x1, img_y1)
+    r, g, b = img.getchannel('R'), img.getchannel('G'), img.getchannel('B')
+    color = (int(np.mean(r)), int(np.mean(g)), int(np.mean(b)))
+    # color = (0, 0, 0)
+    img = img.copy()
+    PIL.ImageDraw.Draw(img).rectangle(xy, color)
+    return img, bbox
 
 def SamplePairing(imgs):  # [0, 0.4]
     def f(img1, v):
@@ -203,13 +274,15 @@ augment_map = {
     'TranslateX': TranslateX,
     'TranslateY': TranslateY,
     'TranslateXabs': TranslateXabs,
-    'TranslateYabs': TranslateYabs
+    'TranslateYabs': TranslateYabs,
+    'TranslateXthr': TranslateXBBoxSafe,
+    'TranslateYthr': TranslateYBboxSafe
 }
 
 aug_sel = [
     'AutoContrast', 'Equalize', 'Rotate', 'Posterize', 'Color', 'Contrast',
     'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs',
-    'TranslateYabs'
+    'TranslateYabs', 'Cutout', 'TranslateX', 'TranslateY', 'TranslateXthr', 'TranslateYthr'
 ]
 
 def augment_list(aug_ls=None):  # 16 oeprations and their ranges
@@ -257,22 +330,26 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
 
     if aug_ls is None:
         ls = [
-            (AutoContrast, 0, 1),
-            (Equalize, 0, 1),
-            # (Invert, 0, 1),
-            (Rotate, 0, 30),
-            (Posterize, 0, 4),
-            # (Solarize, 0, 256),
-            # (SolarizeAdd, 0, 110),
-            (Color, 0.1, 1.9),
-            (Contrast, 0.1, 1.9),
-            (Brightness, 0.1, 1.9),
-            (Sharpness, 0.1, 1.9),
-            (ShearX, 0., 0.3),
-            (ShearY, 0., 0.3),
-            (CutoutAbs, 0, 40),
-            (TranslateXabs, 0., 100),
-            (TranslateYabs, 0., 100),
+            # (AutoContrast, 0, 1),
+            # (Equalize, 0, 1),
+            # # (Invert, 0, 1),
+            # (Rotate, 0, 30),
+            # (Posterize, 0, 4),
+            # # (Solarize, 0, 256),
+            # # (SolarizeAdd, 0, 110),
+            # (Color, 0.1, 1.9),
+            # (Contrast, 0.1, 1.9),
+            # (Brightness, 0.1, 1.9),
+            # (Sharpness, 0.1, 1.9),
+            # (ShearX, 0., 0.3),
+            # (ShearY, 0., 0.3),
+            # (CutoutAbs, 0, 40),
+            # (TranslateXabs, 0., 100),
+            # (TranslateYabs, 0., 100),
+            # (TranslateXBBoxSave, 0., 1),
+            # (TranslateYBboxSave, 0., 1)
+            # (CutoutAbs, 0, 40)
+            (CutoutBboxSafe, 0, 100)
         ]
     else:
         ls = []
@@ -329,7 +406,7 @@ class CutoutDefault(object):
 
 
 class RandAugment:
-    def __init__(self, n, m, _augment_list):
+    def __init__(self, n, m, _augment_list=None):
         self.n = n
         self.m = m  # [0, 30]
         self.augment_list = augment_list(_augment_list)
