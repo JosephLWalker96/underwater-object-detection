@@ -1,5 +1,6 @@
 # code in this file is adpated from rpmcruz/autoaugment
 # https://github.com/rpmcruz/autoaugment/blob/master/transformations.py
+import copy
 import random
 
 import PIL, PIL.ImageOps, PIL.ImageEnhance, PIL.ImageDraw
@@ -36,6 +37,49 @@ def ShearY(img, v, bbox):  # [-0.3, 0.3]
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, v, 1, 0)), bbox
 
 
+def ShearYBboxSafe(img, v, bbox):
+    assert -0.3 <= v <= 0.3
+    if random.random() > 0.5:
+        v = -v
+    print(v)
+    transform_matrix = np.array([[1, 0], [-v, 1]])
+    isSafe = True
+    orig_box = copy.deepcopy(bbox)
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2).T
+        corners_t = transform_matrix @ corners
+        x_max, x_min = np.max(corners_t[0, :]), np.min(corners_t[0, :])
+        y_max, y_min = np.max(corners_t[1, :]), np.min(corners_t[1, :])
+        bbox[i][0] = x_min
+        bbox[i][1] = y_min
+        bbox[i][2] = x_max - x_min
+        bbox[i][3] = y_max - y_min
+        if x_min < 0 or y_min < 0 or x_max > img.size[0] or y_max > img.size[1]:
+            isSafe = False
+    if isSafe:
+        return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, v, 1, 0)), bbox
+    else:
+        return img, orig_box
+
+
+def ShearXBboxSafe(img, v, bbox):
+    assert -0.3 <= v <= 0.3
+    if random.random() > 0.5:
+        v = -v
+    print(v)
+    transform_matrix = np.array([[1, -v], [0, 1]])
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(-1, 2).T
+        corners_t = transform_matrix @ corners
+        x_max, x_min = np.max(corners_t[0, :]), np.min(corners_t[0, :])
+        y_max, y_min = np.max(corners_t[1, :]), np.min(corners_t[1, :])
+        bbox[i][0] = x_min
+        bbox[i][1] = y_min
+        bbox[i][2] = x_max - x_min
+        bbox[i][3] = y_max - y_min
+    return img.transform(img.size, PIL.Image.AFFINE, (1, v, 0, 0, 1, 0)), bbox
+
+
 def TranslateX(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     assert -0.45 <= v <= 0.45
     if random.random() > 0.5:
@@ -54,6 +98,7 @@ def TranslateXabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0)), bbox
 
+
 def TranslateXBBoxSafe(img, v, bbox):  # [0, 1]
     assert 0 <= v
     if random.random() > 0.5:
@@ -62,16 +107,17 @@ def TranslateXBBoxSafe(img, v, bbox):  # [0, 1]
     max_dist = img.size[1]
     for box in bbox:
         if v < 0:
-            max_dist = min(max_dist, img.size[0]-box[0]-box[2])
+            max_dist = min(max_dist, img.size[0] - box[0] - box[2])
         else:
             max_dist = min(max_dist, box[0])
 
-    v = float(v*max_dist)
+    v = float(v * max_dist)
     for i in range(len(bbox)):
         corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
         updated_corners = np.vstack((corners[:, 0] - v, corners[:, 1])).T.astype(int)
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, v, 0, 1, 0)), bbox
+
 
 def TranslateY(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     assert -0.45 <= v <= 0.45
@@ -100,16 +146,17 @@ def TranslateYBboxSafe(img, v, bbox):  # [0, 1]
     max_dist = img.size[0]
     for box in bbox:
         if v < 0:
-            max_dist = min(max_dist, img.size[1]-box[1]-box[3])
+            max_dist = min(max_dist, img.size[1] - box[1] - box[3])
         else:
             max_dist = min(max_dist, box[1])
 
-    v = float(v*max_dist)
+    v = float(v * max_dist)
     for i in range(len(bbox)):
         corners = bbox_to_corners(bbox[i]).reshape(-1, 2)
         updated_corners = np.vstack((corners[:, 0], corners[:, 1] - v)).T.astype(int)
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
+
 
 def Rotate(img, v, bbox):  # [-30, 30]
     assert -30 <= v <= 30
@@ -206,6 +253,7 @@ def CutoutAbs(img, v, bbox):  # [0, 60] => percentage: [0, 0.2]
     PIL.ImageDraw.Draw(img).rectangle(xy, color)
     return img, bbox
 
+
 def CutoutBboxSafe(img, v, bbox):  # [0, 1] => [0, 1 * the precentage of maximum cutout without cutting out bbox]
     # assert 0 <= v <= 20
     if v < 0:
@@ -223,13 +271,13 @@ def CutoutBboxSafe(img, v, bbox):  # [0, 1] => [0, 1 * the precentage of maximum
         isValid = True
         for box in bbox:
             if (img_x0 <= box[0] and img_x1 >= box[0]) or \
-                (img_x0 <= box[0]+box[2] and img_x1 >= box[0]+box[2]) or \
-                (img_x0 >= box[0] and img_x1 <= box[0]+box[2]) or \
-                (img_y0 <= box[1] and img_y1 >= box[1]) or \
-                (img_y0 <= box[1]+box[3] and img_y1 >= box[1]+box[3]) or \
-                (img_y0 >= box[1] and img_y1 <= box[1]+box[3]):
-                    isValid = False
-                    break
+                    (img_x0 <= box[0] + box[2] and img_x1 >= box[0] + box[2]) or \
+                    (img_x0 >= box[0] and img_x1 <= box[0] + box[2]) or \
+                    (img_y0 <= box[1] and img_y1 >= box[1]) or \
+                    (img_y0 <= box[1] + box[3] and img_y1 >= box[1] + box[3]) or \
+                    (img_y0 >= box[1] and img_y1 <= box[1] + box[3]):
+                isValid = False
+                break
         if isValid:
             break
 
@@ -240,6 +288,7 @@ def CutoutBboxSafe(img, v, bbox):  # [0, 1] => [0, 1 * the precentage of maximum
     img = img.copy()
     PIL.ImageDraw.Draw(img).rectangle(xy, color)
     return img, bbox
+
 
 def SamplePairing(imgs):  # [0, 0.4]
     def f(img1, v):
@@ -276,14 +325,16 @@ augment_map = {
     'TranslateXabs': TranslateXabs,
     'TranslateYabs': TranslateYabs,
     'TranslateXthr': TranslateXBBoxSafe,
-    'TranslateYthr': TranslateYBboxSafe
+    'TranslateYthr': TranslateYBboxSafe,
+    'CutoutBboxSafe': CutoutBboxSafe
 }
 
 aug_sel = [
     'AutoContrast', 'Equalize', 'Rotate', 'Posterize', 'Color', 'Contrast',
     'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs',
-    'TranslateYabs', 'Cutout', 'TranslateX', 'TranslateY', 'TranslateXthr', 'TranslateYthr'
+    'TranslateYabs', 'Cutout', 'TranslateX', 'TranslateY', 'TranslateXthr', 'TranslateYthr', 'CutoutBboxSafe'
 ]
+
 
 def augment_list(aug_ls=None):  # 16 oeprations and their ranges
 
@@ -349,7 +400,11 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
             # (TranslateXBBoxSave, 0., 1),
             # (TranslateYBboxSave, 0., 1)
             # (CutoutAbs, 0, 40)
-            (CutoutBboxSafe, 0, 100)
+            # (CutoutBboxSafe, 0, 100)
+            (ShearXBboxSafe, 0., 0.3),
+            (ShearYBboxSafe, 0., 0.3)
+            # (ShearX, 0., 0.3),
+            # (ShearY, 0., 0.3)
         ]
     else:
         ls = []

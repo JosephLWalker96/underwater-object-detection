@@ -41,7 +41,7 @@ def RandAug(image, bboxes, labels, augment_list):
     if p > 0.7:
         while True:
             need_rerun = False
-            n, m = np.random.randint(low=1, high=4, size=1)[0], np.random.randint(low=0, high=30, size=1)[0]
+            n, m = np.random.randint(low=1, high=min(4, len(augment_list)), size=1)[0], np.random.randint(low=0, high=30, size=1)[0]
             randAug = RandAugment(n, m, augment_list)
             t_img, t_boxes = randAug(Image.fromarray(copy.deepcopy(img)), copy.deepcopy(boxes))
             t_img = np.array(t_img)

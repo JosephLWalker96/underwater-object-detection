@@ -150,7 +150,7 @@ def run(args):
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
         name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         # name_ls = ["HUA", "MOO", "RAI", "TAH"]
-        # name_ls = ["PAL"]
+        # name_ls = ["RAI", "TAH", "TTR", "LL", "PAL"]
         for loc in name_ls:
             path_to_dir = os.path.join(args.path_to_dataset, args.exp_num)
             path_to_dir = os.path.join(path_to_dir, loc)
