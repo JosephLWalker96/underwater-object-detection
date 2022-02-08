@@ -162,12 +162,17 @@ class StatsCollector:
         return self.mAP
 
     def clear_mAP(self):
+        self.mAP = 0
+        self.mAP_ready = False
+        self.recall_precision = {0: dict(), 1: dict(), 2: dict()}  # recall -> precision
         self.confidences = {0: [], 1: [], 2: []}
         self.tp = {0: [], 1: [], 2: []}
         self.fp = {0: [], 1: [], 2: []}
         self.GTBox = {0: 0, 1: 0, 2: 0}
-        self.mAP = 0
-        self.mAP_ready = False
+        # total number of predictions
+        self.total = 0
+        self.total_SUIT = 0
+        self.total_target = 0
 
     def update_confusion_matrix(self, predicted_label, target_label):
         self.total += 1

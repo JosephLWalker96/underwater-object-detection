@@ -211,7 +211,10 @@ class train:
             itr = 1
             train_image_precisions = []
             train_loss_hist.reset()
-            self.train_dataset.__prepare_cm__()
+            self.model = best_model if epoch == 30 else self.model #after 30 epoches, run color-matcher
+            if epoch >= 30:
+                self.train_dataset.__prepare_cm__()
+                self.val_dataset.__prepare_cm__()
             print("training")
             with torch.enable_grad():
                 for images, targets, image_ids in tqdm(train_data_loader):
@@ -271,16 +274,16 @@ class train:
             val_score = np.mean(validation_image_precisions)
             val_loss = valid_loss_hist.value
             self.record_collector.append_new_train_record(epoch + 1, train_loss, train_score, val_loss, val_score)
+            val_mAP = self.record_collector.get_mAP()
 
             print(f"Epoch #{epoch + 1} Validation Loss: {val_loss}",
                   "Validation Predicted Mean Score: {0:.4f}".format(val_score),
-                  "Validation mAP score: {0:.4f}".format(self.record_collector.get_mAP()),
+                  "Validation mAP score: {0:.4f}".format(val_mAP),
                   "Time taken :",
                   str(datetime.timedelta(seconds=time.time() - start_time))[:7])
-            self.record_collector.clear_mAP()
             if not best_val:
                 # So any validation roc_auc we have is the best one for now
-                best_val = val_score
+                best_val = val_mAP
                 best_loss = val_loss
                 print("Saving model")
                 # Saving the model
@@ -288,9 +291,9 @@ class train:
                     torch.save(self.model, self.model_dir_path + "/" + self.model_filename)
                 best_model = copy.deepcopy(self.model)
                 # continue
-            elif val_score >= best_val:
+            elif val_mAP > best_val or (val_mAP==best_val and val_loss <= best_loss):
                 print("Saving model")
-                best_val = val_score
+                best_val = val_mAP
                 best_loss = val_loss
                 # Resetting patience since we have new best validation accuracy
                 patience = self.early_stop
@@ -301,11 +304,12 @@ class train:
                 patience -= 1
                 if patience == 0:
                     print('Early stopping.')
-                    print('Best Validation Predicted Mean Score: {:.3f}'.format(best_val))
-                    print('Best Validation Loss: {:.3f}'.format(best_loss))
                     break
+            self.record_collector.clear_mAP()
 
         self.record_collector.save_result(isTrain=True)
+        print("Saved Model's Validation Predicted mAP Score: {:.3f}".format(best_val))
+        print("Saved Model's Validation Loss: {:.3f}".format(best_loss))
 
         return best_model
 
@@ -361,7 +365,7 @@ def main(args):
     train_dataset = QRDatasets(args.path_to_dataset, train_df, transforms=train_tf, use_grayscale=args.use_grayscale,
                                augment_list=args.augment_list, test_df=test_df)
     val_dataset = QRDatasets(args.path_to_dataset, val_df, transforms=train_tf, use_grayscale=args.use_grayscale,
-                             augment_list=args.augment_list)
+                             augment_list=args.augment_list, test_df=test_df)
     train_datasets.append(train_dataset)
     val_datasets.append(val_dataset)
 

@@ -8,6 +8,7 @@ import pandas as pd
 from torch.utils.data import Dataset
 from RandAugment import RandAugment
 from PIL import Image
+import time
 
 
 class QRDatasets(Dataset):
@@ -38,6 +39,7 @@ class QRDatasets(Dataset):
 
 
     def __prepare_cm__(self):
+        st = time.time()
         if self.test_examples is not None and self.CM is not None:
             test_img_paths = np.random.choice(self.test_examples, 10)
             self.img_refs = []
@@ -46,6 +48,7 @@ class QRDatasets(Dataset):
                 test_img_path = os.path.join(self.dataset_dir, str(test_img_path))
                 img_ref = load_img_file(test_img_path)
                 self.img_refs.append(img_ref)
+#         print('preloading ref img takes %f'%(time.time()-st))
 
     # returning the size of the data set
     def __len__(self) -> int:
@@ -76,9 +79,13 @@ class QRDatasets(Dataset):
                     img_ref_idx = np.random.choice(np.arange(5), 1)[0]
                     img_ref = self.img_refs[img_ref_idx]
                     img_src = load_img_file(img_path)
+                    st = time.time()
                     img = self.CM.transfer(src=img_src, ref=img_ref, method='mkl')
+#                     print('transferring img takes %f'%(time.time()-st))
                     # normalize image intensity to 8-bit unsigned integer
+                    st = time.time()
                     img = Normalizer(img).uint8_norm()
+#                     print('normalizing img takes %f'%(time.time()-st))
                 except:
                     img = cv2.imread(img_path)
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
