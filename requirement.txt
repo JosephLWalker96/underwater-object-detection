@@ -15,3 +15,4 @@ jupyterlab-server==1.0.6
 jupyterlab-widgets==1.0.0
 torchvision==0.9.1
 ensemble_boxes==1.0.7
+color-matcher==0.5.0

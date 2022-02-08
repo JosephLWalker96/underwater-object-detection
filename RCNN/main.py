@@ -148,9 +148,11 @@ def run(args):
     dirs_to_labels = []
     yaml_name = args.yaml
     if args.exp_num == 'exp3' or args.exp_num == 'exp4':
-        name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
+        # name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR", "LL", "PAL"]
         # name_ls = ["HUA", "MOO", "RAI", "TAH"]
         # name_ls = ["RAI", "TAH", "TTR", "LL", "PAL"]
+        # name_ls = ['PAL', 'LL']
+        name_ls = ["HUA", "MOO", "RAI", "TAH", "TTR"]
         for loc in name_ls:
             path_to_dir = os.path.join(args.path_to_dataset, args.exp_num)
             path_to_dir = os.path.join(path_to_dir, loc)
@@ -259,6 +261,7 @@ if __name__ == "__main__":
     parser.add_argument('--test_batch_size', default=32, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
+    parser.add_argument('--use_color_matcher', default=False, action='store_true')
     args = parser.parse_args()
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     run(args)

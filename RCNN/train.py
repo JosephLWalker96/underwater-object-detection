@@ -211,6 +211,7 @@ class train:
             itr = 1
             train_image_precisions = []
             train_loss_hist.reset()
+            self.train_dataset.__prepare_cm__()
             print("training")
             with torch.enable_grad():
                 for images, targets, image_ids in tqdm(train_data_loader):
@@ -352,9 +353,13 @@ def main(args):
     print("loading " + path_to_images + "/train_qr_labels.csv")
     train_df = pd.read_csv(path_to_images + "/train_qr_labels.csv")
     val_df = pd.read_csv(path_to_images + "/val_qr_labels.csv")
+    test_df = None
+    if args.use_color_matcher:
+#         test_df = pd.read_csv(path_to_images + "/test_qr_label.csv")
+        test_df = pd.read_csv(path_to_images + "/test_qr_labels.csv")
     train_tf = get_train_val_transform(args.train_transform)
     train_dataset = QRDatasets(args.path_to_dataset, train_df, transforms=train_tf, use_grayscale=args.use_grayscale,
-                               augment_list=args.augment_list)
+                               augment_list=args.augment_list, test_df=test_df)
     val_dataset = QRDatasets(args.path_to_dataset, val_df, transforms=train_tf, use_grayscale=args.use_grayscale,
                              augment_list=args.augment_list)
     train_datasets.append(train_dataset)
@@ -401,6 +406,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
+    parser.add_argument('--use_color_matcher', default=False, action='store_true')
     parser.add_argument('--adam', default=False, action='store_true')
 
     parser.add_argument('--exp_num', default=None, type=str)

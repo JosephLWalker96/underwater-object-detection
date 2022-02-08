@@ -14,7 +14,7 @@ class QRDatasets(Dataset):
 
     # setting up member variable
     def __init__(self, dir_to_dataset: str, df: pd.DataFrame, use_grayscale: bool = False,
-                 transforms=None, isTrain:bool = True, augment_list:list = None):
+                 transforms=None, isTrain: bool = True, augment_list: list = None, test_df: pd.DataFrame = None):
         super().__init__()
 
         self.isTrain = isTrain
@@ -27,6 +27,25 @@ class QRDatasets(Dataset):
 
         # image name series from df
         self.img_name_ls = self.dataframe['Image'].unique()
+
+        # taking example from dataset to use color matcher as transform function
+        self.test_examples = None
+        self.CM = None
+        if test_df is not None:
+            from color_matcher import ColorMatcher
+            self.CM = ColorMatcher()
+            self.test_examples = test_df["img_path"].unique()
+
+
+    def __prepare_cm__(self):
+        if self.test_examples is not None and self.CM is not None:
+            test_img_paths = np.random.choice(self.test_examples, 10)
+            self.img_refs = []
+            for test_img_path in test_img_paths:
+                from color_matcher.io_handler import load_img_file
+                test_img_path = os.path.join(self.dataset_dir, str(test_img_path))
+                img_ref = load_img_file(test_img_path)
+                self.img_refs.append(img_ref)
 
     # returning the size of the data set
     def __len__(self) -> int:
@@ -47,10 +66,25 @@ class QRDatasets(Dataset):
 
                 # change it back to BGR format
                 img = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
+            if self.test_examples is not None and self.CM is not None and np.random.random(size=1)[0] > 0.5:
+                try:
+                    from color_matcher.io_handler import load_img_file
+                    from color_matcher.normalizer import Normalizer
+                    # test_img_path = np.random.choice(self.test_examples, 1)[0]
+                    # test_img_path = os.path.join(self.dataset_dir, str(test_img_path))
+                    # img_ref = load_img_file(test_img_path)
+                    img_ref_idx = np.random.choice(np.arange(5), 1)[0]
+                    img_ref = self.img_refs[img_ref_idx]
+                    img_src = load_img_file(img_path)
+                    img = self.CM.transfer(src=img_src, ref=img_ref, method='mkl')
+                    # normalize image intensity to 8-bit unsigned integer
+                    img = Normalizer(img).uint8_norm()
+                except:
+                    img = cv2.imread(img_path)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             else:
                 img = cv2.imread(img_path)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
 
         assert img is not None
         boxes = records[['x', 'y', 'w', 'h']].values
@@ -93,7 +127,7 @@ class QRDatasets(Dataset):
                 # 'image': np.array(img, dtype=np.float32)/255.0,
                 'bboxes': target['boxes'],
                 'labels': labels,
-                'augment_list': self.augment_list # this is for RandAug Transform
+                'augment_list': self.augment_list  # this is for RandAug Transform
             }
             sample = self.transforms(**sample)
             img = sample['image']
