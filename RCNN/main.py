@@ -129,9 +129,15 @@ def main(path_to_output, path_to_images, path_to_labels, model_path, model_name)
     model = None
     print(model_path + '/' + model_name)
     if os.path.exists(model_path + '/' + model_name):
-        print("loading model")
-        with open(model_path + '/' + model_name, 'rb') as f:
-            model = torch.load(model_path + '/' + model_name, map_location=device)
+        if not args.resume:
+            print("loading model")
+            with open(model_path + '/' + model_name, 'rb') as f:
+                model = torch.load(model_path + '/' + model_name, map_location=device)
+        else:
+            train.main(args)
+            print("loading model from " + model_path + '/' + model_name)
+            with open(model_path + '/' + model_name, 'rb') as f:
+                model = torch.load(model_path + '/' + model_name, map_location=device)
     else:
         print("model does not exist")
         print("training a new model")
@@ -189,6 +195,7 @@ if __name__ == "__main__":
     parser.add_argument('--exp_num', default='exp4', type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
+    parser.add_argument('--resume', default=False, action='store_true')
     parser.add_argument('--model', default='AutoContrast-faster-rcnn-no_es', type=str)
     parser.add_argument('--model_type', default='faster-rcnn', type=str)
     parser.add_argument('--yaml', default=None, type=str)

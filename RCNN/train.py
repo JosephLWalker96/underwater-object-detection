@@ -211,10 +211,8 @@ class train:
             itr = 1
             train_image_precisions = []
             train_loss_hist.reset()
-            self.model = best_model if epoch == 30 else self.model #after 30 epoches, run color-matcher
-            if epoch >= 30:
-                self.train_dataset.__prepare_cm__()
-                self.val_dataset.__prepare_cm__()
+            self.train_dataset.__prepare_cm__()
+            self.val_dataset.__prepare_cm__()
             print("training")
             with torch.enable_grad():
                 for images, targets, image_ids in tqdm(train_data_loader):
@@ -369,7 +367,9 @@ def main(args):
     train_datasets.append(train_dataset)
     val_datasets.append(val_dataset)
 
-    model = net(num_classes=3, nn_type=args.model_type, use_grayscale=args.use_grayscale)
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    model = torch.load(args.image_path + '/../models' + '/' + args.model, map_location=device) if args.resume \
+            else net(num_classes=3, nn_type=args.model_type, use_grayscale=args.use_grayscale)
     params = [p for p in model.parameters() if p.requires_grad]
 
     if args.adam:
@@ -412,6 +412,7 @@ if __name__ == "__main__":
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     parser.add_argument('--use_color_matcher', default=False, action='store_true')
     parser.add_argument('--adam', default=False, action='store_true')
+    parser.add_argument('--resume', default=False, action='store_true')
 
     parser.add_argument('--exp_num', default=None, type=str)
     parser.add_argument('--exp_env', default=None, type=str)
