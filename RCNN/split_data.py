@@ -32,16 +32,21 @@ def img2label_path(img_path):
 
 
 def read_txt(txt_path):
-    x, y, w, h = -1, -1, -1, -1
+    annots = []
     with open(txt_path, 'r') as f:
         #             print(txt_path)
-        annot = f.readlines()
-        # print(annot[0])
-        annot_p = rr = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", annot[0])
-        label, x, y, w, h = int(annot_p[0]), float(annot_p[1]), float(annot_p[2]), float(annot_p[3]), float(annot_p[4])
+        lines = f.readlines()
+        for line in lines:
+            annot_p = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", line)
+            label, x, y, w, h = \
+                int(annot_p[0])+2, float(annot_p[1]), float(annot_p[2]), float(annot_p[3]), float(annot_p[4])
+            annots.append((label, x, y, w, h))
+        f.close()
+    if annots.__len__() == 0:
+        annots.append((0, -1, -1, -1, -1))
 
     # label is 1 or 2: 1 is SUIT, 2 is target
-    return label + 2, x, y, w, h
+    return annots
 
 
 '''
@@ -236,11 +241,13 @@ def get_qr_df(path_to_dataset, path_to_images, path_to_bbox):
         suit_path = suit_dir + '/' + img_name + '.txt'
         target_path = target_dir + '/' + img_name + '.txt'
         if os.path.exists(suit_path):
-            label, x, y, w, h = read_txt(suit_path)
-            out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
+            annots = read_txt(suit_path)
+            for label, x, y, w, h in annots:
+                out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
         if os.path.exists(target_path):
-            label, x, y, w, h = read_txt(target_path)
-            out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
+            annots = read_txt(target_path)
+            for label, x, y, w, h in annots:
+                out_df = store_new_out_entry(label, x, y, w, h, row, out_df)
         if not (os.path.exists(suit_path) or os.path.exists(target_path)):
             # label 0 means no bbox available
             out_df = store_new_out_entry(0, -1, -1, -1, -1, row, out_df)
@@ -599,14 +606,15 @@ def save_to_path(df, path_to_dataset, path_to_bbox, path_to_save, csv_filename, 
                 with open(txt_w_path, 'a') as f:
                     if not os.path.exists(txt_r_path):
                         continue
-                    _, x, y, w, h = read_txt(txt_r_path)
-                    if x < 0:
-                        continue
-                    else:
-                        written_str = '%d %f %f %f %f \n' % (label, x, y, w, h)
-                        f.write(written_str)
-                        # f.truncate()
-                        is_modify = True
+                    annots = read_txt(txt_r_path)
+                    for _, x, y, w, h in annots:
+                        if x < 0:
+                            continue
+                        else:
+                            written_str = '%d %f %f %f %f \n' % (label, x, y, w, h)
+                            f.write(written_str)
+                            # f.truncate()
+                            is_modify = True
                     f.close()
             if not is_modify and os.path.exists(txt_w_path):
                 os.remove(txt_w_path)
@@ -619,6 +627,6 @@ if __name__ == '__main__':
     parser.add_argument('--train_ratio', default=0.8, type=float)
     # this one is for preparing yolov5 layout
     parser.add_argument('--yolov5', default=False, action='store_true')
-    parser.add_argument('--exp_num', default='exp4', type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
+    parser.add_argument('--exp_num', default=None, type=str, choices=['exp1', 'exp2', 'exp3', 'exp4'])
     args = parser.parse_args()
     run()
