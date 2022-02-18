@@ -101,7 +101,7 @@ def bbox_to_corners(bbox):
     y1 = bbox[1]
     x2 = bbox[0] + bbox[2]
     y2 = bbox[1] + bbox[3]
-    return np.array([x1, y1, x2, y1, x1, y2, x2, y2])
+    return np.array([x1, y1, x1, y2, x2, y1, x2, y2])
 
 def corners_to_bbox(corners, img):
     """
@@ -118,3 +118,40 @@ def corners_to_bbox(corners, img):
     width = min(w, max(corners[:,0])) - x1
     height = min(h, max(corners[:,1])) - y1
     return np.array([x1, y1, width, height])
+
+
+def get_transformation_matrix(width, height, distortion_scale):
+    """Get parameters for ``perspective`` for a random perspective transform.
+
+    Args:
+        width (int): width of the image.
+        height (int): height of the image.
+        distortion_scale (float): argument to control the degree of distortion and ranges from 0 to 1.
+
+    Returns:
+        List containing [top-left, top-right, bottom-right, bottom-left] of the original image,
+        List containing [top-left, top-right, bottom-right, bottom-left] of the transformed image.
+    """
+    half_height = height // 2
+    half_width = width // 2
+    topleft = [
+        int(np.random.randint(0, int(distortion_scale * half_width) + 1, size=(1,)).item()),
+        int(np.random.randint(0, int(distortion_scale * half_height) + 1, size=(1,)).item()),
+    ]
+    topright = [
+        int(np.random.randint(width - int(distortion_scale * half_width) - 1, width, size=(1,)).item()),
+        int(np.random.randint(0, int(distortion_scale * half_height) + 1, size=(1,)).item()),
+    ]
+    botright = [
+        int(np.random.randint(width - int(distortion_scale * half_width) - 1, width, size=(1,)).item()),
+        int(np.random.randint(height - int(distortion_scale * half_height) - 1, height, size=(1,)).item()),
+    ]
+    botleft = [
+        int(np.random.randint(0, int(distortion_scale * half_width) + 1, size=(1,)).item()),
+        int(np.random.randint(height - int(distortion_scale * half_height) - 1, height, size=(1,)).item()),
+    ]
+    startpoints = np.float32([[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]])
+    endpoints = np.float32([topleft, topright, botright, botleft])
+    # return startpoints, endpoints
+    M = cv2.getPerspectiveTransform(startpoints, endpoints)
+    return M

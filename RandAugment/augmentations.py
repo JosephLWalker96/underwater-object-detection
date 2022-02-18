@@ -15,6 +15,18 @@ import os
 import glob
 
 
+def Perspective(img, v, bbox): #[0, 1]
+    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    width, height = img.shape[1], img.shape[0]
+    M = get_transformation_matrix(width, height, v)
+    # print(np.array(img.im))
+    t_img = Image.fromarray(np.rint(cv2.warpPerspective(img, M, (width, height))).astype(np.uint8))
+    for i in range(len(bbox)):
+        corners = bbox_to_corners(bbox[i]).reshape(1, 4, 2).astype(np.float32)
+        updated_corners = np.rint(cv2.perspectiveTransform(corners, M)).reshape(4, 2)
+        bbox[i] = corners_to_bbox(updated_corners, t_img)
+    return t_img, bbox
+
 def ShearX(img, v, bbox):  # [-0.3, 0.3]
     assert -0.3 <= v <= 0.3
     if random.random() > 0.5:
@@ -392,19 +404,12 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
             # (Contrast, 0.1, 1.9),
             # (Brightness, 0.1, 1.9),
             # (Sharpness, 0.1, 1.9),
-            # (ShearX, 0., 0.3),
-            # (ShearY, 0., 0.3),
-            # (CutoutAbs, 0, 40),
-            # (TranslateXabs, 0., 100),
-            # (TranslateYabs, 0., 100),
-            # (TranslateXBBoxSave, 0., 1),
-            # (TranslateYBboxSave, 0., 1)
-            # (CutoutAbs, 0, 40)
-            # (CutoutBboxSafe, 0, 100)
+            (TranslateXBBoxSafe, 0., 1),
+            (TranslateYBboxSafe, 0., 1),
+            (CutoutBboxSafe, 0, 100),
             (ShearXBboxSafe, 0., 0.3),
-            (ShearYBboxSafe, 0., 0.3)
-            # (ShearX, 0., 0.3),
-            # (ShearY, 0., 0.3)
+            (ShearYBboxSafe, 0., 0.3),
+            (Perspective, 0, 1)
         ]
     else:
         ls = []
