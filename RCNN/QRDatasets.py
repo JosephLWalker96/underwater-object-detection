@@ -60,6 +60,7 @@ class QRDatasets(Dataset):
         records = self.dataframe.loc[self.dataframe['Image'] == img_name]
 
         img = None
+        domain_label = 0 # 0 for source domain (without color-matcher), otherwise 1
         for idx, record in records.iterrows():
             img_path = os.path.join(self.dataset_dir, str(record["img_path"]))
             if self.gray_scale:
@@ -80,12 +81,13 @@ class QRDatasets(Dataset):
                     img_ref = self.img_refs[img_ref_idx]
                     img_src = load_img_file(img_path)
                     st = time.time()
-                    img = self.CM.transfer(src=img_src, ref=img_ref, method='mkl')
+                    img = self.CM.transfer(src=img_src, ref=img_ref, method='hm-mvgd-hm')
 #                     print('transferring img takes %f'%(time.time()-st))
                     # normalize image intensity to 8-bit unsigned integer
                     st = time.time()
                     img = Normalizer(img).uint8_norm()
 #                     print('normalizing img takes %f'%(time.time()-st))
+                    domain_label = 1
                 except:
                     img = cv2.imread(img_path)
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -148,4 +150,4 @@ class QRDatasets(Dataset):
         img = img.to(torch.float32)
         img /= 255.0
 
-        return img, target, idx
+        return img, target, idx, domain_label

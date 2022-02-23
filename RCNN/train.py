@@ -17,6 +17,7 @@ import os
 import pandas as pd
 import split_data
 from tqdm import tqdm
+from uda_model import net as uda_net
 from model import net
 import argparse
 import cv2
@@ -215,14 +216,17 @@ class train:
             self.val_dataset.__prepare_cm__()
             print("training")
             with torch.enable_grad():
-                for images, targets, image_ids in tqdm(train_data_loader):
+                for images, targets, image_ids, domain_labels in tqdm(train_data_loader):
                     self.model.train()
                     images = list(image.to(self.device) for image in images)
 
                     targets = [
                         {k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
                         for t in targets]
-                    loss_dict = self.model(images, targets)
+                    if type(self.model) is net:
+                        loss_dict = self.model(images, targets)
+                    else:
+                        loss_dict = self.model(images, domain_labels, targets)
                     losses = sum(loss for loss in loss_dict.values())
                     loss_value = losses.item()
 
@@ -246,16 +250,20 @@ class train:
             print("validation")
             validation_image_precisions = []
             with torch.no_grad():
-                for images, targets, imageids in tqdm(valid_data_loader):  # return image, target, image_id
+                for images, targets, imageids, domain_labels in tqdm(valid_data_loader):  # return image, target, image_id
                     # model must be in train mode so that forward() would return losses
                     self.model.train()
                     images = list(image.to(self.device) for image in images)
                     targets = [
                         {k: v.to(self.device) if k == 'labels' else v.float().to(self.device) for k, v in t.items()}
                         for t in targets]
-                    loss_dict = self.model(images, targets)
+                    if type(self.model) is net:
+                        loss_dict = self.model(images, targets)
+                    else:
+                        loss_dict = self.model(images, domain_labels, targets)
                     losses = sum(loss for loss in loss_dict.values())
-                    loss_value = losses.item()
+                    loss_value = losses.item() if type(self.model) is net \
+                        else losses.item()-2*float(loss_dict['domain_loss'])
                     valid_loss_hist.send(loss_value)
 
                     self.model.eval()
@@ -350,6 +358,13 @@ def main(args):
         os.system('python split_data.py --dataset_path ' + args.dataset_path)
         # split_data.run(args)
 
+    if args.use_uda_layers:
+        try:
+            assert args.use_color_matcher
+        except:
+            print('use_color_matcher must be True if using args.use_color_matcher')
+            raise ValueError
+
     train_datasets = []
     val_datasets = []
     print("loading " + path_to_images + "/train_qr_labels.csv")
@@ -368,8 +383,12 @@ def main(args):
     val_datasets.append(val_dataset)
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    model = torch.load(args.image_path + '/../models' + '/' + args.model, map_location=device) if args.resume \
-            else net(num_classes=3, nn_type=args.model_type, use_grayscale=args.use_grayscale)
+    if args.resume:
+        model = torch.load(args.image_path + '/../models' + '/' + args.model, map_location=device)
+    elif args.use_uda_layers:
+        model = uda_net(num_classes=3, nn_type=args.model_type, use_grayscale=args.use_grayscale)
+    else:
+        model = net(num_classes=3, nn_type=args.model_type, use_grayscale=args.use_grayscale)
     params = [p for p in model.parameters() if p.requires_grad]
 
     if args.adam:
@@ -411,6 +430,7 @@ if __name__ == "__main__":
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     parser.add_argument('--use_color_matcher', default=False, action='store_true')
+    parser.add_argument('--use_uda_layers', default=False, action='store_true')
     parser.add_argument('--adam', default=False, action='store_true')
     parser.add_argument('--resume', default=False, action='store_true')
 

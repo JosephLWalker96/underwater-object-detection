@@ -62,7 +62,7 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
 
     iou_scores = []
     with torch.no_grad():
-        for images, targets, image_ids in tqdm(data_loader):
+        for images, targets, image_ids, _ in tqdm(data_loader):
             model.eval()
 
             images = list(image.to(device) for image in images)
@@ -192,7 +192,7 @@ def run(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path_to_dataset', default='../Complete_SUIT_Dataset', type=str)
-    parser.add_argument('--exp_num', default='exp4', type=str)
+    parser.add_argument('--exp_num', default=None, type=str)
     parser.add_argument('--exp_env', default=None, type=str)
 
     parser.add_argument('--resume', default=False, action='store_true')
@@ -269,6 +269,7 @@ if __name__ == "__main__":
     parser.add_argument('--valid_ratio', default=0.2, type=float)
     parser.add_argument('--use_grayscale', default=False, action='store_true')
     parser.add_argument('--use_color_matcher', default=False, action='store_true')
+    parser.add_argument('--use_uda_layers', default=False, action='store_true')
     args = parser.parse_args()
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     run(args)
