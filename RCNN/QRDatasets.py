@@ -82,6 +82,8 @@ class QRDatasets(Dataset):
                     img_src = load_img_file(img_path)
                     st = time.time()
                     img = self.CM.transfer(src=img_src, ref=img_ref, method='hm-mvgd-hm')
+                    # METHODS = ['default', 'hm', 'reinhard', 'mvgd', 'mkl', 'hm-mvgd-hm', 'hm-mkl-hm']
+                    # img = self.CM.transfer(src=img_src, ref=img_ref, method=np.random.choice(METHODS, 1)[0])
 #                     print('transferring img takes %f'%(time.time()-st))
                     # normalize image intensity to 8-bit unsigned integer
                     st = time.time()

@@ -34,6 +34,7 @@ class StatsCollector:
 
         # variable for mAP calculation\
         self.mAP = 0
+        self.ap_scores = {1:0, 2:0}
         self.mAP_ready = False
         self.recall_precision = {0: dict(), 1: dict(), 2: dict()}  # recall -> precision
         self.iou_threshold = iou_threshold
@@ -157,6 +158,7 @@ class StatsCollector:
                 ap += self.recall_precision[label][next] * (next - curr)
 
             self.mAP += ap
+            self.ap_scores[label] = ap
         self.mAP /= 2
         self.mAP_ready = True
         return self.mAP
@@ -169,6 +171,7 @@ class StatsCollector:
         self.tp = {0: [], 1: [], 2: []}
         self.fp = {0: [], 1: [], 2: []}
         self.GTBox = {0: 0, 1: 0, 2: 0}
+        self.ap_scores = {1: 0, 2: 0}
         # total number of predictions
         self.total = 0
         self.total_SUIT = 0
@@ -207,7 +210,7 @@ class StatsCollector:
     def append_new_train_record(self, epoch, train_loss, train_score, val_loss, val_score):
         if self.epoch_records is None:
             self.epoch_records = pd.DataFrame(
-                columns=['experiment number', 'experiment environment',
+                columns=['experiment number', 'experiment environment', 'SUIT AP', 'Target AP',
                          'epoch', 'train loss', 'train score', 'validation loss', 'validation score']
             )
         self.epoch_records = self.epoch_records.append({
@@ -218,20 +221,25 @@ class StatsCollector:
             'train iou': train_score,
             'validation loss': val_loss,
             'validation iou': val_score,
-            'validation mAP': self.get_mAP()
+            'validation mAP': self.get_mAP(),
+            'validation SUIT AP': float(self.ap_scores[1]),
+            'validation Target AP': float(self.ap_scores[2])
         }, ignore_index=True)
 
     def append_new_test_record(self, mean_iou_score):
         if self.test_records is None:
             self.test_records = pd.DataFrame(
-                columns=['experiment number', 'experiment environment', 'mean iou', 'mAP', 'interpolated mAP']
+                columns=['experiment number', 'experiment environment', 'mean iou',
+                         'SUIT AP', 'Target AP', 'mAP', 'interpolated mAP']
             )
         self.test_records = self.test_records.append({
             'experiment number': self.exp_num,
             'transform': self.transform_type,
             'experiment environment': self.exp_env,
             'mean iou': mean_iou_score,
-            'mAP': self.get_mAP()
+            'mAP': self.get_mAP(),
+            'SUIT AP': self.ap_scores[1],
+            'Target AP': self.ap_scores[2]
         }, ignore_index=True)
 
     def save_result(self, isTrain: bool = True):

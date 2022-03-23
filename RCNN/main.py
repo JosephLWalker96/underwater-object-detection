@@ -6,6 +6,8 @@ import numpy as np
 import cv2
 import os
 import torch
+
+import munit_model
 import yaml
 from torch.utils.data import DataLoader
 from stats import StatsCollector
@@ -64,6 +66,9 @@ def test(path_to_output, model, test_dataset, qr_df, exp_env=None):
     with torch.no_grad():
         for images, targets, image_ids, _ in tqdm(data_loader):
             model.eval()
+
+            if type(model) == munit_model.net:
+                model.prepare('test')
 
             images = list(image.to(device) for image in images)
             predictions = make_ensemble_predictions(images, device, [model])
