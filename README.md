@@ -1,4 +1,4 @@
-# Progressive Domain Adaptation for Object Detection
+# Progressive Domain Adaptation for Object Detection (from https://github.com/kevinhkhsu/DA_detection)
 Implementation of our paper **[Progressive Domain Adaptation for Object Detection](https://arxiv.org/pdf/1910.11319.pdf)**, based on [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md) and [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN).
 
 ## Paper
