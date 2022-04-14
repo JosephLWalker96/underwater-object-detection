@@ -1,20 +1,25 @@
 #!/bin/bash
 
 set -x
-set -e:w
+set -e
 
 export PYTHONUNBUFFERED="True"
 
 GPU_ID=$1
 ADAPT_MODE=$2
 NET=$3
+# PREV_ITERS=12122
+# PREV_ITERS=$4
+# PREV_ITERS=5510
+#PREV_ITERS=11950
+PREV_ITERS=11700
 
 array=( $@ )
 len=${#array[@]}
 EXTRA_ARGS=${array[@]:3:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
-case ${DATASET} in
+case ${ADAPT_MODE} in
   K2C)
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
     PREV_S="KITTI_train+KITTI_val"
@@ -44,7 +49,231 @@ case ${DATASET} in
     TRAIN_IMDB_T="bdd100k_daytrain"
     TEST_IMDB="bdd100k_dayval"
     STEPSIZE="[10000]"
-    ITERS=30000
+    ITERS=4000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL_CycleGAN)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUA_synthPALtrain+HUA_synthPALval"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="PAL_val"
+    STEPSIZE="[10000]"
+    ITERS=4000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthPAL_train+HUAsynthPAL_val"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="PAL_val"
+    STEPSIZE="[2755]"
+    ITERS=5510
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2LL_CycleGAN)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthLL_train+HUAsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    STEPSIZE="[10000]"
+    ITERS=4000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2LL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthLL_train+HUAsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    STEPSIZE="[2755]"
+    ITERS=5510
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2TAK_CycleGAN)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthTAK_train+HUAsynthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    STEPSIZE="[10000]"
+    ITERS=4000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2TAK_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthTAK_train+HUAsynthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    STEPSIZE="[2755]"
+    ITERS=5510
+    PREV_ITERS=5510
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2RAN_CycleGAN)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthRAN_train+HUAsynthRAN_val"
+    TRAIN_IMDB_T="RAN_train"
+    TEST_IMDB="RAN_val"
+    STEPSIZE="[10000]"
+    ITERS=4000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2RAN_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthRAN_train+HUAsynthRAN_val"
+    TRAIN_IMDB_T="RAN_train"
+    TEST_IMDB="RAN_val"
+    STEPSIZE="[2755]"
+    ITERS=5510
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL2021_CycleGAN)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthPAL2021_train+HUAsynthPAL2021_val"
+    TRAIN_IMDB_T="PAL2021_train"
+    TEST_IMDB="PAL2021_val"
+    STEPSIZE="[10000]"
+    ITERS=4000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL2021_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="HUA_train+HUA_val"
+    TRAIN_IMDB_S="HUAsynthPAL2021_train+HUAsynthPAL2021_val"
+    TRAIN_IMDB_T="PAL2021_train"
+    TEST_IMDB="PAL2021_val"
+    STEPSIZE="[2755]"
+    ITERS=5510
+    PREV_ITERS=7714
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+    
+  PAL2HUA_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL_val"
+    TRAIN_IMDB_S="PALsynthHUA_val"
+    TRAIN_IMDB_T="HUA_train"
+    TEST_IMDB="HUA_train+HUA_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2LL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL_val"
+    TRAIN_IMDB_S="PALsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2PAL2021_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL_val"
+    TRAIN_IMDB_S="PALsynthPAL2021_val"
+    TRAIN_IMDB_T="PAL2021_train"
+    TEST_IMDB="PAL2021_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2RAN_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL_val"
+    TRAIN_IMDB_S="PALsynthRAN_val"
+    TRAIN_IMDB_T="RAN_train"
+    TEST_IMDB="RAN_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2TAK_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL_val"
+    TRAIN_IMDB_S="PALsynthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+    
+  PAL20212HUA_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL2021_val"
+    TRAIN_IMDB_S="PAL2021synthHUA_val"
+    TRAIN_IMDB_T="HUA_train"
+    TEST_IMDB="HUA_train+HUA_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212LL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL2021_val"
+    TRAIN_IMDB_S="PAL2021synthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212PAL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL2021_val"
+    TRAIN_IMDB_S="PAL2021synthPAL_val"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="PAL_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212RAN_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL2021_val"
+    TRAIN_IMDB_S="PAL2021synthRAN_val"
+    TRAIN_IMDB_T="RAN_train"
+    TEST_IMDB="RAN_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212TAK_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="PAL2021_val"
+    TRAIN_IMDB_S="PAL2021synthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
@@ -68,8 +297,8 @@ set -x
 
 if [ ! -f ${NET_FINAL}.index ]; then
   if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
-    CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/trainval_net_adapt.py \
-      --weight output/${NET}/${PREV_S}/_adapt/${NET}_faster_rcnn_${ADAPT_MODE}_stage1_iter_70000.pth \
+    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/trainval_net_adapt.py \
+      --weight output/${NET}/${PREV_S}/_adapt/${NET}_faster_rcnn_${ADAPT_MODE}_stage1_iter_${PREV_ITERS}.pth \
       --imdb ${TRAIN_IMDB_S} \
       --imdbval ${TEST_IMDB} \
       --imdb_T ${TRAIN_IMDB_T} \
@@ -80,8 +309,8 @@ if [ ! -f ${NET_FINAL}.index ]; then
       --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} ADAPT_MODE ${ADAPT_MODE} \
       TRAIN.STEPSIZE ${STEPSIZE} TRAIN.SNAPSHOT_PREFIX ${SNAPSHOT_PREFIX} ${EXTRA_ARGS}
   else
-    CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/trainval_net_adapt.py \
-      --weight output/${NET}/${PREV_S}/_adapt/${NET}_faster_rcnn_${ADAPT_MODE}_stage1_iter_70000.pth \
+    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/trainval_net_adapt.py \
+      --weight output/${NET}/${PREV_S}/_adapt/${NET}_faster_rcnn_${ADAPT_MODE}_stage1_iter_${PREV_ITERS}.pth \
       --imdb ${TRAIN_IMDB_S} \
       --imdbval ${TEST_IMDB} \
       --imdb_T ${TRAIN_IMDB_T} \

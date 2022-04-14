@@ -79,6 +79,62 @@ case ${DATASET} in
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
+  HUA)
+    TRAIN_IMDB='HUA_train'
+    TEST_IMDB='HUA_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL)
+    TRAIN_IMDB='PAL_train'
+    TEST_IMDB='PAL_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK)
+    TRAIN_IMDB='TAK_train'
+    TEST_IMDB='TAK_val'
+    STEPSIZE="[5000]"
+    ITERS=35000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAH)
+    TRAIN_IMDB='TAH_train'
+    TEST_IMDB='TAH_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  MOO)
+    TRAIN_IMDB='MOO_train'
+    TEST_IMDB='MOO_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUAsynthPAL)
+    TRAIN_IMDB='HUAsynthPAL_train+HUAsynthPAL_val'
+    TEST_IMDB='PAL_val'
+    STEPSIZE="[50000]"
+    ITERS=70000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
   *)
     echo "No dataset given"
     exit
@@ -99,7 +155,7 @@ set -x
 
 if [ ! -f ${NET_FINAL}.index ]; then
   if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
-    CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/trainval_net.py \
+    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/trainval_net.py \
       --weight data/imagenet_weights/${NET}.pth \
       --imdb ${TRAIN_IMDB} \
       --imdbval ${TEST_IMDB} \
@@ -110,7 +166,7 @@ if [ ! -f ${NET_FINAL}.index ]; then
       --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} \
       TRAIN.STEPSIZE ${STEPSIZE} ${EXTRA_ARGS}
   else
-    CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/trainval_net.py \
+    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/trainval_net.py \
       --weight data/imagenet_weights/${NET}.pth \
       --imdb ${TRAIN_IMDB} \
       --imdbval ${TEST_IMDB} \

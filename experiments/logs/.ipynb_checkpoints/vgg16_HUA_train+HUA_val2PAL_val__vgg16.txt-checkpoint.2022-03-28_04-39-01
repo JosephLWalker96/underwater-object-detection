@@ -1,0 +1,140 @@
++ echo Logging output to experiments/logs/vgg16_HUA_train+HUA_val2PAL_val__vgg16.txt.2022-03-28_04-39-01
+Logging output to experiments/logs/vgg16_HUA_train+HUA_val2PAL_val__vgg16.txt.2022-03-28_04-39-01
++ set +x
++ '[' '!' -f output/vgg16/HUA_train+HUA_val/adapt/vgg16_faster_rcnn_iter_55100.pth.index ']'
++ [[ ! -z '' ]]
++ CUDA_VISIBLE_DEVICES=0
++ python ./tools/trainval_net_adapt.py --weight trained_weights/pretrained_detector/vgg16_faster_rcnn_HUA_pretrained.pth --imdb HUA_train+HUA_val --imdbval PAL_val --imdb_T PAL_val --iters 55100 --cfg experiments/cfgs/vgg16_HUA2PAL_direct.yml --tag _adapt --net vgg16 --set ANCHOR_SCALES '[4,8,16,32]' ANCHOR_RATIOS '[0.5,1,2]' TRAIN.STEPSIZE '[11020]' TRAIN.SNAPSHOT_PREFIX vgg16_faster_rcnn_HUA2PAL_direct_stage1
+Called with args:
+Namespace(cfg_file='experiments/cfgs/vgg16_HUA2PAL_direct.yml', imdb_T_name='PAL_val', imdb_name='HUA_train+HUA_val', imdbval_name='PAL_val', max_iters=55100, net='vgg16', set_cfgs=['ANCHOR_SCALES', '[4,8,16,32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'TRAIN.STEPSIZE', '[11020]', 'TRAIN.SNAPSHOT_PREFIX', 'vgg16_faster_rcnn_HUA2PAL_direct_stage1'], tag='_adapt', weight='trained_weights/pretrained_detector/vgg16_faster_rcnn_HUA_pretrained.pth')
+Using config:
+{'ADAPT_LAMBDA': 0.1,
+ 'ADAPT_MODE': 'HUA2PAL',
+ 'ANCHOR_RATIOS': [0.5, 1, 2],
+ 'ANCHOR_SCALES': [4, 8, 16, 32],
+ 'DATA_DIR': '/mnt/DA_detection/data',
+ 'D_lr_mult': 1,
+ 'EXP_DIR': 'vgg16',
+ 'MATLAB': 'matlab',
+ 'MOBILENET': {'DEPTH_MULTIPLIER': 1.0,
+               'FIXED_LAYERS': 5,
+               'REGU_DEPTH': False,
+               'WEIGHT_DECAY': 4e-05},
+ 'PIXEL_MEANS': array([[[102.9801, 115.9465, 122.7717]]]),
+ 'POOLING_MODE': 'crop',
+ 'POOLING_SIZE': 7,
+ 'RESNET': {'FIXED_BLOCKS': 1, 'MAX_POOL': False},
+ 'RNG_SEED': 3,
+ 'ROOT_DIR': '/mnt/DA_detection',
+ 'RPN_CHANNELS': 512,
+ 'TEST': {'BBOX_REG': True,
+          'HAS_RPN': True,
+          'MAX_SIZE': 1000,
+          'MODE': 'nms',
+          'NMS': 0.3,
+          'PROPOSAL_METHOD': 'gt',
+          'RPN_NMS_THRESH': 0.7,
+          'RPN_POST_NMS_TOP_N': 300,
+          'RPN_PRE_NMS_TOP_N': 6000,
+          'RPN_TOP_N': 5000,
+          'SCALES': [500],
+          'SVM': False},
+ 'TRAIN': {'ASPECT_GROUPING': False,
+           'BATCH_SIZE': 512,
+           'BBOX_INSIDE_WEIGHTS': [1.0, 1.0, 1.0, 1.0],
+           'BBOX_NORMALIZE_MEANS': [0.0, 0.0, 0.0, 0.0],
+           'BBOX_NORMALIZE_STDS': [0.1, 0.1, 0.2, 0.2],
+           'BBOX_NORMALIZE_TARGETS': True,
+           'BBOX_NORMALIZE_TARGETS_PRECOMPUTED': True,
+           'BBOX_REG': True,
+           'BBOX_THRESH': 0.5,
+           'BG_THRESH_HI': 0.5,
+           'BG_THRESH_LO': 0.0,
+           'BIAS_DECAY': False,
+           'DISPLAY': 551,
+           'DOUBLE_BIAS': True,
+           'FG_FRACTION': 0.25,
+           'FG_THRESH': 0.5,
+           'GAMMA': 0.1,
+           'HAS_RPN': True,
+           'IMS_PER_BATCH': 1,
+           'LEARNING_RATE': 1e-05,
+           'MAX_SIZE': 1000,
+           'MOMENTUM': 0.9,
+           'PROPOSAL_METHOD': 'gt',
+           'RPN_BATCHSIZE': 256,
+           'RPN_BBOX_INSIDE_WEIGHTS': [1.0, 1.0, 1.0, 1.0],
+           'RPN_CLOBBER_POSITIVES': False,
+           'RPN_FG_FRACTION': 0.5,
+           'RPN_NEGATIVE_OVERLAP': 0.3,
+           'RPN_NMS_THRESH': 0.7,
+           'RPN_POSITIVE_OVERLAP': 0.7,
+           'RPN_POSITIVE_WEIGHT': -1.0,
+           'RPN_POST_NMS_TOP_N': 2000,
+           'RPN_PRE_NMS_TOP_N': 12000,
+           'SCALES': [500],
+           'SNAPSHOT_ITERS': 5510,
+           'SNAPSHOT_KEPT': 10,
+           'SNAPSHOT_PREFIX': 'vgg16_faster_rcnn_HUA2PAL_direct_stage1',
+           'STEPSIZE': [11020],
+           'SUMMARY_INTERVAL': 180,
+           'TRUNCATED': False,
+           'USE_ALL_GT': True,
+           'USE_FLIPPED': True,
+           'USE_GT': False,
+           'WEIGHT_DECAY': 0.0005},
+ 'USE_GPU_NMS': True}
+Loaded dataset `HUA_train` for training
+Set proposal method: gt
+Appending horizontally-flipped training examples...
+flipping gts: 426
+HUA_train gt roidb loaded from /mnt/DA_detection/data/cache/HUA_train_gt_roidb.pkl
+done
+Preparing training data...
+  0%|                                                                                                                      | 0/852 [00:00<?, ?it/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 852/852 [00:00<00:00, 14032.12it/s]
+done
+Loaded dataset `HUA_val` for training
+Set proposal method: gt
+Appending horizontally-flipped training examples...
+flipping gts: 125
+HUA_val gt roidb loaded from /mnt/DA_detection/data/cache/HUA_val_gt_roidb.pkl
+done
+Preparing training data...
+  0%|                                                                                                                      | 0/250 [00:00<?, ?it/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 250/250 [00:00<00:00, 16300.46it/s]
+done
+1102 roidb entries
+Loaded dataset `PAL_val` for training
+Set proposal method: gt
+Appending horizontally-flipped training examples...
+flipping gts: 239
+PAL_val gt roidb loaded from /mnt/DA_detection/data/cache/PAL_val_gt_roidb.pkl
+done
+Preparing training data...
+  0%|                                                                                                                      | 0/478 [00:00<?, ?it/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 478/478 [00:00<00:00, 15090.26it/s]
+done
+478 roidbT entries
+Output will be saved to `/mnt/DA_detection/output/vgg16/HUA_train+HUA_val/_adapt`
+TensorFlow summaries will be saved to `/mnt/DA_detection/tensorboard/vgg16/HUA_train+HUA_val/_adapt`
+Loaded dataset `PAL_val` for training
+Set proposal method: gt
+Preparing training data...
+PAL_val gt roidb loaded from /mnt/DA_detection/data/cache/PAL_val_gt_roidb.pkl
+  0%|                                                                                                                      | 0/239 [00:00<?, ?it/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 239/239 [00:00<00:00, 11712.51it/s]
+done
+239 validation roidb entries
+Filtered 0 roidb entries: 1102 -> 1102
+Filtered 0 roidb entries: 239 -> 239
+Filtered 0 roidb entries: 478 -> 478
+Solving...
+Loading initial model weights from trained_weights/pretrained_detector/vgg16_faster_rcnn_HUA_pretrained.pth
+Loaded.
+/mnt/DA_detection/tools/../lib/nets/network.py:835: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  rpn_loss_cls, rpn_loss_box, loss_cls, loss_box, loss = self._losses["rpn_cross_entropy"].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:836: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['rpn_loss_box'].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:837: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['cross_entropy'].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:838: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['loss_box'].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:839: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['total_loss'].data[0]

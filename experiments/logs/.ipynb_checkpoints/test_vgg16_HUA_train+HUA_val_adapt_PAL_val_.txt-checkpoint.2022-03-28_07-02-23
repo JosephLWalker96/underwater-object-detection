@@ -1,0 +1,342 @@
++ echo Logging output to experiments/logs/test_vgg16_HUA_train+HUA_val_adapt_PAL_val_.txt.2022-03-28_07-02-23
+Logging output to experiments/logs/test_vgg16_HUA_train+HUA_val_adapt_PAL_val_.txt.2022-03-28_07-02-23
++ set +x
+Called with args:
+Namespace(cfg_file='experiments/cfgs/vgg16_HUA2PAL_direct.yml', comp_mode=False, imdb_name='PAL_val', max_per_image=100, model='output/vgg16/HUA_train+HUA_val/_adapt/vgg16_faster_rcnn_HUA2PAL_direct_stage1_iter_2755.pth', net='vgg16', set_cfgs=['ANCHOR_SCALES', '[4,8,16,32]', 'ANCHOR_RATIOS', '[0.5,1,2]'], tag='_adapt')
+Using config:
+{'ADAPT_LAMBDA': 0.1,
+ 'ADAPT_MODE': 'HUA2PAL',
+ 'ANCHOR_RATIOS': [0.5, 1, 2],
+ 'ANCHOR_SCALES': [4, 8, 16, 32],
+ 'DATA_DIR': '/mnt/DA_detection/data',
+ 'D_lr_mult': 1,
+ 'EXP_DIR': 'vgg16',
+ 'MATLAB': 'matlab',
+ 'MOBILENET': {'DEPTH_MULTIPLIER': 1.0,
+               'FIXED_LAYERS': 5,
+               'REGU_DEPTH': False,
+               'WEIGHT_DECAY': 4e-05},
+ 'PIXEL_MEANS': array([[[102.9801, 115.9465, 122.7717]]]),
+ 'POOLING_MODE': 'crop',
+ 'POOLING_SIZE': 7,
+ 'RESNET': {'FIXED_BLOCKS': 1, 'MAX_POOL': False},
+ 'RNG_SEED': 3,
+ 'ROOT_DIR': '/mnt/DA_detection',
+ 'RPN_CHANNELS': 512,
+ 'TEST': {'BBOX_REG': True,
+          'HAS_RPN': True,
+          'MAX_SIZE': 1000,
+          'MODE': 'nms',
+          'NMS': 0.3,
+          'PROPOSAL_METHOD': 'gt',
+          'RPN_NMS_THRESH': 0.7,
+          'RPN_POST_NMS_TOP_N': 300,
+          'RPN_PRE_NMS_TOP_N': 6000,
+          'RPN_TOP_N': 5000,
+          'SCALES': [500],
+          'SVM': False},
+ 'TRAIN': {'ASPECT_GROUPING': False,
+           'BATCH_SIZE': 512,
+           'BBOX_INSIDE_WEIGHTS': [1.0, 1.0, 1.0, 1.0],
+           'BBOX_NORMALIZE_MEANS': [0.0, 0.0, 0.0, 0.0],
+           'BBOX_NORMALIZE_STDS': [0.1, 0.1, 0.2, 0.2],
+           'BBOX_NORMALIZE_TARGETS': True,
+           'BBOX_NORMALIZE_TARGETS_PRECOMPUTED': True,
+           'BBOX_REG': True,
+           'BBOX_THRESH': 0.5,
+           'BG_THRESH_HI': 0.5,
+           'BG_THRESH_LO': 0.0,
+           'BIAS_DECAY': False,
+           'DISPLAY': 551,
+           'DOUBLE_BIAS': True,
+           'FG_FRACTION': 0.25,
+           'FG_THRESH': 0.5,
+           'GAMMA': 0.1,
+           'HAS_RPN': True,
+           'IMS_PER_BATCH': 1,
+           'LEARNING_RATE': 0.001,
+           'MAX_SIZE': 1000,
+           'MOMENTUM': 0.9,
+           'PROPOSAL_METHOD': 'gt',
+           'RPN_BATCHSIZE': 256,
+           'RPN_BBOX_INSIDE_WEIGHTS': [1.0, 1.0, 1.0, 1.0],
+           'RPN_CLOBBER_POSITIVES': False,
+           'RPN_FG_FRACTION': 0.5,
+           'RPN_NEGATIVE_OVERLAP': 0.3,
+           'RPN_NMS_THRESH': 0.7,
+           'RPN_POSITIVE_OVERLAP': 0.7,
+           'RPN_POSITIVE_WEIGHT': -1.0,
+           'RPN_POST_NMS_TOP_N': 2000,
+           'RPN_PRE_NMS_TOP_N': 12000,
+           'SCALES': [500],
+           'SNAPSHOT_ITERS': 2755,
+           'SNAPSHOT_KEPT': 10,
+           'SNAPSHOT_PREFIX': 'vgg16_faster_rcnn',
+           'STEPSIZE': [30000],
+           'SUMMARY_INTERVAL': 180,
+           'TRUNCATED': False,
+           'USE_ALL_GT': True,
+           'USE_FLIPPED': True,
+           'USE_GT': False,
+           'WEIGHT_DECAY': 0.0005},
+ 'USE_GPU_NMS': True}
+Loading model check point from output/vgg16/HUA_train+HUA_val/_adapt/vgg16_faster_rcnn_HUA2PAL_direct_stage1_iter_2755.pth
+Loaded.
+/mnt/DA_detection/tools/../lib/nets/network.py:730: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  self._image = Variable(torch.from_numpy(image.transpose([0,3,1,2])).cuda(), volatile=mode == 'TEST')
+im_detect: 1/239 0.125s 0.002s
+im_detect: 2/239 0.105s 0.001s
+im_detect: 3/239 0.096s 0.001s
+im_detect: 4/239 0.091s 0.001s
+im_detect: 5/239 0.088s 0.001s
+im_detect: 6/239 0.087s 0.001s
+im_detect: 7/239 0.085s 0.001s
+im_detect: 8/239 0.083s 0.001s
+im_detect: 9/239 0.082s 0.001s
+im_detect: 10/239 0.081s 0.001s
+im_detect: 11/239 0.081s 0.001s
+im_detect: 12/239 0.080s 0.001s
+im_detect: 13/239 0.079s 0.001s
+im_detect: 14/239 0.079s 0.001s
+im_detect: 15/239 0.079s 0.001s
+im_detect: 16/239 0.078s 0.001s
+im_detect: 17/239 0.078s 0.001s
+im_detect: 18/239 0.078s 0.001s
+im_detect: 19/239 0.079s 0.001s
+im_detect: 20/239 0.079s 0.001s
+im_detect: 21/239 0.079s 0.001s
+im_detect: 22/239 0.079s 0.001s
+im_detect: 23/239 0.080s 0.001s
+im_detect: 24/239 0.080s 0.001s
+im_detect: 25/239 0.080s 0.001s
+im_detect: 26/239 0.080s 0.001s
+im_detect: 27/239 0.080s 0.001s
+im_detect: 28/239 0.080s 0.001s
+im_detect: 29/239 0.080s 0.001s
+im_detect: 30/239 0.080s 0.001s
+im_detect: 31/239 0.080s 0.001s
+im_detect: 32/239 0.080s 0.001s
+im_detect: 33/239 0.080s 0.001s
+im_detect: 34/239 0.080s 0.001s
+im_detect: 35/239 0.080s 0.001s
+im_detect: 36/239 0.080s 0.001s
+im_detect: 37/239 0.080s 0.001s
+im_detect: 38/239 0.080s 0.001s
+im_detect: 39/239 0.080s 0.001s
+im_detect: 40/239 0.080s 0.001s
+im_detect: 41/239 0.080s 0.001s
+im_detect: 42/239 0.080s 0.001s
+im_detect: 43/239 0.079s 0.001s
+im_detect: 44/239 0.080s 0.001s
+im_detect: 45/239 0.079s 0.001s
+im_detect: 46/239 0.079s 0.001s
+im_detect: 47/239 0.079s 0.001s
+im_detect: 48/239 0.079s 0.001s
+im_detect: 49/239 0.079s 0.001s
+im_detect: 50/239 0.079s 0.001s
+im_detect: 51/239 0.079s 0.001s
+im_detect: 52/239 0.079s 0.001s
+im_detect: 53/239 0.079s 0.001s
+im_detect: 54/239 0.079s 0.001s
+im_detect: 55/239 0.079s 0.001s
+im_detect: 56/239 0.079s 0.001s
+im_detect: 57/239 0.079s 0.001s
+im_detect: 58/239 0.079s 0.001s
+im_detect: 59/239 0.079s 0.001s
+im_detect: 60/239 0.079s 0.001s
+im_detect: 61/239 0.079s 0.001s
+im_detect: 62/239 0.079s 0.001s
+im_detect: 63/239 0.079s 0.001s
+im_detect: 64/239 0.079s 0.001s
+im_detect: 65/239 0.079s 0.001s
+im_detect: 66/239 0.079s 0.001s
+im_detect: 67/239 0.079s 0.001s
+im_detect: 68/239 0.079s 0.001s
+im_detect: 69/239 0.079s 0.001s
+im_detect: 70/239 0.078s 0.001s
+im_detect: 71/239 0.078s 0.001s
+im_detect: 72/239 0.078s 0.001s
+im_detect: 73/239 0.078s 0.001s
+im_detect: 74/239 0.078s 0.001s
+im_detect: 75/239 0.078s 0.001s
+im_detect: 76/239 0.078s 0.001s
+im_detect: 77/239 0.078s 0.001s
+im_detect: 78/239 0.078s 0.001s
+im_detect: 79/239 0.078s 0.001s
+im_detect: 80/239 0.078s 0.001s
+im_detect: 81/239 0.078s 0.001s
+im_detect: 82/239 0.078s 0.001s
+im_detect: 83/239 0.078s 0.001s
+im_detect: 84/239 0.078s 0.001s
+im_detect: 85/239 0.078s 0.001s
+im_detect: 86/239 0.078s 0.001s
+im_detect: 87/239 0.078s 0.001s
+im_detect: 88/239 0.078s 0.001s
+im_detect: 89/239 0.078s 0.001s
+im_detect: 90/239 0.078s 0.001s
+im_detect: 91/239 0.078s 0.001s
+im_detect: 92/239 0.078s 0.001s
+im_detect: 93/239 0.078s 0.001s
+im_detect: 94/239 0.078s 0.001s
+im_detect: 95/239 0.078s 0.001s
+im_detect: 96/239 0.078s 0.001s
+im_detect: 97/239 0.078s 0.001s
+im_detect: 98/239 0.078s 0.001s
+im_detect: 99/239 0.078s 0.001s
+im_detect: 100/239 0.078s 0.001s
+im_detect: 101/239 0.079s 0.001s
+im_detect: 102/239 0.079s 0.001s
+im_detect: 103/239 0.079s 0.001s
+im_detect: 104/239 0.079s 0.001s
+im_detect: 105/239 0.079s 0.001s
+im_detect: 106/239 0.079s 0.001s
+im_detect: 107/239 0.079s 0.001s
+im_detect: 108/239 0.079s 0.001s
+im_detect: 109/239 0.079s 0.001s
+im_detect: 110/239 0.079s 0.001s
+im_detect: 111/239 0.079s 0.001s
+im_detect: 112/239 0.079s 0.001s
+im_detect: 113/239 0.079s 0.001s
+im_detect: 114/239 0.079s 0.001s
+im_detect: 115/239 0.079s 0.001s
+im_detect: 116/239 0.079s 0.001s
+im_detect: 117/239 0.079s 0.001s
+im_detect: 118/239 0.079s 0.001s
+im_detect: 119/239 0.079s 0.001s
+im_detect: 120/239 0.079s 0.001s
+im_detect: 121/239 0.079s 0.001s
+im_detect: 122/239 0.079s 0.001s
+im_detect: 123/239 0.079s 0.001s
+im_detect: 124/239 0.079s 0.001s
+im_detect: 125/239 0.079s 0.001s
+im_detect: 126/239 0.079s 0.001s
+im_detect: 127/239 0.079s 0.001s
+im_detect: 128/239 0.079s 0.001s
+im_detect: 129/239 0.078s 0.001s
+im_detect: 130/239 0.078s 0.001s
+im_detect: 131/239 0.078s 0.001s
+im_detect: 132/239 0.078s 0.001s
+im_detect: 133/239 0.078s 0.001s
+im_detect: 134/239 0.078s 0.001s
+im_detect: 135/239 0.078s 0.001s
+im_detect: 136/239 0.078s 0.001s
+im_detect: 137/239 0.078s 0.001s
+im_detect: 138/239 0.078s 0.001s
+im_detect: 139/239 0.078s 0.001s
+im_detect: 140/239 0.078s 0.001s
+im_detect: 141/239 0.078s 0.001s
+im_detect: 142/239 0.078s 0.001s
+im_detect: 143/239 0.078s 0.001s
+im_detect: 144/239 0.078s 0.001s
+im_detect: 145/239 0.078s 0.001s
+im_detect: 146/239 0.078s 0.001s
+im_detect: 147/239 0.078s 0.001s
+im_detect: 148/239 0.078s 0.001s
+im_detect: 149/239 0.078s 0.001s
+im_detect: 150/239 0.078s 0.001s
+im_detect: 151/239 0.078s 0.001s
+im_detect: 152/239 0.078s 0.001s
+im_detect: 153/239 0.078s 0.001s
+im_detect: 154/239 0.078s 0.001s
+im_detect: 155/239 0.078s 0.001s
+im_detect: 156/239 0.078s 0.001s
+im_detect: 157/239 0.078s 0.001s
+im_detect: 158/239 0.078s 0.001s
+im_detect: 159/239 0.078s 0.001s
+im_detect: 160/239 0.078s 0.001s
+im_detect: 161/239 0.078s 0.001s
+im_detect: 162/239 0.078s 0.001s
+im_detect: 163/239 0.078s 0.001s
+im_detect: 164/239 0.078s 0.001s
+im_detect: 165/239 0.078s 0.001s
+im_detect: 166/239 0.078s 0.001s
+im_detect: 167/239 0.078s 0.001s
+im_detect: 168/239 0.078s 0.001s
+im_detect: 169/239 0.078s 0.001s
+im_detect: 170/239 0.078s 0.001s
+im_detect: 171/239 0.078s 0.001s
+im_detect: 172/239 0.078s 0.001s
+im_detect: 173/239 0.077s 0.001s
+im_detect: 174/239 0.077s 0.001s
+im_detect: 175/239 0.077s 0.001s
+im_detect: 176/239 0.077s 0.001s
+im_detect: 177/239 0.077s 0.001s
+im_detect: 178/239 0.077s 0.001s
+im_detect: 179/239 0.077s 0.001s
+im_detect: 180/239 0.077s 0.001s
+im_detect: 181/239 0.077s 0.001s
+im_detect: 182/239 0.077s 0.001s
+im_detect: 183/239 0.077s 0.001s
+im_detect: 184/239 0.077s 0.001s
+im_detect: 185/239 0.077s 0.001s
+im_detect: 186/239 0.077s 0.001s
+im_detect: 187/239 0.077s 0.001s
+im_detect: 188/239 0.077s 0.001s
+im_detect: 189/239 0.077s 0.001s
+im_detect: 190/239 0.077s 0.001s
+im_detect: 191/239 0.077s 0.001s
+im_detect: 192/239 0.077s 0.001s
+im_detect: 193/239 0.077s 0.001s
+im_detect: 194/239 0.077s 0.001s
+im_detect: 195/239 0.077s 0.001s
+im_detect: 196/239 0.077s 0.001s
+im_detect: 197/239 0.077s 0.001s
+im_detect: 198/239 0.077s 0.001s
+im_detect: 199/239 0.077s 0.001s
+im_detect: 200/239 0.077s 0.001s
+im_detect: 201/239 0.077s 0.001s
+im_detect: 202/239 0.077s 0.001s
+im_detect: 203/239 0.077s 0.001s
+im_detect: 204/239 0.077s 0.001s
+im_detect: 205/239 0.077s 0.001s
+im_detect: 206/239 0.077s 0.001s
+im_detect: 207/239 0.077s 0.001s
+im_detect: 208/239 0.077s 0.001s
+im_detect: 209/239 0.077s 0.001s
+im_detect: 210/239 0.077s 0.001s
+im_detect: 211/239 0.077s 0.001s
+im_detect: 212/239 0.077s 0.001s
+im_detect: 213/239 0.077s 0.001s
+im_detect: 214/239 0.077s 0.001s
+im_detect: 215/239 0.077s 0.001s
+im_detect: 216/239 0.077s 0.001s
+im_detect: 217/239 0.077s 0.001s
+im_detect: 218/239 0.077s 0.001s
+im_detect: 219/239 0.078s 0.001s
+im_detect: 220/239 0.078s 0.001s
+im_detect: 221/239 0.078s 0.001s
+im_detect: 222/239 0.078s 0.001s
+im_detect: 223/239 0.078s 0.001s
+im_detect: 224/239 0.078s 0.001s
+im_detect: 225/239 0.078s 0.001s
+im_detect: 226/239 0.078s 0.001s
+im_detect: 227/239 0.078s 0.001s
+im_detect: 228/239 0.078s 0.001s
+im_detect: 229/239 0.078s 0.001s
+im_detect: 230/239 0.078s 0.001s
+im_detect: 231/239 0.078s 0.001s
+im_detect: 232/239 0.078s 0.001s
+im_detect: 233/239 0.078s 0.001s
+im_detect: 234/239 0.078s 0.001s
+im_detect: 235/239 0.078s 0.001s
+im_detect: 236/239 0.078s 0.001s
+im_detect: 237/239 0.078s 0.001s
+im_detect: 238/239 0.078s 0.001s
+im_detect: 239/239 0.078s 0.001s
+Evaluating detections
+Writing SUIT VOC results file
+VOC07 metric? Yes
+AP for SUIT = 0.8129
+Mean AP = 0.8129
+~~~~~~~~
+Results:
+0.813
+0.813
+~~~~~~~~
+
+--------------------------------------------------------------
+Results computed with the **unofficial** Python eval code.
+Results should be very close to the official MATLAB eval code.
+Recompute with `./tools/reval.py --matlab ...` for your paper.
+-- Thanks, The Management
+--------------------------------------------------------------

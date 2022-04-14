@@ -1,0 +1,3533 @@
++ echo Logging output to experiments/logs/vgg16_HUA_train__vgg16.txt.2022-03-14_07-17-19
+Logging output to experiments/logs/vgg16_HUA_train__vgg16.txt.2022-03-14_07-17-19
++ set +x
++ '[' '!' -f output/vgg16/HUA_train/default/vgg16_faster_rcnn_iter_70000.pth.index ']'
++ [[ ! -z '' ]]
++ CUDA_VISIBLE_DEVICES=0
++ python ./tools/trainval_net.py --weight data/imagenet_weights/vgg16.pth --imdb HUA_train --imdbval HUA_val --iters 70000 --cfg experiments/cfgs/vgg16.yml --net vgg16 --set ANCHOR_SCALES '[4,8,16,32]' ANCHOR_RATIOS '[0.5,1,2]' TRAIN.STEPSIZE '[50000]'
+Called with args:
+Namespace(cfg_file='experiments/cfgs/vgg16.yml', imdb_name='HUA_train', imdbval_name='HUA_val', max_iters=70000, net='vgg16', set_cfgs=['ANCHOR_SCALES', '[4,8,16,32]', 'ANCHOR_RATIOS', '[0.5,1,2]', 'TRAIN.STEPSIZE', '[50000]'], tag=None, weight='data/imagenet_weights/vgg16.pth')
+Using config:
+{'ADAPT_LAMBDA': 0.1,
+ 'ADAPT_MODE': 'K2C',
+ 'ANCHOR_RATIOS': [0.5, 1, 2],
+ 'ANCHOR_SCALES': [4, 8, 16, 32],
+ 'DATA_DIR': '/mnt/DA_detection/data',
+ 'D_lr_mult': 1,
+ 'EXP_DIR': 'vgg16',
+ 'MATLAB': 'matlab',
+ 'MOBILENET': {'DEPTH_MULTIPLIER': 1.0,
+               'FIXED_LAYERS': 5,
+               'REGU_DEPTH': False,
+               'WEIGHT_DECAY': 4e-05},
+ 'PIXEL_MEANS': array([[[102.9801, 115.9465, 122.7717]]]),
+ 'POOLING_MODE': 'crop',
+ 'POOLING_SIZE': 7,
+ 'RESNET': {'FIXED_BLOCKS': 1, 'MAX_POOL': False},
+ 'RNG_SEED': 3,
+ 'ROOT_DIR': '/mnt/DA_detection',
+ 'RPN_CHANNELS': 512,
+ 'TEST': {'BBOX_REG': True,
+          'HAS_RPN': True,
+          'MAX_SIZE': 1000,
+          'MODE': 'nms',
+          'NMS': 0.3,
+          'PROPOSAL_METHOD': 'gt',
+          'RPN_NMS_THRESH': 0.7,
+          'RPN_POST_NMS_TOP_N': 300,
+          'RPN_PRE_NMS_TOP_N': 6000,
+          'RPN_TOP_N': 5000,
+          'SCALES': [500],
+          'SVM': False},
+ 'TRAIN': {'ASPECT_GROUPING': False,
+           'BATCH_SIZE': 256,
+           'BBOX_INSIDE_WEIGHTS': [1.0, 1.0, 1.0, 1.0],
+           'BBOX_NORMALIZE_MEANS': [0.0, 0.0, 0.0, 0.0],
+           'BBOX_NORMALIZE_STDS': [0.1, 0.1, 0.2, 0.2],
+           'BBOX_NORMALIZE_TARGETS': True,
+           'BBOX_NORMALIZE_TARGETS_PRECOMPUTED': True,
+           'BBOX_REG': True,
+           'BBOX_THRESH': 0.5,
+           'BG_THRESH_HI': 0.5,
+           'BG_THRESH_LO': 0.0,
+           'BIAS_DECAY': False,
+           'DISPLAY': 20,
+           'DOUBLE_BIAS': True,
+           'FG_FRACTION': 0.25,
+           'FG_THRESH': 0.5,
+           'GAMMA': 0.1,
+           'HAS_RPN': True,
+           'IMS_PER_BATCH': 1,
+           'LEARNING_RATE': 0.001,
+           'MAX_SIZE': 1000,
+           'MOMENTUM': 0.9,
+           'PROPOSAL_METHOD': 'gt',
+           'RPN_BATCHSIZE': 256,
+           'RPN_BBOX_INSIDE_WEIGHTS': [1.0, 1.0, 1.0, 1.0],
+           'RPN_CLOBBER_POSITIVES': False,
+           'RPN_FG_FRACTION': 0.5,
+           'RPN_NEGATIVE_OVERLAP': 0.3,
+           'RPN_NMS_THRESH': 0.7,
+           'RPN_POSITIVE_OVERLAP': 0.7,
+           'RPN_POSITIVE_WEIGHT': -1.0,
+           'RPN_POST_NMS_TOP_N': 2000,
+           'RPN_PRE_NMS_TOP_N': 12000,
+           'SCALES': [500],
+           'SNAPSHOT_ITERS': 10000,
+           'SNAPSHOT_KEPT': 10,
+           'SNAPSHOT_PREFIX': 'vgg16_faster_rcnn',
+           'STEPSIZE': [50000],
+           'SUMMARY_INTERVAL': 180,
+           'TRUNCATED': False,
+           'USE_ALL_GT': True,
+           'USE_FLIPPED': True,
+           'USE_GT': False,
+           'WEIGHT_DECAY': 0.0005},
+ 'USE_GPU_NMS': True}
+Num Classes: 3
+Loaded dataset `HUA_train` for training
+Set proposal method: gt
+Appending horizontally-flipped training examples...
+flipping gts: 371
+wrote gt roidb to /mnt/DA_detection/data/cache/HUA_train_gt_roidb.pkl
+done
+Preparing training data...
+  0%|                                                                                                                                          | 0/742 [00:00<?, ?it/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 742/742 [00:00<00:00, 19022.37it/s]
+done
+Num Classes: 3
+742 roidb entries
+Output will be saved to `/mnt/DA_detection/output/vgg16/HUA_train/default`
+TensorFlow summaries will be saved to `/mnt/DA_detection/tensorboard/vgg16/HUA_train/default`
+Num Classes: 3
+Loaded dataset `HUA_val` for training
+Set proposal method: gt
+Preparing training data...
+wrote gt roidb to /mnt/DA_detection/data/cache/HUA_val_gt_roidb.pkl
+  0%|                                                                                                                                          | 0/111 [00:00<?, ?it/s]100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 111/111 [00:00<00:00, 10262.48it/s]
+done
+Num Classes: 3
+111 validation roidb entries
+Filtered 0 roidb entries: 742 -> 742
+Filtered 0 roidb entries: 111 -> 111
+Solving...
+Loading initial model weights from data/imagenet_weights/vgg16.pth
+Loaded.
+/mnt/DA_detection/tools/../lib/nets/network.py:1044: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  rpn_loss_cls, rpn_loss_box, loss_cls, loss_box, loss = self._losses["rpn_cross_entropy"].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:1045: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['rpn_loss_box'].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:1046: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['cross_entropy'].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:1047: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['loss_box'].data[0], \
+/mnt/DA_detection/tools/../lib/nets/network.py:1048: UserWarning: invalid index of a 0-dim tensor. This will be an error in PyTorch 0.5. Use tensor.item() to convert a 0-dim tensor to a Python number
+  self._losses['total_loss'].data[0]
+iter: 20 / 70000, total loss: 0.105841
+ >>> rpn_loss_cls: 0.009824
+ >>> rpn_loss_box: 0.031439
+ >>> loss_cls: 0.058205
+ >>> loss_box: 0.006373
+ >>> lr: 0.001000
+speed: 0.238s / iter
+iter: 40 / 70000, total loss: 0.051393
+ >>> rpn_loss_cls: 0.001681
+ >>> rpn_loss_box: 0.023602
+ >>> loss_cls: 0.021563
+ >>> loss_box: 0.004546
+ >>> lr: 0.001000
+speed: 0.225s / iter
+iter: 60 / 70000, total loss: 0.037191
+ >>> rpn_loss_cls: 0.007466
+ >>> rpn_loss_box: 0.013615
+ >>> loss_cls: 0.012029
+ >>> loss_box: 0.004080
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 80 / 70000, total loss: 0.031338
+ >>> rpn_loss_cls: 0.001121
+ >>> rpn_loss_box: 0.011343
+ >>> loss_cls: 0.017892
+ >>> loss_box: 0.000982
+ >>> lr: 0.001000
+speed: 0.227s / iter
+iter: 100 / 70000, total loss: 0.028782
+ >>> rpn_loss_cls: 0.002665
+ >>> rpn_loss_box: 0.025680
+ >>> loss_cls: 0.000436
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.225s / iter
+iter: 120 / 70000, total loss: 0.017023
+ >>> rpn_loss_cls: 0.001032
+ >>> rpn_loss_box: 0.015976
+ >>> loss_cls: 0.000014
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 140 / 70000, total loss: 0.023557
+ >>> rpn_loss_cls: 0.000342
+ >>> rpn_loss_box: 0.008641
+ >>> loss_cls: 0.007532
+ >>> loss_box: 0.007041
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 160 / 70000, total loss: 0.053745
+ >>> rpn_loss_cls: 0.000536
+ >>> rpn_loss_box: 0.012264
+ >>> loss_cls: 0.021352
+ >>> loss_box: 0.019594
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 180 / 70000, total loss: 0.011601
+ >>> rpn_loss_cls: 0.000228
+ >>> rpn_loss_box: 0.011313
+ >>> loss_cls: 0.000060
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 200 / 70000, total loss: 0.025892
+ >>> rpn_loss_cls: 0.000092
+ >>> rpn_loss_box: 0.012100
+ >>> loss_cls: 0.009171
+ >>> loss_box: 0.004529
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 220 / 70000, total loss: 0.018405
+ >>> rpn_loss_cls: 0.000475
+ >>> rpn_loss_box: 0.017888
+ >>> loss_cls: 0.000042
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 240 / 70000, total loss: 0.055657
+ >>> rpn_loss_cls: 0.002234
+ >>> rpn_loss_box: 0.033353
+ >>> loss_cls: 0.013135
+ >>> loss_box: 0.006935
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 260 / 70000, total loss: 0.023340
+ >>> rpn_loss_cls: 0.001365
+ >>> rpn_loss_box: 0.013203
+ >>> loss_cls: 0.008772
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 280 / 70000, total loss: 0.020268
+ >>> rpn_loss_cls: 0.000353
+ >>> rpn_loss_box: 0.013679
+ >>> loss_cls: 0.005552
+ >>> loss_box: 0.000684
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 300 / 70000, total loss: 0.010997
+ >>> rpn_loss_cls: 0.000166
+ >>> rpn_loss_box: 0.010767
+ >>> loss_cls: 0.000064
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.220s / iter
+iter: 320 / 70000, total loss: 0.009751
+ >>> rpn_loss_cls: 0.000690
+ >>> rpn_loss_box: 0.008624
+ >>> loss_cls: 0.000438
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 340 / 70000, total loss: 0.005897
+ >>> rpn_loss_cls: 0.000262
+ >>> rpn_loss_box: 0.005606
+ >>> loss_cls: 0.000030
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 360 / 70000, total loss: 0.040074
+ >>> rpn_loss_cls: 0.000334
+ >>> rpn_loss_box: 0.021572
+ >>> loss_cls: 0.010997
+ >>> loss_box: 0.007171
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 380 / 70000, total loss: 0.049735
+ >>> rpn_loss_cls: 0.013463
+ >>> rpn_loss_box: 0.034622
+ >>> loss_cls: 0.001650
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.220s / iter
+iter: 400 / 70000, total loss: 0.081037
+ >>> rpn_loss_cls: 0.051659
+ >>> rpn_loss_box: 0.029373
+ >>> loss_cls: 0.000004
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 420 / 70000, total loss: 0.073940
+ >>> rpn_loss_cls: 0.014394
+ >>> rpn_loss_box: 0.012438
+ >>> loss_cls: 0.040796
+ >>> loss_box: 0.006312
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 440 / 70000, total loss: 0.049744
+ >>> rpn_loss_cls: 0.022985
+ >>> rpn_loss_box: 0.026746
+ >>> loss_cls: 0.000013
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 460 / 70000, total loss: 0.013124
+ >>> rpn_loss_cls: 0.005062
+ >>> rpn_loss_box: 0.008051
+ >>> loss_cls: 0.000010
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 480 / 70000, total loss: 0.010192
+ >>> rpn_loss_cls: 0.000800
+ >>> rpn_loss_box: 0.009377
+ >>> loss_cls: 0.000016
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 500 / 70000, total loss: 0.022057
+ >>> rpn_loss_cls: 0.010364
+ >>> rpn_loss_box: 0.011683
+ >>> loss_cls: 0.000010
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 520 / 70000, total loss: 0.011665
+ >>> rpn_loss_cls: 0.003131
+ >>> rpn_loss_box: 0.008520
+ >>> loss_cls: 0.000014
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 540 / 70000, total loss: 0.006895
+ >>> rpn_loss_cls: 0.000824
+ >>> rpn_loss_box: 0.006060
+ >>> loss_cls: 0.000012
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 560 / 70000, total loss: 0.058307
+ >>> rpn_loss_cls: 0.005125
+ >>> rpn_loss_box: 0.012106
+ >>> loss_cls: 0.035662
+ >>> loss_box: 0.005414
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 580 / 70000, total loss: 0.006028
+ >>> rpn_loss_cls: 0.002454
+ >>> rpn_loss_box: 0.003553
+ >>> loss_cls: 0.000021
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 600 / 70000, total loss: 0.020684
+ >>> rpn_loss_cls: 0.003045
+ >>> rpn_loss_box: 0.017614
+ >>> loss_cls: 0.000024
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 620 / 70000, total loss: 0.011728
+ >>> rpn_loss_cls: 0.001129
+ >>> rpn_loss_box: 0.010580
+ >>> loss_cls: 0.000020
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 640 / 70000, total loss: 0.014967
+ >>> rpn_loss_cls: 0.002666
+ >>> rpn_loss_box: 0.012290
+ >>> loss_cls: 0.000011
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 660 / 70000, total loss: 0.007722
+ >>> rpn_loss_cls: 0.000873
+ >>> rpn_loss_box: 0.006806
+ >>> loss_cls: 0.000042
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 680 / 70000, total loss: 0.011339
+ >>> rpn_loss_cls: 0.001057
+ >>> rpn_loss_box: 0.010239
+ >>> loss_cls: 0.000044
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 700 / 70000, total loss: 0.004467
+ >>> rpn_loss_cls: 0.001178
+ >>> rpn_loss_box: 0.003241
+ >>> loss_cls: 0.000048
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 720 / 70000, total loss: 0.013179
+ >>> rpn_loss_cls: 0.000870
+ >>> rpn_loss_box: 0.012231
+ >>> loss_cls: 0.000079
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 740 / 70000, total loss: 0.040461
+ >>> rpn_loss_cls: 0.001130
+ >>> rpn_loss_box: 0.039291
+ >>> loss_cls: 0.000039
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 760 / 70000, total loss: 0.023607
+ >>> rpn_loss_cls: 0.006667
+ >>> rpn_loss_box: 0.016699
+ >>> loss_cls: 0.000241
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 780 / 70000, total loss: 0.036500
+ >>> rpn_loss_cls: 0.001737
+ >>> rpn_loss_box: 0.023748
+ >>> loss_cls: 0.006481
+ >>> loss_box: 0.004533
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 800 / 70000, total loss: 0.021644
+ >>> rpn_loss_cls: 0.000971
+ >>> rpn_loss_box: 0.011339
+ >>> loss_cls: 0.004792
+ >>> loss_box: 0.004543
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 820 / 70000, total loss: 0.020771
+ >>> rpn_loss_cls: 0.002865
+ >>> rpn_loss_box: 0.008089
+ >>> loss_cls: 0.006936
+ >>> loss_box: 0.002881
+ >>> lr: 0.001000
+speed: 0.224s / iter
+iter: 840 / 70000, total loss: 0.002991
+ >>> rpn_loss_cls: 0.000546
+ >>> rpn_loss_box: 0.002388
+ >>> loss_cls: 0.000057
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 860 / 70000, total loss: 0.018089
+ >>> rpn_loss_cls: 0.000708
+ >>> rpn_loss_box: 0.016728
+ >>> loss_cls: 0.000653
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 880 / 70000, total loss: 0.009087
+ >>> rpn_loss_cls: 0.000562
+ >>> rpn_loss_box: 0.007293
+ >>> loss_cls: 0.001232
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 900 / 70000, total loss: 0.051629
+ >>> rpn_loss_cls: 0.000393
+ >>> rpn_loss_box: 0.014423
+ >>> loss_cls: 0.016224
+ >>> loss_box: 0.020590
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 920 / 70000, total loss: 0.016380
+ >>> rpn_loss_cls: 0.000521
+ >>> rpn_loss_box: 0.004783
+ >>> loss_cls: 0.008143
+ >>> loss_box: 0.002933
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 940 / 70000, total loss: 0.013945
+ >>> rpn_loss_cls: 0.000480
+ >>> rpn_loss_box: 0.002632
+ >>> loss_cls: 0.003566
+ >>> loss_box: 0.007267
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 960 / 70000, total loss: 0.014218
+ >>> rpn_loss_cls: 0.000470
+ >>> rpn_loss_box: 0.013703
+ >>> loss_cls: 0.000046
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 980 / 70000, total loss: 0.018408
+ >>> rpn_loss_cls: 0.000474
+ >>> rpn_loss_box: 0.006573
+ >>> loss_cls: 0.006099
+ >>> loss_box: 0.005262
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1000 / 70000, total loss: 0.017459
+ >>> rpn_loss_cls: 0.000260
+ >>> rpn_loss_box: 0.007414
+ >>> loss_cls: 0.004237
+ >>> loss_box: 0.005548
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1020 / 70000, total loss: 0.010859
+ >>> rpn_loss_cls: 0.000219
+ >>> rpn_loss_box: 0.002541
+ >>> loss_cls: 0.004654
+ >>> loss_box: 0.003445
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1040 / 70000, total loss: 0.007838
+ >>> rpn_loss_cls: 0.000555
+ >>> rpn_loss_box: 0.007229
+ >>> loss_cls: 0.000054
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1060 / 70000, total loss: 0.030743
+ >>> rpn_loss_cls: 0.000101
+ >>> rpn_loss_box: 0.023586
+ >>> loss_cls: 0.007056
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1080 / 70000, total loss: 0.013641
+ >>> rpn_loss_cls: 0.000458
+ >>> rpn_loss_box: 0.012159
+ >>> loss_cls: 0.001024
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1100 / 70000, total loss: 0.003475
+ >>> rpn_loss_cls: 0.000250
+ >>> rpn_loss_box: 0.003163
+ >>> loss_cls: 0.000062
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1120 / 70000, total loss: 0.032664
+ >>> rpn_loss_cls: 0.025006
+ >>> rpn_loss_box: 0.006956
+ >>> loss_cls: 0.000702
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1140 / 70000, total loss: 0.015791
+ >>> rpn_loss_cls: 0.004708
+ >>> rpn_loss_box: 0.010745
+ >>> loss_cls: 0.000338
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1160 / 70000, total loss: 0.010906
+ >>> rpn_loss_cls: 0.002647
+ >>> rpn_loss_box: 0.007848
+ >>> loss_cls: 0.000411
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1180 / 70000, total loss: 0.006021
+ >>> rpn_loss_cls: 0.001105
+ >>> rpn_loss_box: 0.004875
+ >>> loss_cls: 0.000042
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1200 / 70000, total loss: 0.009370
+ >>> rpn_loss_cls: 0.000966
+ >>> rpn_loss_box: 0.008349
+ >>> loss_cls: 0.000054
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1220 / 70000, total loss: 0.016807
+ >>> rpn_loss_cls: 0.001021
+ >>> rpn_loss_box: 0.015740
+ >>> loss_cls: 0.000047
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1240 / 70000, total loss: 0.005239
+ >>> rpn_loss_cls: 0.000331
+ >>> rpn_loss_box: 0.004846
+ >>> loss_cls: 0.000062
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1260 / 70000, total loss: 0.002202
+ >>> rpn_loss_cls: 0.000323
+ >>> rpn_loss_box: 0.001822
+ >>> loss_cls: 0.000057
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1280 / 70000, total loss: 0.004107
+ >>> rpn_loss_cls: 0.001072
+ >>> rpn_loss_box: 0.002968
+ >>> loss_cls: 0.000067
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1300 / 70000, total loss: 0.054727
+ >>> rpn_loss_cls: 0.000760
+ >>> rpn_loss_box: 0.022797
+ >>> loss_cls: 0.029584
+ >>> loss_box: 0.001587
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1320 / 70000, total loss: 0.008583
+ >>> rpn_loss_cls: 0.000779
+ >>> rpn_loss_box: 0.007771
+ >>> loss_cls: 0.000033
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1340 / 70000, total loss: 0.019046
+ >>> rpn_loss_cls: 0.000834
+ >>> rpn_loss_box: 0.018161
+ >>> loss_cls: 0.000051
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1360 / 70000, total loss: 0.004280
+ >>> rpn_loss_cls: 0.000265
+ >>> rpn_loss_box: 0.003952
+ >>> loss_cls: 0.000063
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1380 / 70000, total loss: 0.007735
+ >>> rpn_loss_cls: 0.000689
+ >>> rpn_loss_box: 0.006938
+ >>> loss_cls: 0.000108
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1400 / 70000, total loss: 0.004955
+ >>> rpn_loss_cls: 0.000346
+ >>> rpn_loss_box: 0.004496
+ >>> loss_cls: 0.000113
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1420 / 70000, total loss: 0.026775
+ >>> rpn_loss_cls: 0.000160
+ >>> rpn_loss_box: 0.026497
+ >>> loss_cls: 0.000118
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1440 / 70000, total loss: 0.002708
+ >>> rpn_loss_cls: 0.000592
+ >>> rpn_loss_box: 0.001995
+ >>> loss_cls: 0.000121
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1460 / 70000, total loss: 0.012226
+ >>> rpn_loss_cls: 0.000272
+ >>> rpn_loss_box: 0.011879
+ >>> loss_cls: 0.000075
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1480 / 70000, total loss: 0.010614
+ >>> rpn_loss_cls: 0.000240
+ >>> rpn_loss_box: 0.010292
+ >>> loss_cls: 0.000083
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1500 / 70000, total loss: 0.042142
+ >>> rpn_loss_cls: 0.006517
+ >>> rpn_loss_box: 0.009849
+ >>> loss_cls: 0.010230
+ >>> loss_box: 0.015546
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1520 / 70000, total loss: 0.025441
+ >>> rpn_loss_cls: 0.002494
+ >>> rpn_loss_box: 0.008464
+ >>> loss_cls: 0.012457
+ >>> loss_box: 0.002026
+ >>> lr: 0.001000
+speed: 0.223s / iter
+iter: 1540 / 70000, total loss: 0.012441
+ >>> rpn_loss_cls: 0.000582
+ >>> rpn_loss_box: 0.004979
+ >>> loss_cls: 0.004527
+ >>> loss_box: 0.002353
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1560 / 70000, total loss: 0.010328
+ >>> rpn_loss_cls: 0.000367
+ >>> rpn_loss_box: 0.000402
+ >>> loss_cls: 0.006139
+ >>> loss_box: 0.003420
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1580 / 70000, total loss: 0.034535
+ >>> rpn_loss_cls: 0.000260
+ >>> rpn_loss_box: 0.008173
+ >>> loss_cls: 0.011053
+ >>> loss_box: 0.015049
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1600 / 70000, total loss: 0.008146
+ >>> rpn_loss_cls: 0.001043
+ >>> rpn_loss_box: 0.000701
+ >>> loss_cls: 0.006147
+ >>> loss_box: 0.000255
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1620 / 70000, total loss: 0.022293
+ >>> rpn_loss_cls: 0.000439
+ >>> rpn_loss_box: 0.010350
+ >>> loss_cls: 0.006612
+ >>> loss_box: 0.004892
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1640 / 70000, total loss: 0.038342
+ >>> rpn_loss_cls: 0.000633
+ >>> rpn_loss_box: 0.005440
+ >>> loss_cls: 0.014814
+ >>> loss_box: 0.017456
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1660 / 70000, total loss: 0.028974
+ >>> rpn_loss_cls: 0.000269
+ >>> rpn_loss_box: 0.003903
+ >>> loss_cls: 0.011939
+ >>> loss_box: 0.012863
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1680 / 70000, total loss: 0.019368
+ >>> rpn_loss_cls: 0.000444
+ >>> rpn_loss_box: 0.008354
+ >>> loss_cls: 0.004986
+ >>> loss_box: 0.005585
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1700 / 70000, total loss: 0.017861
+ >>> rpn_loss_cls: 0.000329
+ >>> rpn_loss_box: 0.007122
+ >>> loss_cls: 0.006392
+ >>> loss_box: 0.004018
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1720 / 70000, total loss: 0.006100
+ >>> rpn_loss_cls: 0.000335
+ >>> rpn_loss_box: 0.003070
+ >>> loss_cls: 0.002696
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1740 / 70000, total loss: 0.033761
+ >>> rpn_loss_cls: 0.000178
+ >>> rpn_loss_box: 0.007312
+ >>> loss_cls: 0.011480
+ >>> loss_box: 0.014792
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1760 / 70000, total loss: 0.025923
+ >>> rpn_loss_cls: 0.000166
+ >>> rpn_loss_box: 0.006113
+ >>> loss_cls: 0.009767
+ >>> loss_box: 0.009877
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 1780 / 70000, total loss: 0.018482
+ >>> rpn_loss_cls: 0.000211
+ >>> rpn_loss_box: 0.007197
+ >>> loss_cls: 0.005045
+ >>> loss_box: 0.006029
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1800 / 70000, total loss: 0.001204
+ >>> rpn_loss_cls: 0.000123
+ >>> rpn_loss_box: 0.000691
+ >>> loss_cls: 0.000390
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1820 / 70000, total loss: 0.024419
+ >>> rpn_loss_cls: 0.000182
+ >>> rpn_loss_box: 0.007237
+ >>> loss_cls: 0.012604
+ >>> loss_box: 0.004396
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1840 / 70000, total loss: 0.025876
+ >>> rpn_loss_cls: 0.000591
+ >>> rpn_loss_box: 0.023288
+ >>> loss_cls: 0.001997
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1860 / 70000, total loss: 0.020566
+ >>> rpn_loss_cls: 0.015054
+ >>> rpn_loss_box: 0.004164
+ >>> loss_cls: 0.001348
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1880 / 70000, total loss: 0.028150
+ >>> rpn_loss_cls: 0.002267
+ >>> rpn_loss_box: 0.025343
+ >>> loss_cls: 0.000540
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1900 / 70000, total loss: 0.010388
+ >>> rpn_loss_cls: 0.000972
+ >>> rpn_loss_box: 0.009203
+ >>> loss_cls: 0.000212
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1920 / 70000, total loss: 0.005662
+ >>> rpn_loss_cls: 0.000471
+ >>> rpn_loss_box: 0.005080
+ >>> loss_cls: 0.000111
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1940 / 70000, total loss: 0.002685
+ >>> rpn_loss_cls: 0.000560
+ >>> rpn_loss_box: 0.002042
+ >>> loss_cls: 0.000083
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1960 / 70000, total loss: 0.001106
+ >>> rpn_loss_cls: 0.000416
+ >>> rpn_loss_box: 0.000612
+ >>> loss_cls: 0.000078
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 1980 / 70000, total loss: 0.005193
+ >>> rpn_loss_cls: 0.000440
+ >>> rpn_loss_box: 0.004535
+ >>> loss_cls: 0.000217
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2000 / 70000, total loss: 0.005720
+ >>> rpn_loss_cls: 0.000526
+ >>> rpn_loss_box: 0.005096
+ >>> loss_cls: 0.000098
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2020 / 70000, total loss: 0.004880
+ >>> rpn_loss_cls: 0.000335
+ >>> rpn_loss_box: 0.004462
+ >>> loss_cls: 0.000082
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2040 / 70000, total loss: 0.038554
+ >>> rpn_loss_cls: 0.000605
+ >>> rpn_loss_box: 0.002992
+ >>> loss_cls: 0.034598
+ >>> loss_box: 0.000359
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2060 / 70000, total loss: 0.004775
+ >>> rpn_loss_cls: 0.000632
+ >>> rpn_loss_box: 0.004035
+ >>> loss_cls: 0.000108
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2080 / 70000, total loss: 0.032255
+ >>> rpn_loss_cls: 0.001131
+ >>> rpn_loss_box: 0.031030
+ >>> loss_cls: 0.000094
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2100 / 70000, total loss: 0.002328
+ >>> rpn_loss_cls: 0.000250
+ >>> rpn_loss_box: 0.001984
+ >>> loss_cls: 0.000094
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2120 / 70000, total loss: 0.027996
+ >>> rpn_loss_cls: 0.000458
+ >>> rpn_loss_box: 0.027394
+ >>> loss_cls: 0.000144
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2140 / 70000, total loss: 0.011515
+ >>> rpn_loss_cls: 0.000169
+ >>> rpn_loss_box: 0.011185
+ >>> loss_cls: 0.000162
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2160 / 70000, total loss: 0.017156
+ >>> rpn_loss_cls: 0.000276
+ >>> rpn_loss_box: 0.016668
+ >>> loss_cls: 0.000212
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2180 / 70000, total loss: 0.002349
+ >>> rpn_loss_cls: 0.000329
+ >>> rpn_loss_box: 0.001871
+ >>> loss_cls: 0.000149
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2200 / 70000, total loss: 0.003883
+ >>> rpn_loss_cls: 0.000403
+ >>> rpn_loss_box: 0.003353
+ >>> loss_cls: 0.000126
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2220 / 70000, total loss: 0.003843
+ >>> rpn_loss_cls: 0.000382
+ >>> rpn_loss_box: 0.003321
+ >>> loss_cls: 0.000140
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2240 / 70000, total loss: 0.008493
+ >>> rpn_loss_cls: 0.000744
+ >>> rpn_loss_box: 0.005404
+ >>> loss_cls: 0.002344
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2260 / 70000, total loss: 0.006082
+ >>> rpn_loss_cls: 0.001202
+ >>> rpn_loss_box: 0.004693
+ >>> loss_cls: 0.000187
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2280 / 70000, total loss: 0.043036
+ >>> rpn_loss_cls: 0.000694
+ >>> rpn_loss_box: 0.015134
+ >>> loss_cls: 0.007630
+ >>> loss_box: 0.019579
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2300 / 70000, total loss: 0.041259
+ >>> rpn_loss_cls: 0.000242
+ >>> rpn_loss_box: 0.011603
+ >>> loss_cls: 0.013685
+ >>> loss_box: 0.015728
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2320 / 70000, total loss: 0.011346
+ >>> rpn_loss_cls: 0.000296
+ >>> rpn_loss_box: 0.000875
+ >>> loss_cls: 0.008638
+ >>> loss_box: 0.001536
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2340 / 70000, total loss: 0.010948
+ >>> rpn_loss_cls: 0.000261
+ >>> rpn_loss_box: 0.006031
+ >>> loss_cls: 0.002087
+ >>> loss_box: 0.002569
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2360 / 70000, total loss: 0.017775
+ >>> rpn_loss_cls: 0.000515
+ >>> rpn_loss_box: 0.004579
+ >>> loss_cls: 0.011047
+ >>> loss_box: 0.001634
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2380 / 70000, total loss: 0.006138
+ >>> rpn_loss_cls: 0.000380
+ >>> rpn_loss_box: 0.002188
+ >>> loss_cls: 0.003571
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2400 / 70000, total loss: 0.022685
+ >>> rpn_loss_cls: 0.000326
+ >>> rpn_loss_box: 0.012798
+ >>> loss_cls: 0.006077
+ >>> loss_box: 0.003484
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2420 / 70000, total loss: 0.028628
+ >>> rpn_loss_cls: 0.000315
+ >>> rpn_loss_box: 0.002133
+ >>> loss_cls: 0.006677
+ >>> loss_box: 0.019503
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2440 / 70000, total loss: 0.012561
+ >>> rpn_loss_cls: 0.000151
+ >>> rpn_loss_box: 0.012137
+ >>> loss_cls: 0.000273
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2460 / 70000, total loss: 0.007270
+ >>> rpn_loss_cls: 0.000152
+ >>> rpn_loss_box: 0.001913
+ >>> loss_cls: 0.005205
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2480 / 70000, total loss: 0.015748
+ >>> rpn_loss_cls: 0.000124
+ >>> rpn_loss_box: 0.006068
+ >>> loss_cls: 0.009145
+ >>> loss_box: 0.000412
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2500 / 70000, total loss: 0.023343
+ >>> rpn_loss_cls: 0.000225
+ >>> rpn_loss_box: 0.000676
+ >>> loss_cls: 0.007380
+ >>> loss_box: 0.015062
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2520 / 70000, total loss: 0.005965
+ >>> rpn_loss_cls: 0.000205
+ >>> rpn_loss_box: 0.000278
+ >>> loss_cls: 0.005482
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2540 / 70000, total loss: 0.013211
+ >>> rpn_loss_cls: 0.000204
+ >>> rpn_loss_box: 0.010830
+ >>> loss_cls: 0.002178
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2560 / 70000, total loss: 0.016675
+ >>> rpn_loss_cls: 0.000144
+ >>> rpn_loss_box: 0.016428
+ >>> loss_cls: 0.000103
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2580 / 70000, total loss: 0.005324
+ >>> rpn_loss_cls: 0.000309
+ >>> rpn_loss_box: 0.000666
+ >>> loss_cls: 0.004349
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2600 / 70000, total loss: 0.024017
+ >>> rpn_loss_cls: 0.010477
+ >>> rpn_loss_box: 0.007477
+ >>> loss_cls: 0.006064
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2620 / 70000, total loss: 0.016654
+ >>> rpn_loss_cls: 0.000551
+ >>> rpn_loss_box: 0.016001
+ >>> loss_cls: 0.000103
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2640 / 70000, total loss: 0.005942
+ >>> rpn_loss_cls: 0.000851
+ >>> rpn_loss_box: 0.004888
+ >>> loss_cls: 0.000204
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2660 / 70000, total loss: 0.014140
+ >>> rpn_loss_cls: 0.000265
+ >>> rpn_loss_box: 0.013703
+ >>> loss_cls: 0.000172
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2680 / 70000, total loss: 0.003736
+ >>> rpn_loss_cls: 0.000333
+ >>> rpn_loss_box: 0.003353
+ >>> loss_cls: 0.000050
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2700 / 70000, total loss: 0.005549
+ >>> rpn_loss_cls: 0.000303
+ >>> rpn_loss_box: 0.005098
+ >>> loss_cls: 0.000148
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2720 / 70000, total loss: 0.006314
+ >>> rpn_loss_cls: 0.000435
+ >>> rpn_loss_box: 0.005724
+ >>> loss_cls: 0.000155
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 2740 / 70000, total loss: 0.003760
+ >>> rpn_loss_cls: 0.000295
+ >>> rpn_loss_box: 0.003359
+ >>> loss_cls: 0.000107
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2760 / 70000, total loss: 0.001293
+ >>> rpn_loss_cls: 0.000321
+ >>> rpn_loss_box: 0.000834
+ >>> loss_cls: 0.000138
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2780 / 70000, total loss: 0.002092
+ >>> rpn_loss_cls: 0.000362
+ >>> rpn_loss_box: 0.001616
+ >>> loss_cls: 0.000114
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2800 / 70000, total loss: 0.001726
+ >>> rpn_loss_cls: 0.000462
+ >>> rpn_loss_box: 0.001144
+ >>> loss_cls: 0.000121
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2820 / 70000, total loss: 0.025062
+ >>> rpn_loss_cls: 0.000975
+ >>> rpn_loss_box: 0.023987
+ >>> loss_cls: 0.000100
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2840 / 70000, total loss: 0.009874
+ >>> rpn_loss_cls: 0.000421
+ >>> rpn_loss_box: 0.009344
+ >>> loss_cls: 0.000109
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2860 / 70000, total loss: 0.001251
+ >>> rpn_loss_cls: 0.000231
+ >>> rpn_loss_box: 0.000905
+ >>> loss_cls: 0.000116
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2880 / 70000, total loss: 0.002352
+ >>> rpn_loss_cls: 0.000243
+ >>> rpn_loss_box: 0.001930
+ >>> loss_cls: 0.000179
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2900 / 70000, total loss: 0.015501
+ >>> rpn_loss_cls: 0.000653
+ >>> rpn_loss_box: 0.014681
+ >>> loss_cls: 0.000167
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2920 / 70000, total loss: 0.002766
+ >>> rpn_loss_cls: 0.000304
+ >>> rpn_loss_box: 0.002315
+ >>> loss_cls: 0.000146
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2940 / 70000, total loss: 0.002521
+ >>> rpn_loss_cls: 0.000360
+ >>> rpn_loss_box: 0.001963
+ >>> loss_cls: 0.000198
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2960 / 70000, total loss: 0.004803
+ >>> rpn_loss_cls: 0.000207
+ >>> rpn_loss_box: 0.004430
+ >>> loss_cls: 0.000167
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 2980 / 70000, total loss: 0.021553
+ >>> rpn_loss_cls: 0.000613
+ >>> rpn_loss_box: 0.004259
+ >>> loss_cls: 0.015012
+ >>> loss_box: 0.001669
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3000 / 70000, total loss: 0.025240
+ >>> rpn_loss_cls: 0.000781
+ >>> rpn_loss_box: 0.003196
+ >>> loss_cls: 0.021263
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3020 / 70000, total loss: 0.032951
+ >>> rpn_loss_cls: 0.001043
+ >>> rpn_loss_box: 0.001892
+ >>> loss_cls: 0.012269
+ >>> loss_box: 0.017748
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3040 / 70000, total loss: 0.027697
+ >>> rpn_loss_cls: 0.000816
+ >>> rpn_loss_box: 0.001427
+ >>> loss_cls: 0.009808
+ >>> loss_box: 0.015645
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3060 / 70000, total loss: 0.011365
+ >>> rpn_loss_cls: 0.000371
+ >>> rpn_loss_box: 0.001020
+ >>> loss_cls: 0.005580
+ >>> loss_box: 0.004393
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3080 / 70000, total loss: 0.030924
+ >>> rpn_loss_cls: 0.000267
+ >>> rpn_loss_box: 0.001311
+ >>> loss_cls: 0.012011
+ >>> loss_box: 0.017335
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3100 / 70000, total loss: 0.024106
+ >>> rpn_loss_cls: 0.000301
+ >>> rpn_loss_box: 0.006354
+ >>> loss_cls: 0.007898
+ >>> loss_box: 0.009554
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3120 / 70000, total loss: 0.015205
+ >>> rpn_loss_cls: 0.000459
+ >>> rpn_loss_box: 0.001100
+ >>> loss_cls: 0.010268
+ >>> loss_box: 0.003377
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3140 / 70000, total loss: 0.011073
+ >>> rpn_loss_cls: 0.000256
+ >>> rpn_loss_box: 0.001466
+ >>> loss_cls: 0.003583
+ >>> loss_box: 0.005767
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3160 / 70000, total loss: 0.033313
+ >>> rpn_loss_cls: 0.000285
+ >>> rpn_loss_box: 0.006477
+ >>> loss_cls: 0.010598
+ >>> loss_box: 0.015954
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3180 / 70000, total loss: 0.007510
+ >>> rpn_loss_cls: 0.000314
+ >>> rpn_loss_box: 0.007060
+ >>> loss_cls: 0.000136
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3200 / 70000, total loss: 0.023059
+ >>> rpn_loss_cls: 0.000171
+ >>> rpn_loss_box: 0.013447
+ >>> loss_cls: 0.009441
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3220 / 70000, total loss: 0.010800
+ >>> rpn_loss_cls: 0.000220
+ >>> rpn_loss_box: 0.005057
+ >>> loss_cls: 0.005296
+ >>> loss_box: 0.000227
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3240 / 70000, total loss: 0.001127
+ >>> rpn_loss_cls: 0.000292
+ >>> rpn_loss_box: 0.000684
+ >>> loss_cls: 0.000151
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3260 / 70000, total loss: 0.014175
+ >>> rpn_loss_cls: 0.000173
+ >>> rpn_loss_box: 0.001347
+ >>> loss_cls: 0.005614
+ >>> loss_box: 0.007041
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3280 / 70000, total loss: 0.041537
+ >>> rpn_loss_cls: 0.000266
+ >>> rpn_loss_box: 0.012188
+ >>> loss_cls: 0.009659
+ >>> loss_box: 0.019424
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3300 / 70000, total loss: 0.001542
+ >>> rpn_loss_cls: 0.000167
+ >>> rpn_loss_box: 0.000619
+ >>> loss_cls: 0.000755
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3320 / 70000, total loss: 0.039732
+ >>> rpn_loss_cls: 0.000221
+ >>> rpn_loss_box: 0.010978
+ >>> loss_cls: 0.012931
+ >>> loss_box: 0.015602
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3340 / 70000, total loss: 0.025384
+ >>> rpn_loss_cls: 0.009053
+ >>> rpn_loss_box: 0.011871
+ >>> loss_cls: 0.004459
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3360 / 70000, total loss: 0.006298
+ >>> rpn_loss_cls: 0.000195
+ >>> rpn_loss_box: 0.005948
+ >>> loss_cls: 0.000156
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3380 / 70000, total loss: 0.032173
+ >>> rpn_loss_cls: 0.000401
+ >>> rpn_loss_box: 0.001233
+ >>> loss_cls: 0.029110
+ >>> loss_box: 0.001430
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3400 / 70000, total loss: 0.001646
+ >>> rpn_loss_cls: 0.000266
+ >>> rpn_loss_box: 0.001282
+ >>> loss_cls: 0.000099
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 3420 / 70000, total loss: 0.004052
+ >>> rpn_loss_cls: 0.000361
+ >>> rpn_loss_box: 0.003570
+ >>> loss_cls: 0.000120
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3440 / 70000, total loss: 0.007048
+ >>> rpn_loss_cls: 0.000178
+ >>> rpn_loss_box: 0.006749
+ >>> loss_cls: 0.000122
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3460 / 70000, total loss: 0.014045
+ >>> rpn_loss_cls: 0.000348
+ >>> rpn_loss_box: 0.013601
+ >>> loss_cls: 0.000097
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3480 / 70000, total loss: 0.004733
+ >>> rpn_loss_cls: 0.000130
+ >>> rpn_loss_box: 0.004481
+ >>> loss_cls: 0.000122
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3500 / 70000, total loss: 0.013173
+ >>> rpn_loss_cls: 0.000118
+ >>> rpn_loss_box: 0.012929
+ >>> loss_cls: 0.000126
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3520 / 70000, total loss: 0.009903
+ >>> rpn_loss_cls: 0.000383
+ >>> rpn_loss_box: 0.009423
+ >>> loss_cls: 0.000096
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3540 / 70000, total loss: 0.012923
+ >>> rpn_loss_cls: 0.000185
+ >>> rpn_loss_box: 0.012598
+ >>> loss_cls: 0.000139
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3560 / 70000, total loss: 0.015438
+ >>> rpn_loss_cls: 0.000701
+ >>> rpn_loss_box: 0.014523
+ >>> loss_cls: 0.000214
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3580 / 70000, total loss: 0.003544
+ >>> rpn_loss_cls: 0.000253
+ >>> rpn_loss_box: 0.003139
+ >>> loss_cls: 0.000152
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3600 / 70000, total loss: 0.010798
+ >>> rpn_loss_cls: 0.000358
+ >>> rpn_loss_box: 0.010270
+ >>> loss_cls: 0.000169
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3620 / 70000, total loss: 0.001775
+ >>> rpn_loss_cls: 0.000240
+ >>> rpn_loss_box: 0.001315
+ >>> loss_cls: 0.000219
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3640 / 70000, total loss: 0.001800
+ >>> rpn_loss_cls: 0.000302
+ >>> rpn_loss_box: 0.001240
+ >>> loss_cls: 0.000258
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3660 / 70000, total loss: 0.015717
+ >>> rpn_loss_cls: 0.000150
+ >>> rpn_loss_box: 0.015359
+ >>> loss_cls: 0.000208
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3680 / 70000, total loss: 0.004463
+ >>> rpn_loss_cls: 0.000183
+ >>> rpn_loss_box: 0.004053
+ >>> loss_cls: 0.000227
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3700 / 70000, total loss: 0.003082
+ >>> rpn_loss_cls: 0.000382
+ >>> rpn_loss_box: 0.002484
+ >>> loss_cls: 0.000216
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3720 / 70000, total loss: 0.051876
+ >>> rpn_loss_cls: 0.000341
+ >>> rpn_loss_box: 0.001502
+ >>> loss_cls: 0.030223
+ >>> loss_box: 0.019811
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3740 / 70000, total loss: 0.011538
+ >>> rpn_loss_cls: 0.000249
+ >>> rpn_loss_box: 0.008605
+ >>> loss_cls: 0.002684
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3760 / 70000, total loss: 0.013072
+ >>> rpn_loss_cls: 0.000237
+ >>> rpn_loss_box: 0.002701
+ >>> loss_cls: 0.004517
+ >>> loss_box: 0.005617
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3780 / 70000, total loss: 0.005023
+ >>> rpn_loss_cls: 0.000204
+ >>> rpn_loss_box: 0.004660
+ >>> loss_cls: 0.000160
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3800 / 70000, total loss: 0.024185
+ >>> rpn_loss_cls: 0.000172
+ >>> rpn_loss_box: 0.002471
+ >>> loss_cls: 0.009280
+ >>> loss_box: 0.012261
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3820 / 70000, total loss: 0.016795
+ >>> rpn_loss_cls: 0.000173
+ >>> rpn_loss_box: 0.009902
+ >>> loss_cls: 0.006483
+ >>> loss_box: 0.000237
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3840 / 70000, total loss: 0.016820
+ >>> rpn_loss_cls: 0.000147
+ >>> rpn_loss_box: 0.008224
+ >>> loss_cls: 0.003534
+ >>> loss_box: 0.004914
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3860 / 70000, total loss: 0.022512
+ >>> rpn_loss_cls: 0.000198
+ >>> rpn_loss_box: 0.004739
+ >>> loss_cls: 0.007242
+ >>> loss_box: 0.010334
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3880 / 70000, total loss: 0.023549
+ >>> rpn_loss_cls: 0.000063
+ >>> rpn_loss_box: 0.023269
+ >>> loss_cls: 0.000216
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3900 / 70000, total loss: 0.044452
+ >>> rpn_loss_cls: 0.000077
+ >>> rpn_loss_box: 0.019429
+ >>> loss_cls: 0.007267
+ >>> loss_box: 0.017680
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3920 / 70000, total loss: 0.005546
+ >>> rpn_loss_cls: 0.000130
+ >>> rpn_loss_box: 0.005253
+ >>> loss_cls: 0.000163
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3940 / 70000, total loss: 0.006671
+ >>> rpn_loss_cls: 0.000083
+ >>> rpn_loss_box: 0.006420
+ >>> loss_cls: 0.000168
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3960 / 70000, total loss: 0.006191
+ >>> rpn_loss_cls: 0.000116
+ >>> rpn_loss_box: 0.003907
+ >>> loss_cls: 0.001888
+ >>> loss_box: 0.000280
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 3980 / 70000, total loss: 0.004217
+ >>> rpn_loss_cls: 0.000176
+ >>> rpn_loss_box: 0.003929
+ >>> loss_cls: 0.000112
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4000 / 70000, total loss: 0.007081
+ >>> rpn_loss_cls: 0.000201
+ >>> rpn_loss_box: 0.001616
+ >>> loss_cls: 0.005264
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4020 / 70000, total loss: 0.022199
+ >>> rpn_loss_cls: 0.000266
+ >>> rpn_loss_box: 0.012101
+ >>> loss_cls: 0.003522
+ >>> loss_box: 0.006310
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4040 / 70000, total loss: 0.026328
+ >>> rpn_loss_cls: 0.000191
+ >>> rpn_loss_box: 0.004393
+ >>> loss_cls: 0.007900
+ >>> loss_box: 0.013844
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4060 / 70000, total loss: 0.003313
+ >>> rpn_loss_cls: 0.000155
+ >>> rpn_loss_box: 0.002952
+ >>> loss_cls: 0.000207
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4080 / 70000, total loss: 0.007008
+ >>> rpn_loss_cls: 0.005862
+ >>> rpn_loss_box: 0.001056
+ >>> loss_cls: 0.000090
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4100 / 70000, total loss: 0.008352
+ >>> rpn_loss_cls: 0.000523
+ >>> rpn_loss_box: 0.007724
+ >>> loss_cls: 0.000105
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4120 / 70000, total loss: 0.001171
+ >>> rpn_loss_cls: 0.000481
+ >>> rpn_loss_box: 0.000602
+ >>> loss_cls: 0.000087
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4140 / 70000, total loss: 0.006562
+ >>> rpn_loss_cls: 0.000335
+ >>> rpn_loss_box: 0.006156
+ >>> loss_cls: 0.000071
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4160 / 70000, total loss: 0.008493
+ >>> rpn_loss_cls: 0.000225
+ >>> rpn_loss_box: 0.008168
+ >>> loss_cls: 0.000100
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4180 / 70000, total loss: 0.000505
+ >>> rpn_loss_cls: 0.000301
+ >>> rpn_loss_box: 0.000148
+ >>> loss_cls: 0.000056
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4200 / 70000, total loss: 0.003302
+ >>> rpn_loss_cls: 0.000170
+ >>> rpn_loss_box: 0.003063
+ >>> loss_cls: 0.000068
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4220 / 70000, total loss: 0.000912
+ >>> rpn_loss_cls: 0.000248
+ >>> rpn_loss_box: 0.000510
+ >>> loss_cls: 0.000153
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4240 / 70000, total loss: 0.001311
+ >>> rpn_loss_cls: 0.000160
+ >>> rpn_loss_box: 0.001060
+ >>> loss_cls: 0.000091
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4260 / 70000, total loss: 0.006562
+ >>> rpn_loss_cls: 0.000535
+ >>> rpn_loss_box: 0.005913
+ >>> loss_cls: 0.000114
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4280 / 70000, total loss: 0.013013
+ >>> rpn_loss_cls: 0.000133
+ >>> rpn_loss_box: 0.012769
+ >>> loss_cls: 0.000111
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4300 / 70000, total loss: 0.002602
+ >>> rpn_loss_cls: 0.000630
+ >>> rpn_loss_box: 0.001825
+ >>> loss_cls: 0.000147
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4320 / 70000, total loss: 0.001168
+ >>> rpn_loss_cls: 0.000282
+ >>> rpn_loss_box: 0.000752
+ >>> loss_cls: 0.000134
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4340 / 70000, total loss: 0.002303
+ >>> rpn_loss_cls: 0.000124
+ >>> rpn_loss_box: 0.002071
+ >>> loss_cls: 0.000108
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4360 / 70000, total loss: 0.001005
+ >>> rpn_loss_cls: 0.000188
+ >>> rpn_loss_box: 0.000661
+ >>> loss_cls: 0.000157
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4380 / 70000, total loss: 0.001271
+ >>> rpn_loss_cls: 0.000300
+ >>> rpn_loss_box: 0.000829
+ >>> loss_cls: 0.000142
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4400 / 70000, total loss: 0.002472
+ >>> rpn_loss_cls: 0.000271
+ >>> rpn_loss_box: 0.002006
+ >>> loss_cls: 0.000194
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4420 / 70000, total loss: 0.004819
+ >>> rpn_loss_cls: 0.000265
+ >>> rpn_loss_box: 0.004353
+ >>> loss_cls: 0.000202
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4440 / 70000, total loss: 0.012784
+ >>> rpn_loss_cls: 0.000155
+ >>> rpn_loss_box: 0.012482
+ >>> loss_cls: 0.000147
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4460 / 70000, total loss: 0.028409
+ >>> rpn_loss_cls: 0.000552
+ >>> rpn_loss_box: 0.006388
+ >>> loss_cls: 0.019747
+ >>> loss_box: 0.001722
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4480 / 70000, total loss: 0.005074
+ >>> rpn_loss_cls: 0.000186
+ >>> rpn_loss_box: 0.004403
+ >>> loss_cls: 0.000486
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4500 / 70000, total loss: 0.019094
+ >>> rpn_loss_cls: 0.000416
+ >>> rpn_loss_box: 0.005144
+ >>> loss_cls: 0.007036
+ >>> loss_box: 0.006498
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4520 / 70000, total loss: 0.020617
+ >>> rpn_loss_cls: 0.000477
+ >>> rpn_loss_box: 0.015926
+ >>> loss_cls: 0.004214
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4540 / 70000, total loss: 0.006973
+ >>> rpn_loss_cls: 0.000238
+ >>> rpn_loss_box: 0.000673
+ >>> loss_cls: 0.004552
+ >>> loss_box: 0.001511
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4560 / 70000, total loss: 0.009001
+ >>> rpn_loss_cls: 0.000162
+ >>> rpn_loss_box: 0.002480
+ >>> loss_cls: 0.003196
+ >>> loss_box: 0.003163
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4580 / 70000, total loss: 0.022394
+ >>> rpn_loss_cls: 0.000090
+ >>> rpn_loss_box: 0.014942
+ >>> loss_cls: 0.005181
+ >>> loss_box: 0.002182
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4600 / 70000, total loss: 0.015427
+ >>> rpn_loss_cls: 0.000300
+ >>> rpn_loss_box: 0.014354
+ >>> loss_cls: 0.000773
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4620 / 70000, total loss: 0.003006
+ >>> rpn_loss_cls: 0.000189
+ >>> rpn_loss_box: 0.000853
+ >>> loss_cls: 0.001964
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4640 / 70000, total loss: 0.015475
+ >>> rpn_loss_cls: 0.000205
+ >>> rpn_loss_box: 0.005606
+ >>> loss_cls: 0.009320
+ >>> loss_box: 0.000344
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4660 / 70000, total loss: 0.013761
+ >>> rpn_loss_cls: 0.000138
+ >>> rpn_loss_box: 0.001908
+ >>> loss_cls: 0.011715
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4680 / 70000, total loss: 0.005380
+ >>> rpn_loss_cls: 0.000187
+ >>> rpn_loss_box: 0.005026
+ >>> loss_cls: 0.000167
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4700 / 70000, total loss: 0.041511
+ >>> rpn_loss_cls: 0.000115
+ >>> rpn_loss_box: 0.001073
+ >>> loss_cls: 0.013960
+ >>> loss_box: 0.026362
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4720 / 70000, total loss: 0.047739
+ >>> rpn_loss_cls: 0.000405
+ >>> rpn_loss_box: 0.021304
+ >>> loss_cls: 0.010413
+ >>> loss_box: 0.015618
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4740 / 70000, total loss: 0.016747
+ >>> rpn_loss_cls: 0.000195
+ >>> rpn_loss_box: 0.003676
+ >>> loss_cls: 0.012876
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4760 / 70000, total loss: 0.020178
+ >>> rpn_loss_cls: 0.000360
+ >>> rpn_loss_box: 0.005146
+ >>> loss_cls: 0.007535
+ >>> loss_box: 0.007138
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4780 / 70000, total loss: 0.039360
+ >>> rpn_loss_cls: 0.000112
+ >>> rpn_loss_box: 0.006587
+ >>> loss_cls: 0.012123
+ >>> loss_box: 0.020538
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4800 / 70000, total loss: 0.009955
+ >>> rpn_loss_cls: 0.000121
+ >>> rpn_loss_box: 0.000582
+ >>> loss_cls: 0.006024
+ >>> loss_box: 0.003227
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4820 / 70000, total loss: 0.026916
+ >>> rpn_loss_cls: 0.006636
+ >>> rpn_loss_box: 0.015048
+ >>> loss_cls: 0.005233
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4840 / 70000, total loss: 0.051066
+ >>> rpn_loss_cls: 0.000343
+ >>> rpn_loss_box: 0.016736
+ >>> loss_cls: 0.033384
+ >>> loss_box: 0.000603
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4860 / 70000, total loss: 0.006214
+ >>> rpn_loss_cls: 0.000275
+ >>> rpn_loss_box: 0.005869
+ >>> loss_cls: 0.000070
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4880 / 70000, total loss: 0.002329
+ >>> rpn_loss_cls: 0.000314
+ >>> rpn_loss_box: 0.001983
+ >>> loss_cls: 0.000031
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 4900 / 70000, total loss: 0.001463
+ >>> rpn_loss_cls: 0.000280
+ >>> rpn_loss_box: 0.001095
+ >>> loss_cls: 0.000088
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4920 / 70000, total loss: 0.000710
+ >>> rpn_loss_cls: 0.000271
+ >>> rpn_loss_box: 0.000285
+ >>> loss_cls: 0.000153
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4940 / 70000, total loss: 0.000649
+ >>> rpn_loss_cls: 0.000297
+ >>> rpn_loss_box: 0.000298
+ >>> loss_cls: 0.000054
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4960 / 70000, total loss: 0.000590
+ >>> rpn_loss_cls: 0.000246
+ >>> rpn_loss_box: 0.000258
+ >>> loss_cls: 0.000086
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 4980 / 70000, total loss: 0.006317
+ >>> rpn_loss_cls: 0.000246
+ >>> rpn_loss_box: 0.005958
+ >>> loss_cls: 0.000113
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5000 / 70000, total loss: 0.009644
+ >>> rpn_loss_cls: 0.000227
+ >>> rpn_loss_box: 0.009314
+ >>> loss_cls: 0.000103
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5020 / 70000, total loss: 0.003791
+ >>> rpn_loss_cls: 0.000167
+ >>> rpn_loss_box: 0.003493
+ >>> loss_cls: 0.000131
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5040 / 70000, total loss: 0.018839
+ >>> rpn_loss_cls: 0.000336
+ >>> rpn_loss_box: 0.018391
+ >>> loss_cls: 0.000111
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5060 / 70000, total loss: 0.003708
+ >>> rpn_loss_cls: 0.000101
+ >>> rpn_loss_box: 0.003461
+ >>> loss_cls: 0.000145
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5080 / 70000, total loss: 0.001936
+ >>> rpn_loss_cls: 0.000193
+ >>> rpn_loss_box: 0.001512
+ >>> loss_cls: 0.000231
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5100 / 70000, total loss: 0.010043
+ >>> rpn_loss_cls: 0.000119
+ >>> rpn_loss_box: 0.009776
+ >>> loss_cls: 0.000148
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5120 / 70000, total loss: 0.014517
+ >>> rpn_loss_cls: 0.000392
+ >>> rpn_loss_box: 0.013980
+ >>> loss_cls: 0.000146
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5140 / 70000, total loss: 0.000911
+ >>> rpn_loss_cls: 0.000312
+ >>> rpn_loss_box: 0.000424
+ >>> loss_cls: 0.000174
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5160 / 70000, total loss: 0.001401
+ >>> rpn_loss_cls: 0.000444
+ >>> rpn_loss_box: 0.000732
+ >>> loss_cls: 0.000225
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5180 / 70000, total loss: 0.008471
+ >>> rpn_loss_cls: 0.000571
+ >>> rpn_loss_box: 0.007733
+ >>> loss_cls: 0.000167
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5200 / 70000, total loss: 0.065183
+ >>> rpn_loss_cls: 0.005629
+ >>> rpn_loss_box: 0.003317
+ >>> loss_cls: 0.041014
+ >>> loss_box: 0.015222
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5220 / 70000, total loss: 0.020612
+ >>> rpn_loss_cls: 0.000928
+ >>> rpn_loss_box: 0.002505
+ >>> loss_cls: 0.006098
+ >>> loss_box: 0.011081
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5240 / 70000, total loss: 0.007071
+ >>> rpn_loss_cls: 0.000155
+ >>> rpn_loss_box: 0.005686
+ >>> loss_cls: 0.001230
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5260 / 70000, total loss: 0.014123
+ >>> rpn_loss_cls: 0.000395
+ >>> rpn_loss_box: 0.012468
+ >>> loss_cls: 0.001260
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5280 / 70000, total loss: 0.008199
+ >>> rpn_loss_cls: 0.000113
+ >>> rpn_loss_box: 0.000481
+ >>> loss_cls: 0.004929
+ >>> loss_box: 0.002677
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5300 / 70000, total loss: 0.031387
+ >>> rpn_loss_cls: 0.000094
+ >>> rpn_loss_box: 0.008192
+ >>> loss_cls: 0.006820
+ >>> loss_box: 0.016280
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5320 / 70000, total loss: 0.042011
+ >>> rpn_loss_cls: 0.000076
+ >>> rpn_loss_box: 0.028944
+ >>> loss_cls: 0.007076
+ >>> loss_box: 0.005915
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5340 / 70000, total loss: 0.003337
+ >>> rpn_loss_cls: 0.000150
+ >>> rpn_loss_box: 0.003053
+ >>> loss_cls: 0.000134
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5360 / 70000, total loss: 0.001849
+ >>> rpn_loss_cls: 0.000151
+ >>> rpn_loss_box: 0.000841
+ >>> loss_cls: 0.000857
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5380 / 70000, total loss: 0.026342
+ >>> rpn_loss_cls: 0.000073
+ >>> rpn_loss_box: 0.006120
+ >>> loss_cls: 0.006634
+ >>> loss_box: 0.013515
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5400 / 70000, total loss: 0.007057
+ >>> rpn_loss_cls: 0.000279
+ >>> rpn_loss_box: 0.003095
+ >>> loss_cls: 0.003683
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5420 / 70000, total loss: 0.006493
+ >>> rpn_loss_cls: 0.000084
+ >>> rpn_loss_box: 0.003489
+ >>> loss_cls: 0.002920
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5440 / 70000, total loss: 0.023364
+ >>> rpn_loss_cls: 0.000062
+ >>> rpn_loss_box: 0.004281
+ >>> loss_cls: 0.004566
+ >>> loss_box: 0.014455
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5460 / 70000, total loss: 0.023273
+ >>> rpn_loss_cls: 0.000390
+ >>> rpn_loss_box: 0.014430
+ >>> loss_cls: 0.004419
+ >>> loss_box: 0.004033
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5480 / 70000, total loss: 0.021960
+ >>> rpn_loss_cls: 0.000323
+ >>> rpn_loss_box: 0.021332
+ >>> loss_cls: 0.000305
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5500 / 70000, total loss: 0.000536
+ >>> rpn_loss_cls: 0.000110
+ >>> rpn_loss_box: 0.000353
+ >>> loss_cls: 0.000072
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5520 / 70000, total loss: 0.037338
+ >>> rpn_loss_cls: 0.000202
+ >>> rpn_loss_box: 0.014465
+ >>> loss_cls: 0.006586
+ >>> loss_box: 0.016085
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5540 / 70000, total loss: 0.017308
+ >>> rpn_loss_cls: 0.000088
+ >>> rpn_loss_box: 0.008637
+ >>> loss_cls: 0.008584
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5560 / 70000, total loss: 0.019131
+ >>> rpn_loss_cls: 0.003623
+ >>> rpn_loss_box: 0.008958
+ >>> loss_cls: 0.006550
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5580 / 70000, total loss: 0.007070
+ >>> rpn_loss_cls: 0.000717
+ >>> rpn_loss_box: 0.005792
+ >>> loss_cls: 0.000561
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5600 / 70000, total loss: 0.007271
+ >>> rpn_loss_cls: 0.000675
+ >>> rpn_loss_box: 0.006495
+ >>> loss_cls: 0.000102
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5620 / 70000, total loss: 0.002607
+ >>> rpn_loss_cls: 0.000479
+ >>> rpn_loss_box: 0.001917
+ >>> loss_cls: 0.000211
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5640 / 70000, total loss: 0.002460
+ >>> rpn_loss_cls: 0.000438
+ >>> rpn_loss_box: 0.001965
+ >>> loss_cls: 0.000057
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5660 / 70000, total loss: 0.003085
+ >>> rpn_loss_cls: 0.000441
+ >>> rpn_loss_box: 0.002554
+ >>> loss_cls: 0.000090
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5680 / 70000, total loss: 0.002688
+ >>> rpn_loss_cls: 0.000266
+ >>> rpn_loss_box: 0.002315
+ >>> loss_cls: 0.000107
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5700 / 70000, total loss: 0.041957
+ >>> rpn_loss_cls: 0.000088
+ >>> rpn_loss_box: 0.010728
+ >>> loss_cls: 0.030991
+ >>> loss_box: 0.000150
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5720 / 70000, total loss: 0.003983
+ >>> rpn_loss_cls: 0.000257
+ >>> rpn_loss_box: 0.003588
+ >>> loss_cls: 0.000139
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5740 / 70000, total loss: 0.004507
+ >>> rpn_loss_cls: 0.000294
+ >>> rpn_loss_box: 0.004119
+ >>> loss_cls: 0.000094
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5760 / 70000, total loss: 0.028342
+ >>> rpn_loss_cls: 0.000490
+ >>> rpn_loss_box: 0.027776
+ >>> loss_cls: 0.000076
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5780 / 70000, total loss: 0.036011
+ >>> rpn_loss_cls: 0.000218
+ >>> rpn_loss_box: 0.005277
+ >>> loss_cls: 0.029840
+ >>> loss_box: 0.000676
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5800 / 70000, total loss: 0.005136
+ >>> rpn_loss_cls: 0.000092
+ >>> rpn_loss_box: 0.004904
+ >>> loss_cls: 0.000140
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 5820 / 70000, total loss: 0.031376
+ >>> rpn_loss_cls: 0.000176
+ >>> rpn_loss_box: 0.001249
+ >>> loss_cls: 0.029654
+ >>> loss_box: 0.000297
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5840 / 70000, total loss: 0.006571
+ >>> rpn_loss_cls: 0.000165
+ >>> rpn_loss_box: 0.006114
+ >>> loss_cls: 0.000293
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5860 / 70000, total loss: 0.001475
+ >>> rpn_loss_cls: 0.000245
+ >>> rpn_loss_box: 0.001049
+ >>> loss_cls: 0.000181
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5880 / 70000, total loss: 0.005400
+ >>> rpn_loss_cls: 0.000193
+ >>> rpn_loss_box: 0.005060
+ >>> loss_cls: 0.000148
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5900 / 70000, total loss: 0.031567
+ >>> rpn_loss_cls: 0.000137
+ >>> rpn_loss_box: 0.004274
+ >>> loss_cls: 0.026126
+ >>> loss_box: 0.001031
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5920 / 70000, total loss: 0.004750
+ >>> rpn_loss_cls: 0.000347
+ >>> rpn_loss_box: 0.004250
+ >>> loss_cls: 0.000154
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5940 / 70000, total loss: 0.028424
+ >>> rpn_loss_cls: 0.000496
+ >>> rpn_loss_box: 0.013063
+ >>> loss_cls: 0.012663
+ >>> loss_box: 0.002202
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5960 / 70000, total loss: 0.051819
+ >>> rpn_loss_cls: 0.000661
+ >>> rpn_loss_box: 0.005673
+ >>> loss_cls: 0.015985
+ >>> loss_box: 0.029499
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 5980 / 70000, total loss: 0.023302
+ >>> rpn_loss_cls: 0.000072
+ >>> rpn_loss_box: 0.003159
+ >>> loss_cls: 0.011749
+ >>> loss_box: 0.008322
+ >>> lr: 0.001000
+speed: 0.222s / iter
+iter: 6000 / 70000, total loss: 0.010962
+ >>> rpn_loss_cls: 0.000179
+ >>> rpn_loss_box: 0.000356
+ >>> loss_cls: 0.010427
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6020 / 70000, total loss: 0.012060
+ >>> rpn_loss_cls: 0.000112
+ >>> rpn_loss_box: 0.004155
+ >>> loss_cls: 0.004190
+ >>> loss_box: 0.003603
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6040 / 70000, total loss: 0.004317
+ >>> rpn_loss_cls: 0.000092
+ >>> rpn_loss_box: 0.004126
+ >>> loss_cls: 0.000099
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6060 / 70000, total loss: 0.037750
+ >>> rpn_loss_cls: 0.000065
+ >>> rpn_loss_box: 0.013126
+ >>> loss_cls: 0.007193
+ >>> loss_box: 0.017366
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6080 / 70000, total loss: 0.006192
+ >>> rpn_loss_cls: 0.000092
+ >>> rpn_loss_box: 0.005953
+ >>> loss_cls: 0.000148
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6100 / 70000, total loss: 0.029294
+ >>> rpn_loss_cls: 0.000145
+ >>> rpn_loss_box: 0.006496
+ >>> loss_cls: 0.012307
+ >>> loss_box: 0.010346
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6120 / 70000, total loss: 0.052612
+ >>> rpn_loss_cls: 0.000094
+ >>> rpn_loss_box: 0.004221
+ >>> loss_cls: 0.017608
+ >>> loss_box: 0.030689
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6140 / 70000, total loss: 0.030132
+ >>> rpn_loss_cls: 0.000140
+ >>> rpn_loss_box: 0.003640
+ >>> loss_cls: 0.011358
+ >>> loss_box: 0.014995
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6160 / 70000, total loss: 0.004870
+ >>> rpn_loss_cls: 0.000238
+ >>> rpn_loss_box: 0.004112
+ >>> loss_cls: 0.000520
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6180 / 70000, total loss: 0.022830
+ >>> rpn_loss_cls: 0.002462
+ >>> rpn_loss_box: 0.000300
+ >>> loss_cls: 0.007209
+ >>> loss_box: 0.012858
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6200 / 70000, total loss: 0.012153
+ >>> rpn_loss_cls: 0.000097
+ >>> rpn_loss_box: 0.002656
+ >>> loss_cls: 0.008694
+ >>> loss_box: 0.000706
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6220 / 70000, total loss: 0.010264
+ >>> rpn_loss_cls: 0.000060
+ >>> rpn_loss_box: 0.009805
+ >>> loss_cls: 0.000399
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6240 / 70000, total loss: 0.002867
+ >>> rpn_loss_cls: 0.000080
+ >>> rpn_loss_box: 0.002085
+ >>> loss_cls: 0.000702
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6260 / 70000, total loss: 0.018503
+ >>> rpn_loss_cls: 0.000145
+ >>> rpn_loss_box: 0.012764
+ >>> loss_cls: 0.003679
+ >>> loss_box: 0.001915
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6280 / 70000, total loss: 0.013445
+ >>> rpn_loss_cls: 0.000182
+ >>> rpn_loss_box: 0.013191
+ >>> loss_cls: 0.000072
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6300 / 70000, total loss: 0.038514
+ >>> rpn_loss_cls: 0.001330
+ >>> rpn_loss_box: 0.025707
+ >>> loss_cls: 0.011477
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6320 / 70000, total loss: 0.003356
+ >>> rpn_loss_cls: 0.000872
+ >>> rpn_loss_box: 0.002402
+ >>> loss_cls: 0.000082
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6340 / 70000, total loss: 0.008641
+ >>> rpn_loss_cls: 0.000319
+ >>> rpn_loss_box: 0.008195
+ >>> loss_cls: 0.000126
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6360 / 70000, total loss: 0.005651
+ >>> rpn_loss_cls: 0.000351
+ >>> rpn_loss_box: 0.005226
+ >>> loss_cls: 0.000074
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6380 / 70000, total loss: 0.007050
+ >>> rpn_loss_cls: 0.000184
+ >>> rpn_loss_box: 0.006759
+ >>> loss_cls: 0.000107
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6400 / 70000, total loss: 0.003179
+ >>> rpn_loss_cls: 0.000181
+ >>> rpn_loss_box: 0.002893
+ >>> loss_cls: 0.000105
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6420 / 70000, total loss: 0.001986
+ >>> rpn_loss_cls: 0.000133
+ >>> rpn_loss_box: 0.001702
+ >>> loss_cls: 0.000151
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6440 / 70000, total loss: 0.006145
+ >>> rpn_loss_cls: 0.000107
+ >>> rpn_loss_box: 0.005938
+ >>> loss_cls: 0.000101
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6460 / 70000, total loss: 0.000529
+ >>> rpn_loss_cls: 0.000191
+ >>> rpn_loss_box: 0.000223
+ >>> loss_cls: 0.000115
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6480 / 70000, total loss: 0.002209
+ >>> rpn_loss_cls: 0.000149
+ >>> rpn_loss_box: 0.001910
+ >>> loss_cls: 0.000150
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6500 / 70000, total loss: 0.017875
+ >>> rpn_loss_cls: 0.000387
+ >>> rpn_loss_box: 0.017334
+ >>> loss_cls: 0.000154
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6520 / 70000, total loss: 0.004714
+ >>> rpn_loss_cls: 0.000748
+ >>> rpn_loss_box: 0.003826
+ >>> loss_cls: 0.000141
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6540 / 70000, total loss: 0.003338
+ >>> rpn_loss_cls: 0.000109
+ >>> rpn_loss_box: 0.003094
+ >>> loss_cls: 0.000135
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6560 / 70000, total loss: 0.003078
+ >>> rpn_loss_cls: 0.000202
+ >>> rpn_loss_box: 0.002755
+ >>> loss_cls: 0.000121
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6580 / 70000, total loss: 0.004938
+ >>> rpn_loss_cls: 0.000119
+ >>> rpn_loss_box: 0.004606
+ >>> loss_cls: 0.000213
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6600 / 70000, total loss: 0.007662
+ >>> rpn_loss_cls: 0.000220
+ >>> rpn_loss_box: 0.007247
+ >>> loss_cls: 0.000195
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6620 / 70000, total loss: 0.005767
+ >>> rpn_loss_cls: 0.000204
+ >>> rpn_loss_box: 0.005332
+ >>> loss_cls: 0.000231
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6640 / 70000, total loss: 0.007667
+ >>> rpn_loss_cls: 0.000394
+ >>> rpn_loss_box: 0.007136
+ >>> loss_cls: 0.000137
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6660 / 70000, total loss: 0.004326
+ >>> rpn_loss_cls: 0.000197
+ >>> rpn_loss_box: 0.004024
+ >>> loss_cls: 0.000106
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6680 / 70000, total loss: 0.009240
+ >>> rpn_loss_cls: 0.000317
+ >>> rpn_loss_box: 0.008811
+ >>> loss_cls: 0.000112
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6700 / 70000, total loss: 0.004930
+ >>> rpn_loss_cls: 0.000413
+ >>> rpn_loss_box: 0.004394
+ >>> loss_cls: 0.000123
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6720 / 70000, total loss: 0.010951
+ >>> rpn_loss_cls: 0.000286
+ >>> rpn_loss_box: 0.000864
+ >>> loss_cls: 0.004488
+ >>> loss_box: 0.005312
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6740 / 70000, total loss: 0.026326
+ >>> rpn_loss_cls: 0.000392
+ >>> rpn_loss_box: 0.001846
+ >>> loss_cls: 0.008331
+ >>> loss_box: 0.015758
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6760 / 70000, total loss: 0.008746
+ >>> rpn_loss_cls: 0.000175
+ >>> rpn_loss_box: 0.000306
+ >>> loss_cls: 0.008265
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6780 / 70000, total loss: 0.019462
+ >>> rpn_loss_cls: 0.000406
+ >>> rpn_loss_box: 0.015514
+ >>> loss_cls: 0.003543
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6800 / 70000, total loss: 0.014461
+ >>> rpn_loss_cls: 0.000139
+ >>> rpn_loss_box: 0.000818
+ >>> loss_cls: 0.010557
+ >>> loss_box: 0.002948
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6820 / 70000, total loss: 0.004230
+ >>> rpn_loss_cls: 0.000227
+ >>> rpn_loss_box: 0.003870
+ >>> loss_cls: 0.000133
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6840 / 70000, total loss: 0.035368
+ >>> rpn_loss_cls: 0.000374
+ >>> rpn_loss_box: 0.010280
+ >>> loss_cls: 0.009833
+ >>> loss_box: 0.014882
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6860 / 70000, total loss: 0.009267
+ >>> rpn_loss_cls: 0.000145
+ >>> rpn_loss_box: 0.001917
+ >>> loss_cls: 0.004515
+ >>> loss_box: 0.002690
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6880 / 70000, total loss: 0.002151
+ >>> rpn_loss_cls: 0.000215
+ >>> rpn_loss_box: 0.001834
+ >>> loss_cls: 0.000102
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6900 / 70000, total loss: 0.001555
+ >>> rpn_loss_cls: 0.000185
+ >>> rpn_loss_box: 0.000657
+ >>> loss_cls: 0.000713
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6920 / 70000, total loss: 0.007491
+ >>> rpn_loss_cls: 0.000223
+ >>> rpn_loss_box: 0.000847
+ >>> loss_cls: 0.006420
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6940 / 70000, total loss: 0.037860
+ >>> rpn_loss_cls: 0.000082
+ >>> rpn_loss_box: 0.020086
+ >>> loss_cls: 0.006511
+ >>> loss_box: 0.011182
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6960 / 70000, total loss: 0.012084
+ >>> rpn_loss_cls: 0.000227
+ >>> rpn_loss_box: 0.007717
+ >>> loss_cls: 0.004140
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 6980 / 70000, total loss: 0.000688
+ >>> rpn_loss_cls: 0.000148
+ >>> rpn_loss_box: 0.000441
+ >>> loss_cls: 0.000098
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7000 / 70000, total loss: 0.006619
+ >>> rpn_loss_cls: 0.000306
+ >>> rpn_loss_box: 0.006170
+ >>> loss_cls: 0.000143
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7020 / 70000, total loss: 0.022489
+ >>> rpn_loss_cls: 0.000245
+ >>> rpn_loss_box: 0.008233
+ >>> loss_cls: 0.008326
+ >>> loss_box: 0.005686
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7040 / 70000, total loss: 0.004803
+ >>> rpn_loss_cls: 0.000120
+ >>> rpn_loss_box: 0.004603
+ >>> loss_cls: 0.000079
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7060 / 70000, total loss: 0.004949
+ >>> rpn_loss_cls: 0.000503
+ >>> rpn_loss_box: 0.000698
+ >>> loss_cls: 0.003749
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7080 / 70000, total loss: 0.003551
+ >>> rpn_loss_cls: 0.000280
+ >>> rpn_loss_box: 0.003159
+ >>> loss_cls: 0.000112
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7100 / 70000, total loss: 0.006357
+ >>> rpn_loss_cls: 0.000376
+ >>> rpn_loss_box: 0.005862
+ >>> loss_cls: 0.000119
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7120 / 70000, total loss: 0.013238
+ >>> rpn_loss_cls: 0.000351
+ >>> rpn_loss_box: 0.012792
+ >>> loss_cls: 0.000095
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7140 / 70000, total loss: 0.000628
+ >>> rpn_loss_cls: 0.000252
+ >>> rpn_loss_box: 0.000322
+ >>> loss_cls: 0.000055
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7160 / 70000, total loss: 0.004949
+ >>> rpn_loss_cls: 0.000202
+ >>> rpn_loss_box: 0.004689
+ >>> loss_cls: 0.000058
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7180 / 70000, total loss: 0.003039
+ >>> rpn_loss_cls: 0.000188
+ >>> rpn_loss_box: 0.002763
+ >>> loss_cls: 0.000088
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7200 / 70000, total loss: 0.003579
+ >>> rpn_loss_cls: 0.000208
+ >>> rpn_loss_box: 0.003267
+ >>> loss_cls: 0.000105
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7220 / 70000, total loss: 0.047742
+ >>> rpn_loss_cls: 0.000067
+ >>> rpn_loss_box: 0.012444
+ >>> loss_cls: 0.028951
+ >>> loss_box: 0.006280
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7240 / 70000, total loss: 0.012492
+ >>> rpn_loss_cls: 0.000103
+ >>> rpn_loss_box: 0.012280
+ >>> loss_cls: 0.000110
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7260 / 70000, total loss: 0.001080
+ >>> rpn_loss_cls: 0.000136
+ >>> rpn_loss_box: 0.000800
+ >>> loss_cls: 0.000145
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7280 / 70000, total loss: 0.009422
+ >>> rpn_loss_cls: 0.000232
+ >>> rpn_loss_box: 0.009113
+ >>> loss_cls: 0.000077
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7300 / 70000, total loss: 0.002196
+ >>> rpn_loss_cls: 0.000112
+ >>> rpn_loss_box: 0.001948
+ >>> loss_cls: 0.000136
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7320 / 70000, total loss: 0.000806
+ >>> rpn_loss_cls: 0.000072
+ >>> rpn_loss_box: 0.000562
+ >>> loss_cls: 0.000172
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7340 / 70000, total loss: 0.002700
+ >>> rpn_loss_cls: 0.000111
+ >>> rpn_loss_box: 0.002360
+ >>> loss_cls: 0.000228
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7360 / 70000, total loss: 0.004955
+ >>> rpn_loss_cls: 0.000091
+ >>> rpn_loss_box: 0.004689
+ >>> loss_cls: 0.000175
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7380 / 70000, total loss: 0.005594
+ >>> rpn_loss_cls: 0.000145
+ >>> rpn_loss_box: 0.005259
+ >>> loss_cls: 0.000190
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7400 / 70000, total loss: 0.001832
+ >>> rpn_loss_cls: 0.000196
+ >>> rpn_loss_box: 0.001396
+ >>> loss_cls: 0.000240
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7420 / 70000, total loss: 0.026663
+ >>> rpn_loss_cls: 0.000178
+ >>> rpn_loss_box: 0.000391
+ >>> loss_cls: 0.021406
+ >>> loss_box: 0.004688
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7440 / 70000, total loss: 0.019465
+ >>> rpn_loss_cls: 0.001545
+ >>> rpn_loss_box: 0.008469
+ >>> loss_cls: 0.009452
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7460 / 70000, total loss: 0.011564
+ >>> rpn_loss_cls: 0.000331
+ >>> rpn_loss_box: 0.009339
+ >>> loss_cls: 0.001894
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7480 / 70000, total loss: 0.026516
+ >>> rpn_loss_cls: 0.000215
+ >>> rpn_loss_box: 0.004520
+ >>> loss_cls: 0.009240
+ >>> loss_box: 0.012541
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7500 / 70000, total loss: 0.009108
+ >>> rpn_loss_cls: 0.000228
+ >>> rpn_loss_box: 0.000651
+ >>> loss_cls: 0.004728
+ >>> loss_box: 0.003501
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7520 / 70000, total loss: 0.005301
+ >>> rpn_loss_cls: 0.000181
+ >>> rpn_loss_box: 0.004980
+ >>> loss_cls: 0.000140
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7540 / 70000, total loss: 0.009639
+ >>> rpn_loss_cls: 0.000152
+ >>> rpn_loss_box: 0.000622
+ >>> loss_cls: 0.003470
+ >>> loss_box: 0.005396
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7560 / 70000, total loss: 0.004335
+ >>> rpn_loss_cls: 0.000229
+ >>> rpn_loss_box: 0.000286
+ >>> loss_cls: 0.003819
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7580 / 70000, total loss: 0.033230
+ >>> rpn_loss_cls: 0.000270
+ >>> rpn_loss_box: 0.009145
+ >>> loss_cls: 0.008987
+ >>> loss_box: 0.014829
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7600 / 70000, total loss: 0.022052
+ >>> rpn_loss_cls: 0.000333
+ >>> rpn_loss_box: 0.017600
+ >>> loss_cls: 0.002779
+ >>> loss_box: 0.001340
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7620 / 70000, total loss: 0.036391
+ >>> rpn_loss_cls: 0.000435
+ >>> rpn_loss_box: 0.013895
+ >>> loss_cls: 0.015212
+ >>> loss_box: 0.006849
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7640 / 70000, total loss: 0.013173
+ >>> rpn_loss_cls: 0.000114
+ >>> rpn_loss_box: 0.000274
+ >>> loss_cls: 0.006492
+ >>> loss_box: 0.006293
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7660 / 70000, total loss: 0.039551
+ >>> rpn_loss_cls: 0.000078
+ >>> rpn_loss_box: 0.005069
+ >>> loss_cls: 0.008528
+ >>> loss_box: 0.025876
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7680 / 70000, total loss: 0.021000
+ >>> rpn_loss_cls: 0.000163
+ >>> rpn_loss_box: 0.002320
+ >>> loss_cls: 0.007807
+ >>> loss_box: 0.010709
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7700 / 70000, total loss: 0.006902
+ >>> rpn_loss_cls: 0.000303
+ >>> rpn_loss_box: 0.003252
+ >>> loss_cls: 0.003347
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7720 / 70000, total loss: 0.006497
+ >>> rpn_loss_cls: 0.000120
+ >>> rpn_loss_box: 0.001690
+ >>> loss_cls: 0.004686
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7740 / 70000, total loss: 0.016527
+ >>> rpn_loss_cls: 0.000128
+ >>> rpn_loss_box: 0.002311
+ >>> loss_cls: 0.005531
+ >>> loss_box: 0.008557
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7760 / 70000, total loss: 0.029384
+ >>> rpn_loss_cls: 0.000277
+ >>> rpn_loss_box: 0.017232
+ >>> loss_cls: 0.007624
+ >>> loss_box: 0.004250
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7780 / 70000, total loss: 0.002828
+ >>> rpn_loss_cls: 0.000184
+ >>> rpn_loss_box: 0.002570
+ >>> loss_cls: 0.000073
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7800 / 70000, total loss: 0.002128
+ >>> rpn_loss_cls: 0.000564
+ >>> rpn_loss_box: 0.001448
+ >>> loss_cls: 0.000116
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7820 / 70000, total loss: 0.008070
+ >>> rpn_loss_cls: 0.000167
+ >>> rpn_loss_box: 0.007780
+ >>> loss_cls: 0.000122
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7840 / 70000, total loss: 0.001538
+ >>> rpn_loss_cls: 0.000211
+ >>> rpn_loss_box: 0.001207
+ >>> loss_cls: 0.000120
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7860 / 70000, total loss: 0.008186
+ >>> rpn_loss_cls: 0.000450
+ >>> rpn_loss_box: 0.007618
+ >>> loss_cls: 0.000117
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7880 / 70000, total loss: 0.003457
+ >>> rpn_loss_cls: 0.000233
+ >>> rpn_loss_box: 0.002991
+ >>> loss_cls: 0.000233
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7900 / 70000, total loss: 0.002830
+ >>> rpn_loss_cls: 0.000129
+ >>> rpn_loss_box: 0.002576
+ >>> loss_cls: 0.000125
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7920 / 70000, total loss: 0.001171
+ >>> rpn_loss_cls: 0.000192
+ >>> rpn_loss_box: 0.000864
+ >>> loss_cls: 0.000115
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7940 / 70000, total loss: 0.002062
+ >>> rpn_loss_cls: 0.000122
+ >>> rpn_loss_box: 0.001792
+ >>> loss_cls: 0.000149
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7960 / 70000, total loss: 0.000460
+ >>> rpn_loss_cls: 0.000131
+ >>> rpn_loss_box: 0.000224
+ >>> loss_cls: 0.000104
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 7980 / 70000, total loss: 0.033872
+ >>> rpn_loss_cls: 0.000078
+ >>> rpn_loss_box: 0.003379
+ >>> loss_cls: 0.029888
+ >>> loss_box: 0.000527
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8000 / 70000, total loss: 0.003539
+ >>> rpn_loss_cls: 0.000210
+ >>> rpn_loss_box: 0.003194
+ >>> loss_cls: 0.000136
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8020 / 70000, total loss: 0.000498
+ >>> rpn_loss_cls: 0.000112
+ >>> rpn_loss_box: 0.000277
+ >>> loss_cls: 0.000109
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8040 / 70000, total loss: 0.000996
+ >>> rpn_loss_cls: 0.000082
+ >>> rpn_loss_box: 0.000777
+ >>> loss_cls: 0.000137
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8060 / 70000, total loss: 0.001015
+ >>> rpn_loss_cls: 0.000105
+ >>> rpn_loss_box: 0.000708
+ >>> loss_cls: 0.000201
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8080 / 70000, total loss: 0.001512
+ >>> rpn_loss_cls: 0.000098
+ >>> rpn_loss_box: 0.001233
+ >>> loss_cls: 0.000181
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8100 / 70000, total loss: 0.000715
+ >>> rpn_loss_cls: 0.000120
+ >>> rpn_loss_box: 0.000360
+ >>> loss_cls: 0.000235
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8120 / 70000, total loss: 0.001233
+ >>> rpn_loss_cls: 0.000123
+ >>> rpn_loss_box: 0.000952
+ >>> loss_cls: 0.000158
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8140 / 70000, total loss: 0.002637
+ >>> rpn_loss_cls: 0.000220
+ >>> rpn_loss_box: 0.002197
+ >>> loss_cls: 0.000220
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8160 / 70000, total loss: 0.011468
+ >>> rpn_loss_cls: 0.000427
+ >>> rpn_loss_box: 0.010924
+ >>> loss_cls: 0.000117
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8180 / 70000, total loss: 0.002060
+ >>> rpn_loss_cls: 0.001670
+ >>> rpn_loss_box: 0.000227
+ >>> loss_cls: 0.000163
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8200 / 70000, total loss: 0.017029
+ >>> rpn_loss_cls: 0.000354
+ >>> rpn_loss_box: 0.001671
+ >>> loss_cls: 0.006744
+ >>> loss_box: 0.008259
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8220 / 70000, total loss: 0.007459
+ >>> rpn_loss_cls: 0.000387
+ >>> rpn_loss_box: 0.000487
+ >>> loss_cls: 0.002773
+ >>> loss_box: 0.003812
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8240 / 70000, total loss: 0.028649
+ >>> rpn_loss_cls: 0.000130
+ >>> rpn_loss_box: 0.000329
+ >>> loss_cls: 0.014526
+ >>> loss_box: 0.013664
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8260 / 70000, total loss: 0.016568
+ >>> rpn_loss_cls: 0.000154
+ >>> rpn_loss_box: 0.006407
+ >>> loss_cls: 0.010007
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8280 / 70000, total loss: 0.045750
+ >>> rpn_loss_cls: 0.000162
+ >>> rpn_loss_box: 0.006418
+ >>> loss_cls: 0.014417
+ >>> loss_box: 0.024753
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8300 / 70000, total loss: 0.011722
+ >>> rpn_loss_cls: 0.000069
+ >>> rpn_loss_box: 0.003107
+ >>> loss_cls: 0.003413
+ >>> loss_box: 0.005133
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8320 / 70000, total loss: 0.030555
+ >>> rpn_loss_cls: 0.000072
+ >>> rpn_loss_box: 0.021418
+ >>> loss_cls: 0.006887
+ >>> loss_box: 0.002178
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8340 / 70000, total loss: 0.013875
+ >>> rpn_loss_cls: 0.000134
+ >>> rpn_loss_box: 0.001529
+ >>> loss_cls: 0.007479
+ >>> loss_box: 0.004733
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8360 / 70000, total loss: 0.006022
+ >>> rpn_loss_cls: 0.000188
+ >>> rpn_loss_box: 0.005705
+ >>> loss_cls: 0.000129
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8380 / 70000, total loss: 0.007890
+ >>> rpn_loss_cls: 0.000090
+ >>> rpn_loss_box: 0.002837
+ >>> loss_cls: 0.004963
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8400 / 70000, total loss: 0.007712
+ >>> rpn_loss_cls: 0.000103
+ >>> rpn_loss_box: 0.000446
+ >>> loss_cls: 0.004219
+ >>> loss_box: 0.002944
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8420 / 70000, total loss: 0.004293
+ >>> rpn_loss_cls: 0.000147
+ >>> rpn_loss_box: 0.000541
+ >>> loss_cls: 0.003117
+ >>> loss_box: 0.000487
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8440 / 70000, total loss: 0.011907
+ >>> rpn_loss_cls: 0.000220
+ >>> rpn_loss_box: 0.009979
+ >>> loss_cls: 0.001708
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8460 / 70000, total loss: 0.000655
+ >>> rpn_loss_cls: 0.000112
+ >>> rpn_loss_box: 0.000463
+ >>> loss_cls: 0.000080
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8480 / 70000, total loss: 0.010217
+ >>> rpn_loss_cls: 0.000086
+ >>> rpn_loss_box: 0.003561
+ >>> loss_cls: 0.004588
+ >>> loss_box: 0.001982
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8500 / 70000, total loss: 0.007433
+ >>> rpn_loss_cls: 0.000229
+ >>> rpn_loss_box: 0.007127
+ >>> loss_cls: 0.000077
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8520 / 70000, total loss: 0.003567
+ >>> rpn_loss_cls: 0.000105
+ >>> rpn_loss_box: 0.001690
+ >>> loss_cls: 0.001772
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8540 / 70000, total loss: 0.005387
+ >>> rpn_loss_cls: 0.000702
+ >>> rpn_loss_box: 0.004467
+ >>> loss_cls: 0.000218
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8560 / 70000, total loss: 0.015704
+ >>> rpn_loss_cls: 0.000143
+ >>> rpn_loss_box: 0.015461
+ >>> loss_cls: 0.000099
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8580 / 70000, total loss: 0.004268
+ >>> rpn_loss_cls: 0.000546
+ >>> rpn_loss_box: 0.003617
+ >>> loss_cls: 0.000106
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8600 / 70000, total loss: 0.010013
+ >>> rpn_loss_cls: 0.000391
+ >>> rpn_loss_box: 0.009500
+ >>> loss_cls: 0.000122
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8620 / 70000, total loss: 0.007165
+ >>> rpn_loss_cls: 0.000287
+ >>> rpn_loss_box: 0.006799
+ >>> loss_cls: 0.000079
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8640 / 70000, total loss: 0.009052
+ >>> rpn_loss_cls: 0.000110
+ >>> rpn_loss_box: 0.008843
+ >>> loss_cls: 0.000099
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8660 / 70000, total loss: 0.006119
+ >>> rpn_loss_cls: 0.000094
+ >>> rpn_loss_box: 0.005898
+ >>> loss_cls: 0.000127
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8680 / 70000, total loss: 0.000560
+ >>> rpn_loss_cls: 0.000154
+ >>> rpn_loss_box: 0.000320
+ >>> loss_cls: 0.000086
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8700 / 70000, total loss: 0.006066
+ >>> rpn_loss_cls: 0.000247
+ >>> rpn_loss_box: 0.005727
+ >>> loss_cls: 0.000092
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8720 / 70000, total loss: 0.007460
+ >>> rpn_loss_cls: 0.000055
+ >>> rpn_loss_box: 0.007250
+ >>> loss_cls: 0.000156
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8740 / 70000, total loss: 0.005171
+ >>> rpn_loss_cls: 0.000128
+ >>> rpn_loss_box: 0.004929
+ >>> loss_cls: 0.000114
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8760 / 70000, total loss: 0.004339
+ >>> rpn_loss_cls: 0.000194
+ >>> rpn_loss_box: 0.004001
+ >>> loss_cls: 0.000143
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8780 / 70000, total loss: 0.003967
+ >>> rpn_loss_cls: 0.000106
+ >>> rpn_loss_box: 0.003752
+ >>> loss_cls: 0.000109
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8800 / 70000, total loss: 0.035938
+ >>> rpn_loss_cls: 0.000158
+ >>> rpn_loss_box: 0.004702
+ >>> loss_cls: 0.030675
+ >>> loss_box: 0.000402
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8820 / 70000, total loss: 0.004310
+ >>> rpn_loss_cls: 0.000070
+ >>> rpn_loss_box: 0.003988
+ >>> loss_cls: 0.000252
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8840 / 70000, total loss: 0.002494
+ >>> rpn_loss_cls: 0.000114
+ >>> rpn_loss_box: 0.002137
+ >>> loss_cls: 0.000243
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8860 / 70000, total loss: 0.012700
+ >>> rpn_loss_cls: 0.000059
+ >>> rpn_loss_box: 0.012393
+ >>> loss_cls: 0.000248
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8880 / 70000, total loss: 0.002170
+ >>> rpn_loss_cls: 0.000175
+ >>> rpn_loss_box: 0.001824
+ >>> loss_cls: 0.000170
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8900 / 70000, total loss: 0.030619
+ >>> rpn_loss_cls: 0.000141
+ >>> rpn_loss_box: 0.000515
+ >>> loss_cls: 0.023104
+ >>> loss_box: 0.006859
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8920 / 70000, total loss: 0.012142
+ >>> rpn_loss_cls: 0.000872
+ >>> rpn_loss_box: 0.000745
+ >>> loss_cls: 0.010525
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8940 / 70000, total loss: 0.019253
+ >>> rpn_loss_cls: 0.000290
+ >>> rpn_loss_box: 0.002342
+ >>> loss_cls: 0.011035
+ >>> loss_box: 0.005586
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8960 / 70000, total loss: 0.022395
+ >>> rpn_loss_cls: 0.000135
+ >>> rpn_loss_box: 0.002681
+ >>> loss_cls: 0.008448
+ >>> loss_box: 0.011132
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 8980 / 70000, total loss: 0.024338
+ >>> rpn_loss_cls: 0.000116
+ >>> rpn_loss_box: 0.004648
+ >>> loss_cls: 0.007265
+ >>> loss_box: 0.012309
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9000 / 70000, total loss: 0.008427
+ >>> rpn_loss_cls: 0.000108
+ >>> rpn_loss_box: 0.001557
+ >>> loss_cls: 0.006762
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9020 / 70000, total loss: 0.011981
+ >>> rpn_loss_cls: 0.000111
+ >>> rpn_loss_box: 0.001897
+ >>> loss_cls: 0.003980
+ >>> loss_box: 0.005994
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9040 / 70000, total loss: 0.023615
+ >>> rpn_loss_cls: 0.000045
+ >>> rpn_loss_box: 0.005445
+ >>> loss_cls: 0.014155
+ >>> loss_box: 0.003970
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9060 / 70000, total loss: 0.029758
+ >>> rpn_loss_cls: 0.000038
+ >>> rpn_loss_box: 0.023455
+ >>> loss_cls: 0.005421
+ >>> loss_box: 0.000845
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9080 / 70000, total loss: 0.033288
+ >>> rpn_loss_cls: 0.000131
+ >>> rpn_loss_box: 0.010077
+ >>> loss_cls: 0.007731
+ >>> loss_box: 0.015349
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9100 / 70000, total loss: 0.012337
+ >>> rpn_loss_cls: 0.000166
+ >>> rpn_loss_box: 0.012023
+ >>> loss_cls: 0.000148
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9120 / 70000, total loss: 0.011870
+ >>> rpn_loss_cls: 0.000097
+ >>> rpn_loss_box: 0.000267
+ >>> loss_cls: 0.007726
+ >>> loss_box: 0.003780
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9140 / 70000, total loss: 0.006365
+ >>> rpn_loss_cls: 0.000077
+ >>> rpn_loss_box: 0.005063
+ >>> loss_cls: 0.001225
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9160 / 70000, total loss: 0.005227
+ >>> rpn_loss_cls: 0.000126
+ >>> rpn_loss_box: 0.000346
+ >>> loss_cls: 0.003706
+ >>> loss_box: 0.001050
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9180 / 70000, total loss: 0.002265
+ >>> rpn_loss_cls: 0.000141
+ >>> rpn_loss_box: 0.001959
+ >>> loss_cls: 0.000165
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9200 / 70000, total loss: 0.001883
+ >>> rpn_loss_cls: 0.000156
+ >>> rpn_loss_box: 0.001584
+ >>> loss_cls: 0.000143
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9220 / 70000, total loss: 0.028555
+ >>> rpn_loss_cls: 0.000056
+ >>> rpn_loss_box: 0.006695
+ >>> loss_cls: 0.005539
+ >>> loss_box: 0.016266
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9240 / 70000, total loss: 0.011894
+ >>> rpn_loss_cls: 0.000123
+ >>> rpn_loss_box: 0.005743
+ >>> loss_cls: 0.004130
+ >>> loss_box: 0.001897
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9260 / 70000, total loss: 0.005464
+ >>> rpn_loss_cls: 0.000189
+ >>> rpn_loss_box: 0.005155
+ >>> loss_cls: 0.000120
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9280 / 70000, total loss: 0.002282
+ >>> rpn_loss_cls: 0.000935
+ >>> rpn_loss_box: 0.000618
+ >>> loss_cls: 0.000729
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9300 / 70000, total loss: 0.002219
+ >>> rpn_loss_cls: 0.000339
+ >>> rpn_loss_box: 0.001594
+ >>> loss_cls: 0.000286
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9320 / 70000, total loss: 0.001203
+ >>> rpn_loss_cls: 0.000247
+ >>> rpn_loss_box: 0.000858
+ >>> loss_cls: 0.000097
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9340 / 70000, total loss: 0.009144
+ >>> rpn_loss_cls: 0.000334
+ >>> rpn_loss_box: 0.008544
+ >>> loss_cls: 0.000265
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9360 / 70000, total loss: 0.001375
+ >>> rpn_loss_cls: 0.000217
+ >>> rpn_loss_box: 0.001064
+ >>> loss_cls: 0.000094
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9380 / 70000, total loss: 0.000512
+ >>> rpn_loss_cls: 0.000147
+ >>> rpn_loss_box: 0.000276
+ >>> loss_cls: 0.000090
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9400 / 70000, total loss: 0.009762
+ >>> rpn_loss_cls: 0.000067
+ >>> rpn_loss_box: 0.009578
+ >>> loss_cls: 0.000118
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9420 / 70000, total loss: 0.001116
+ >>> rpn_loss_cls: 0.000156
+ >>> rpn_loss_box: 0.000856
+ >>> loss_cls: 0.000103
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9440 / 70000, total loss: 0.005948
+ >>> rpn_loss_cls: 0.000216
+ >>> rpn_loss_box: 0.005618
+ >>> loss_cls: 0.000115
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9460 / 70000, total loss: 0.003815
+ >>> rpn_loss_cls: 0.000124
+ >>> rpn_loss_box: 0.003554
+ >>> loss_cls: 0.000136
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9480 / 70000, total loss: 0.002729
+ >>> rpn_loss_cls: 0.000064
+ >>> rpn_loss_box: 0.002489
+ >>> loss_cls: 0.000176
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9500 / 70000, total loss: 0.001672
+ >>> rpn_loss_cls: 0.000132
+ >>> rpn_loss_box: 0.001346
+ >>> loss_cls: 0.000193
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9520 / 70000, total loss: 0.000571
+ >>> rpn_loss_cls: 0.000095
+ >>> rpn_loss_box: 0.000329
+ >>> loss_cls: 0.000147
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9540 / 70000, total loss: 0.028411
+ >>> rpn_loss_cls: 0.000083
+ >>> rpn_loss_box: 0.000954
+ >>> loss_cls: 0.026912
+ >>> loss_box: 0.000461
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9560 / 70000, total loss: 0.002057
+ >>> rpn_loss_cls: 0.000094
+ >>> rpn_loss_box: 0.001727
+ >>> loss_cls: 0.000237
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9580 / 70000, total loss: 0.000844
+ >>> rpn_loss_cls: 0.000108
+ >>> rpn_loss_box: 0.000416
+ >>> loss_cls: 0.000320
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9600 / 70000, total loss: 0.000703
+ >>> rpn_loss_cls: 0.000152
+ >>> rpn_loss_box: 0.000369
+ >>> loss_cls: 0.000182
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9620 / 70000, total loss: 0.000969
+ >>> rpn_loss_cls: 0.000153
+ >>> rpn_loss_box: 0.000589
+ >>> loss_cls: 0.000227
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9640 / 70000, total loss: 0.004860
+ >>> rpn_loss_cls: 0.000197
+ >>> rpn_loss_box: 0.004425
+ >>> loss_cls: 0.000238
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9660 / 70000, total loss: 0.012278
+ >>> rpn_loss_cls: 0.000713
+ >>> rpn_loss_box: 0.005794
+ >>> loss_cls: 0.004152
+ >>> loss_box: 0.001619
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9680 / 70000, total loss: 0.023654
+ >>> rpn_loss_cls: 0.000202
+ >>> rpn_loss_box: 0.000266
+ >>> loss_cls: 0.011422
+ >>> loss_box: 0.011764
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9700 / 70000, total loss: 0.016747
+ >>> rpn_loss_cls: 0.000303
+ >>> rpn_loss_box: 0.010715
+ >>> loss_cls: 0.003955
+ >>> loss_box: 0.001773
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9720 / 70000, total loss: 0.033135
+ >>> rpn_loss_cls: 0.000162
+ >>> rpn_loss_box: 0.004337
+ >>> loss_cls: 0.011206
+ >>> loss_box: 0.017429
+ >>> lr: 0.001000
+speed: 0.221s / iter
+iter: 9740 / 70000, total loss: 0.007792
+ >>> rpn_loss_cls: 0.000101
+ >>> rpn_loss_box: 0.000488
+ >>> loss_cls: 0.007203
+ >>> loss_box: 0.000000
+ >>> lr: 0.001000
+speed: 0.221s / iter

@@ -264,6 +264,8 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
       .astype(np.float32, copy=False)
     
     original_all_boxes[j][i] = cls_dets
+    
+    idx = np.argmax(all_boxes[j][i][:, 4])
 
     # Limit to max_per_image detections *over all classes*
     if max_per_image > 0:

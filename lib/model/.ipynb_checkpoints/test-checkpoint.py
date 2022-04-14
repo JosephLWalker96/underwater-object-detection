@@ -93,7 +93,7 @@ def im_detect(net, im):
   blobs['im_info'] = np.array([im_blob.shape[1], im_blob.shape[2], im_scales[0]], dtype=np.float32)
 
   _, scores, bbox_pred, rois, fc7, net_conv = net.test_image(blobs['data'], blobs['im_info'])
-  
+
   boxes = rois[:, 1:5] / im_scales[0]
   scores = np.reshape(scores, [scores.shape[0], -1])
   bbox_pred = np.reshape(bbox_pred, [bbox_pred.shape[0], -1])
@@ -136,14 +136,20 @@ def apply_nms(all_boxes, thresh):
         continue
       nms_boxes[cls_ind][im_ind] = dets[keep, :].copy()
   return nms_boxes
-def draw_car_bb(im, bboxes, scores=[], thr=0.3, type='det'):
+  
+def draw_car_bb(im, bboxes, scores=[], thr=0.3, color_type='1'):
     bboxes = bboxes.astype(int)
     imgcv = np.copy(im)
     h, w, _ = imgcv.shape
-    color = (255,0,0)
-    if type == 'gt':
+
+    
+    if color_type == 'gt':
       scores = np.ones(len(bboxes))
       color = (0,0,255)
+    elif color_type == '1':
+      color = (255,0,0)
+    elif color_type == '2':
+      color = (0,255,0)
 
     for i, box in enumerate(bboxes):
       if scores[i] < thr:
@@ -154,16 +160,57 @@ def draw_car_bb(im, bboxes, scores=[], thr=0.3, type='det'):
                     (box[0], box[1]), (box[2], box[3]),
                     color, thick)
       mess = '%s: %.3f' % ('Car', scores[i])
-      if type == 'gt':
+      if color_type == 'gt':
         mess = ''
       cv2.putText(imgcv, mess, (box[0], box[1] - 12),
                   0, 1e-3 * h / 2., color, 2)
 
     return imgcv
 
+def split_bbox(bbox, imgname, class_recs):
+  R = class_recs[imgname]
+  BBGT = R['bbox'].astype(float)
+
+  ov_th = []
+  und_th = []
+  gt_left = np.ones(len(BBGT))
+  for bb in bbox:
+    assert bb.shape[0] == 5
+    ovmax = -np.inf
+    bb = bb.astype(float)
+    if BBGT.size > 0:
+        # compute overlaps
+        # intersection
+        ixmin = np.maximum(BBGT[:, 0], bb[0])
+        iymin = np.maximum(BBGT[:, 1], bb[1])
+        ixmax = np.minimum(BBGT[:, 2], bb[2])
+        iymax = np.minimum(BBGT[:, 3], bb[3])
+        iw = np.maximum(ixmax - ixmin + 1., 0.)
+        ih = np.maximum(iymax - iymin + 1., 0.)
+        inters = iw * ih
+
+        # union
+        uni = ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +
+               (BBGT[:, 2] - BBGT[:, 0] + 1.) *
+               (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
+
+        overlaps = inters / uni
+        ovmax = np.max(overlaps)
+        jmax = np.argmax(overlaps)
+
+        gt_left[jmax] = 0
+
+    if ovmax >= 0.5:
+      ov_th.append(bb)
+    else:
+      und_th.append(bb)
+
+  gt_left = np.where(gt_left == 1)[0]
+
+  return np.array(ov_th), np.array(und_th), BBGT[gt_left] # N, box+score
 
 def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
-  vis = True
+  vis = False
 
   np.random.seed(cfg.RNG_SEED)
   """Test a Fast R-CNN network on an image database."""
@@ -173,24 +220,22 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
   #  (x1, y1, x2, y2, score)
   all_boxes = [[[] for _ in range(num_images)]
          for _ in range(imdb.num_classes)]
+  ##
+  original_all_boxes = [[[] for _ in range(num_images)]
+         for _ in range(imdb.num_classes)]
+  ##
 
   output_dir = get_output_dir(imdb, weights_filename)
-
-  if vis and 'cityscapes' in imdb.name:
-    gt_roidb = [imdb._load_cityscapes_annotation(index)
-                  for index in imdb.image_index]
-  elif vis and 'KITTI' in imdb.name:
-    gt_roidb = [imdb._load_KITTI_annotation(index)
-              for index in imdb.image_index]
-  else:
-    gt_roidb = None
 
   # timers
   _t = {'im_detect' : Timer(), 'misc' : Timer()}
 
+  # extract gt objects for this class
+  class_recs = {}
+  npos = 0
+
   for i in range(num_images):
     im = cv2.imread(imdb.image_path_at(i))
-
     _t['im_detect'].tic()
     scores, boxes = im_detect(net, im)
     _t['im_detect'].toc()
@@ -205,8 +250,22 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
       cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])) \
         .astype(np.float32, copy=False)
       keep = nms(torch.from_numpy(cls_dets), cfg.TEST.NMS).numpy() if cls_dets.size > 0 else []
+      # ##
+      # original_all_boxes[j][i] = cls_dets
+      # ##
       cls_dets = cls_dets[keep, :]
       all_boxes[j][i] = cls_dets
+    ##
+    obj_scores = net.roi_scores.cpu().data.numpy()
+    inds = np.where(obj_scores[:] > thresh)[0]
+    cls_scores = obj_scores[inds]
+    cls_boxes = boxes[inds, 4:8]
+    cls_dets = np.hstack((cls_boxes, obj_scores[:])) \
+      .astype(np.float32, copy=False)
+    
+    original_all_boxes[j][i] = cls_dets
+    
+    idx = np.argmax(all_boxes[j][i][:, 4])
 
     # Limit to max_per_image detections *over all classes*
     if max_per_image > 0:
@@ -217,23 +276,12 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
         for j in range(1, imdb.num_classes):
           keep = np.where(all_boxes[j][i][:, -1] >= image_thresh)[0]
           all_boxes[j][i] = all_boxes[j][i][keep, :]
+          
     _t['misc'].toc()
     
     print('im_detect: {:d}/{:d} {:.3f}s {:.3f}s' \
         .format(i + 1, num_images, _t['im_detect'].average_time(),
             _t['misc'].average_time()))
-
-    if vis and gt_roidb:
-      #draw ground truth boxes
-      im2show = draw_car_bb(im, gt_roidb[i]['boxes'], type='gt')
-
-      #draw detected boxes
-      im2show = draw_car_bb(im2show, np.squeeze(all_boxes[1][i][:, :-1]), np.squeeze(all_boxes[1][i][:,-1])) #draw class 1: car
-      cv2.imwrite('/home/disk1/DA/pytorch-faster-rcnn/vis/inDomain/'+imdb.image_index[i]+'.png', im2show)
-      #cv2.imshow('test', im2show)
-      #cv2.waitKey(0)
-      
-
 
   det_file = os.path.join(output_dir, 'detections.pkl')
   with open(det_file, 'wb') as f:
@@ -241,4 +289,3 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
 
   print('Evaluating detections')
   imdb.evaluate_detections(all_boxes, output_dir)
-

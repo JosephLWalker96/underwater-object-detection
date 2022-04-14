@@ -43,6 +43,207 @@ case ${ADAPT_MODE} in
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
+  HUA2PAL_CycleGAN)
+    TRAIN_IMDB_S="HUA_synthPALtrain+HUA_synthPALval"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="PAL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL_cm)
+    TRAIN_IMDB_S="HUAsynthPAL_train+HUAsynthPAL_val"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="PAL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2RAN_CycleGAN)
+    TRAIN_IMDB_S="HUA_synthRANtrain+HUA_synthRANval"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="RAN_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2RAN_cm)
+    TRAIN_IMDB_S="HUAsynthRAN_train+HUAsynthRAN_val"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="RAN_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL2021_CycleGAN)
+    TRAIN_IMDB_S="HUAsynthPAL2021_train+HUAsynthPAL2021_val"
+    TRAIN_IMDB_T="PAL2021_train"
+    TEST_IMDB="PAL2021_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL2021_cm)
+    TRAIN_IMDB_S="HUAsynthPAL2021_train+HUAsynthPAL2021_val"
+    TRAIN_IMDB_T="PAL2021_train"
+    TEST_IMDB="PAL2021_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2LL_CycleGAN)
+    TRAIN_IMDB_S="HUAsynthLL_train+HUAsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2LL_cm)
+    TRAIN_IMDB_S="HUAsynthLL_train+HUAsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2TAK_CycleGAN)
+    TRAIN_IMDB_S="HUAsynthTAK_train+HUAsynthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2TAK_cm)
+    TRAIN_IMDB_S="HUAsynthTAK_train+HUAsynthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    ITERS=${TEST_ITER}
+#     ITERS=2204
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2LL_CycleGAN)
+    TRAIN_IMDB_S="HUAsynthLL_train+HUAsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2LL_cm)
+    TRAIN_IMDB_S="HUAsynthLL_train+HUAsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+
+  PAL2HUA_cm)
+    TRAIN_IMDB_S="PALsynthHUA_val"
+    TRAIN_IMDB_T="HUA_train"
+    TEST_IMDB="HUA_trainval"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2LL_cm)
+    TRAIN_IMDB_S="PALsynthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2PAL2021_cm)
+    TRAIN_IMDB_S="PALsynthPAL2021_val"
+    TRAIN_IMDB_T="PAL2021_train"
+    TEST_IMDB="PAL2021_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2RAN_cm)
+    TRAIN_IMDB_S="PALsynthRAN_val"
+    TRAIN_IMDB_T="RAN_train"
+    TEST_IMDB="RAN_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2TAK_cm)
+    TRAIN_IMDB_S="PALsynthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+    
+  PAL20212HUA_cm)
+    TRAIN_IMDB_S="PAL2021synthHUA_val"
+    TRAIN_IMDB_T="HUA_train"
+    TEST_IMDB="HUA_trainval"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212LL_cm)
+    TRAIN_IMDB_S="PAL2021synthLL_val"
+    TRAIN_IMDB_T="LL_train"
+    TEST_IMDB="LL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212PAL_cm)
+    TRAIN_IMDB_S="PAL2021synthPAL_val"
+    TRAIN_IMDB_T="PAL_train"
+    TEST_IMDB="PAL_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212RAN_cm)
+    TRAIN_IMDB_S="PAL2021synthRAN_val"
+    TRAIN_IMDB_T="RAN_train"
+    TEST_IMDB="RAN_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212TAK_cm)
+    TRAIN_IMDB_S="PAL2021synthTAK_val"
+    TRAIN_IMDB_T="TAK_train"
+    TEST_IMDB="TAK_val"
+    ITERS=${TEST_ITER}
+    STEPSIZE="[50000]"
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
   *)
     echo "No dataset given"
     exit
@@ -61,7 +262,7 @@ else
 fi
 
 if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
-  CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/test_net.py \
+  CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/test_net.py \
     --imdb ${TEST_IMDB} \
     --model ${NET_FINAL} \
     --cfg experiments/cfgs/${NET}_${ADAPT_MODE}.yml \
@@ -70,7 +271,7 @@ if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
     --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} \
           ${EXTRA_ARGS}
 else
-  CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/test_net.py \
+  CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/test_net.py \
     --imdb ${TEST_IMDB} \
     --model ${NET_FINAL} \
     --cfg experiments/cfgs/${NET}_${ADAPT_MODE}.yml \
