@@ -202,7 +202,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--resume', default=False, action='store_true')
     parser.add_argument('--model', default='AutoContrast-faster-rcnn-no_es', type=str)
-    parser.add_argument('--model_type', default='faster-rcnn', type=str)
+    # parser.add_argument('--model_type', default='faster-rcnn', type=str)
+    parser.add_argument('--model_type', default='faster-rcnn-vgg16', type=str)
     parser.add_argument('--yaml', default=None, type=str)
 
     # parser.add_argument('--model', default='faster-rcnn-mobilenet', type=str)

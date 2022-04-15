@@ -29,34 +29,22 @@ class net(nn.Module):
         #TODO: need to debug for this one
         elif self.nn_type == 'faster-rcnn-vgg16':
             # cite: https://github.com/pytorch/vision/issues/1116#issuecomment-515373212
-            vgg = torchvision.models.vgg16(pretrained=True)
-            backbone = vgg.features[:-1]
-            for layer in backbone[:10]:
-                for p in layer.parameters():
-                    p.requires_grad = False
+            backbone = torchvision.models.vgg16(pretrained=True).features
             backbone.out_channels = 512
+
             anchor_generator = torchvision.models.detection.faster_rcnn.AnchorGenerator(
                 sizes=((32, 64, 128, 256, 512),),
                 aspect_ratios=((0.5, 1.0, 2.0),))
+
             roi_pooler = torchvision.ops.MultiScaleRoIAlign(featmap_names=['0'],
                                                             output_size=7,
                                                             sampling_ratio=2)
-            class BoxHead(nn.Module):
-                def __init__(self, vgg):
-                    super(BoxHead, self).__init__()
-                    self.classifier = nn.Sequential(*list(vgg.classifier._modules.values())[:-1])
 
-                def forward(self, x):
-                    x = x.flatten(start_dim=1)
-                    x = self.classifier(x)
-                    return x
-            box_head = BoxHead(vgg)
             self.model = torchvision.models.detection.faster_rcnn.FasterRCNN(
                 backbone=backbone,
+                num_classes=num_classes,
                 rpn_anchor_generator=anchor_generator,
-                box_roi_pool=roi_pooler,
-                box_head=box_head,
-                box_predictor=torchvision.models.detection.faster_rcnn.FastRCNNPredictor(4096, num_classes=3))
+                box_roi_pool=roi_pooler)
 
         elif self.nn_type == 'faster-rcnn-mobilenet':
             self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_320_fpn(pretrained=True)
@@ -66,7 +54,7 @@ class net(nn.Module):
             # replace the pre-trained head with a new one
             self.model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
         else:
-            print("Current choice of models are: faster-rcnn, retinanet")
+            print("Current choice of models are: faster-rcnn, retinanet, faster-rcnn-vgg16")
             raise ValueError
 
     def forward(self, images, targets=None):
