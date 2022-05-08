@@ -14,8 +14,94 @@ from tqdm import tqdm
 import os
 import glob
 
+def RandomCropping(img, v, bboxs):
+    # v = 1-v
+    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    img_w, img_h = img.shape[1], img.shape[0]
 
-def Perspective(img, v, bbox): #[0, 1]
+    x_min, y_min, x_max, y_max = union_of_bboxes(
+        width=img_w, height=img_h, bboxes=bboxs
+    )
+
+    # find the dist from cropped region to left, top, right and bottom
+    rm_v = 1-v  # the proportion to be removed
+    rm_v_left = float(rm_v * np.random.random(1)[0])
+    rm_v_top = float(rm_v * np.random.random(1)[0])
+    x_rm1 = int(img_w * rm_v_left) if img_w * rm_v_left < x_min else x_min
+    y_rm1 = int(img_h * rm_v_top) if img_h * rm_v_top < y_min else y_min
+    rm_v_left = x_rm1 / img_w
+    rm_v_top = y_rm1 / img_h
+
+    rm_v_right = rm_v - rm_v_left
+    rm_v_bottom = rm_v - rm_v_top
+    x_rm2 = int(img_w * rm_v_right) if img_w * rm_v_right < img_w-x_max else img_w-x_max
+    y_rm2 = int(img_h * rm_v_bottom) if img_h * rm_v_bottom < img_h-y_max else img_h-y_max
+    rm_v_right = x_rm2 / img_w
+    rm_v_bottom = y_rm2 / img_h
+    rm_v_x_curr = rm_v_right + rm_v_left
+    rm_v_y_curr = rm_v_bottom + rm_v_top
+
+    if rm_v_x_curr < rm_v:
+        displace_v = rm_v-rm_v_x_curr
+        if x_rm1+img_w * displace_v < x_min:
+            x_rm1 += displace_v*img_w
+
+    if rm_v_y_curr < rm_v:
+        displace_v = rm_v - rm_v_y_curr
+        if y_rm1+img_h * displace_v < y_min:
+            y_rm1 += displace_v*img_h
+
+    # find the cropped coordinates
+    x1 = max(0, int(x_rm1))
+    y1 = max(0, int(y_rm1))
+    x2 = min(img_w, int(img_w-x_rm2))
+    y2 = min(img_h, int(img_h-y_rm2))
+
+    # cropped out the region
+    t_img = img[y1:y2, x1:x2]
+    t_img = Image.fromarray(np.rint(t_img).astype(np.uint8))
+
+    # transform the bbox (don't need to change the w and h)
+    bboxs[:, 0] = bboxs[:, 0] - x1
+    bboxs[:, 1] = bboxs[:, 1] - y1
+
+    return t_img, bboxs
+
+def FurtherDistance(img, v, bboxs):  # [0, 1] percentage of original image in t_image
+    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    o_width, o_height = img.shape[1], img.shape[0]
+    width = int(img.shape[1] * v)
+    height = int(img.shape[0] * v)
+    dim = (width, height)
+    resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+
+    ## Calculate padding
+    delta_w = o_width - width
+    delta_h = o_height - height
+    left = random.randrange(0, delta_w)
+    top = random.randrange(0, delta_h)
+    right = delta_w - left
+    bottom = delta_h - top
+
+    ## Calcualte new bounding box
+    for i in range(len(bboxs)):
+        bbox = bboxs[i]
+        x1, y1, w, h = bbox[0] / o_width, bbox[1] / o_height, bbox[2] / o_width, bbox[3] / o_height
+        x_start = x1 * width + left
+        x_end = (x1 + w) * width + left
+        y_start = y1 * height + top
+        y_end = (y1 + h) * height + top
+        bboxs[i][0], bboxs[i][1], bboxs[i][2], bboxs[i][3] = int(x_start), int(y_start), int(x_end - x_start), int(
+            y_end - y_start)
+
+    color = [0, 0, 0]
+    t_img = cv2.copyMakeBorder(resized, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+    t_img = Image.fromarray(np.rint(t_img).astype(np.uint8))
+
+    return t_img, bboxs
+
+
+def Perspective(img, v, bbox):  # [0, 1]
     img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
     width, height = img.shape[1], img.shape[0]
     M = get_transformation_matrix(width, height, v)
@@ -26,6 +112,7 @@ def Perspective(img, v, bbox): #[0, 1]
         updated_corners = np.rint(cv2.perspectiveTransform(corners, M)).reshape(4, 2)
         bbox[i] = corners_to_bbox(updated_corners, t_img)
     return t_img, bbox
+
 
 def ShearX(img, v, bbox):  # [-0.3, 0.3]
     assert -0.3 <= v <= 0.3
@@ -171,13 +258,17 @@ def TranslateYBboxSafe(img, v, bbox):  # [0, 1]
 
 
 def Rotate(img, v, bbox):  # [-30, 30]
+    v = int(v*30)
     assert -30 <= v <= 30
     if random.random() > 0.5:
         v = -v
-    M = rotation_matrix(img, v)
+
+    M, nW, nH = rotation_matrix(img, v)
+    img = Image.fromarray(cv2.warpAffine(np.array(img), M, (nW, nH)))
     for i in range(len(bbox)):
         bbox[i] = rotate_update_bbox(bbox[i], M, img)
-    return img.rotate(v), bbox
+
+    return img, bbox
 
 
 def AutoContrast(img, _, bbox):
@@ -338,12 +429,13 @@ augment_map = {
     'TranslateYabs': TranslateYabs,
     'TranslateXthr': TranslateXBBoxSafe,
     'TranslateYthr': TranslateYBboxSafe,
-    'CutoutBboxSafe': CutoutBboxSafe
+    'CutoutBboxSafe': CutoutBboxSafe,
+    'FurtherDistance': FurtherDistance
 }
 
 aug_sel = [
     'AutoContrast', 'Equalize', 'Rotate', 'Posterize', 'Color', 'Contrast',
-    'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs',
+    'Brightness', 'Sharpness', 'ShearX', 'ShearY', 'CutoutAbs', 'TranslateXabs', 'FurtherDistance',
     'TranslateYabs', 'Cutout', 'TranslateX', 'TranslateY', 'TranslateXthr', 'TranslateYthr', 'CutoutBboxSafe'
 ]
 
@@ -392,25 +484,28 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
     # ]
 
     if aug_ls is None:
-        ls = [
-            # (AutoContrast, 0, 1),
-            # (Equalize, 0, 1),
-            # # (Invert, 0, 1),
-            # (Rotate, 0, 30),
-            # (Posterize, 0, 4),
-            # # (Solarize, 0, 256),
-            # # (SolarizeAdd, 0, 110),
-            # (Color, 0.1, 1.9),
-            # (Contrast, 0.1, 1.9),
-            # (Brightness, 0.1, 1.9),
-            # (Sharpness, 0.1, 1.9),
-            (TranslateXBBoxSafe, 0., 1),
-            (TranslateYBboxSafe, 0., 1),
-            (CutoutBboxSafe, 0, 100),
-            (ShearXBboxSafe, 0., 0.3),
-            (ShearYBboxSafe, 0., 0.3),
-            (Perspective, 0, 1)
-        ]
+        # ls = [
+        #     # (AutoContrast, 0, 1),
+        #     # (Equalize, 0, 1),
+        #     # # (Invert, 0, 1),
+        #     (Rotate, 0, 30),
+        #     # (Posterize, 0, 4),
+        #     # # (Solarize, 0, 256),
+        #     # # (SolarizeAdd, 0, 110),
+        #     # (Color, 0.1, 1.9),
+        #     # (Contrast, 0.1, 1.9),
+        #     # (Brightness, 0.1, 1.9),
+        #     # (Sharpness, 0.1, 1.9),
+        #     (TranslateXBBoxSafe, 0., 1),
+        #     (TranslateYBboxSafe, 0., 1),
+        #     (CutoutBboxSafe, 0, 100),
+        #     (ShearXBboxSafe, 0., 0.3),
+        #     (ShearYBboxSafe, 0., 0.3),
+        #     (Perspective, 0, 0.5),
+        #     (FurtherDistance, 0.3, 0.8)
+        # ]
+        # ls = [(RandomCropping, 0, 1)]
+        ls = [(Rotate, 0, 1)]
     else:
         ls = []
         for aug, minval, maxval in aug_ls:
