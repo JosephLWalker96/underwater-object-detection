@@ -29,6 +29,8 @@ import time
 
 import json
 
+# torch.backends.cudnn.benchmark = True
+
 def scale_lr(optimizer, scale):
   """Scale the learning rate of the optimizer"""
   for param_group in optimizer.param_groups:
@@ -233,6 +235,8 @@ class SolverWrapper(object):
       ss_paths.remove(sfile)
     
   def train_model(self, max_iters):
+    torch.backends.cudnn.benchmark = True
+
     # Build data layers for both training and validation set
     self.data_layer = RoIDataLayer(self.roidb, self.imdb.num_classes)
     self.data_layer_val = RoIDataLayer(self.valroidb, self.imdb.num_classes, random=True)

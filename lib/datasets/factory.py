@@ -27,6 +27,11 @@ from datasets.HUAsynthRAN import HUAsynthRAN
 from datasets.TAK import TAK
 from datasets.HUAsynthTAK import HUAsynthTAK
 
+from datasets.ALLexceptTAK import ALLexceptTAK
+from datasets.ALLexceptPAL2021 import ALLexceptPAL2021
+from datasets.TAKsynthALLexceptTAK import TAKsynthALLexceptTAK
+from datasets.PAL2021synthALLexceptPAL2021 import PAL2021synthALLexceptPAL2021
+
 from datasets.TAH import TAH
 from datasets.MOO import MOO
 
@@ -123,6 +128,26 @@ for split in ['train', 'val', 'trainval']:
 for split in ['train', 'val', 'trainval']:
   name = 'RAN_{}'.format(split)
   __sets[name] = (lambda split=split: RAN(split))
+  
+# Set up ALLexceptTAK
+for split in ['train', 'val', 'trainval']:
+  name = 'ALLexceptTAK_{}'.format(split)
+  __sets[name] = (lambda split=split: ALLexceptTAK(split))
+  
+# Set up TAKsynthALLexceptTAK
+for split in ['train', 'val', 'trainval']:
+  name = 'TAKsynthALLexceptTAK_{}'.format(split)
+  __sets[name] = (lambda split=split: TAKsynthALLexceptTAK(split))
+  
+# Set up ALLexceptPAL2021
+for split in ['train', 'val', 'trainval']:
+  name = 'ALLexceptPAL2021_{}'.format(split)
+  __sets[name] = (lambda split=split: ALLexceptPAL2021(split))
+  
+# Set up PAL2021synthALLexceptPAL2021
+for split in ['train', 'val', 'trainval']:
+  name = 'PAL2021synthALLexceptPAL2021_{}'.format(split)
+  __sets[name] = (lambda split=split: PAL2021synthALLexceptPAL2021(split))
     
 # Set up TAK
 for split in ['train', 'val', 'trainval']:

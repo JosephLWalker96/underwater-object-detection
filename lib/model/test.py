@@ -260,6 +260,8 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
     inds = np.where(obj_scores[:] > thresh)[0]
     cls_scores = obj_scores[inds]
     cls_boxes = boxes[inds, 4:8]
+#    print(f"cls scores shape:{cls_scores}")
+#    print(f"cls boxes shape:{cls_boxes}")
     cls_dets = np.hstack((cls_boxes, obj_scores[:])) \
       .astype(np.float32, copy=False)
     
