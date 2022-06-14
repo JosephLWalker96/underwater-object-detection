@@ -1,12 +1,4 @@
 # Progressive Domain Adaptation for Object Detection (from https://github.com/kevinhkhsu/DA_detection)
-Implementation of our paper **[Progressive Domain Adaptation for Object Detection](https://arxiv.org/pdf/1910.11319.pdf)**, based on [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md) and [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN).
-
-## Paper
-**[Progressive Domain Adaptation for Object Detection](https://arxiv.org/pdf/1910.11319.pdf)**
-[Han-Kai Hsu](https://sites.google.com/site/kevinhkhsu/), [Chun-Han Yao](https://www.chhankyao.com/), [Yi-Hsuan Tsai](https://sites.google.com/site/yihsuantsai/home), [Wei-Chih Hung](https://hfslyc.github.io/), [Hung-Yu Tseng](https://sites.google.com/site/hytseng0509/), [Maneesh Singh](https://scholar.google.com/citations?user=hdQhiFgAAAAJ) and [Ming-Hsuan Yang](http://faculty.ucmerced.edu/mhyang/index.html)
-IEEE Winter Conference on Applications of Computer Vision (WACV), 2020.
-
-Please cite our paper if you find it useful for your research.
 ```
 @inproceedings{hsu2020progressivedet,
   author = {Han-Kai Hsu and Chun-Han Yao and Yi-Hsuan Tsai and Wei-Chih Hung and Hung-Yu Tseng and Maneesh Singh and Ming-Hsuan Yang},
@@ -15,6 +7,7 @@ Please cite our paper if you find it useful for your research.
   year = {2020}
 }
 ```
+
 
 ## Dependencies
 This code is tested with **Pytorch 0.4.1** and **CUDA 9.0**
@@ -44,23 +37,6 @@ sh ./lib/make.sh
 #### BDD100k
 - Download the data from [here](https://bdd-data.berkeley.edu/).
 - Extract the files under `data/bdd100k/`
-
-## Generate synthetic data with CycleGAN
-Generate the synthetic data with the [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN) implementation.
-
-`git clone https://github.com/aitorzip/PyTorch-CycleGAN`
-
-#### Dataset loader code
-Import the dataset loader code in `./cycleGAN_dataset_loader/` to train/test the CycleGAN on corresponding image translation task.
-
-#### Generate from pre-trained weight:
-Follow the testing instructions on [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN) and download the weight below to generate synthetic images. (Remember to change to the corresponding output image size)
-- [KITTI with Cityscapes style](http://vllab1.ucmerced.edu/~hhsu22/da_det/pretrained_cycleGAN_weight/K_C_model.tar.gz) (KITTI->Cityscapes): size=(376,1244)
-Locate the generated data under `data/KITTI/training/synthCity_image_2/` with same naming and folder structure as original KITTI data.
-- [Cityscapes with FoggyCityscapes style](http://vllab1.ucmerced.edu/~hhsu22/da_det/pretrained_cycleGAN_weight/foggyC_C_model.tar.gz) (Cityscapes->FoggyCityscapes): size=(1024,2048)
-Locate the generated data under `data/CityScapes/leftImg8bit/synthFoggytrain` with same naming and folder structure as original Cityscapes data.
-- [Cityscapes with BDD style](http://vllab1.ucmerced.edu/~hhsu22/da_det/pretrained_cycleGAN_weight/cityscapes_BDDday_model.tar.gz) (Cityscpaes->BDD100k): size=(1024,1280)
-Locate the generated data under `data/CityScapes/leftImg8bit/synthBDDdaytrain` and `data/CityScapes/leftImg8bit/synthBDDdayval` with same naming and folder structure as original Cityscapes data.
 
 #### Train your own CycleGAN:
 Please follow the training instructions on [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN).
