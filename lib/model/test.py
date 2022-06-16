@@ -273,12 +273,20 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
     idx = np.argmax(all_boxes[j][i][:, 4])
     img_name = imdb.image_path_at(i).split('/')[-1]
     cur_dets = all_boxes[j][i][idx]
-    output_df = output_df.append({"image name": img_name, 
-                                  "x_min": cur_dets[0], 
-                                  "y_min": cur_dets[1], 
-                                  "x_max": cur_dets[2], 
-                                  "y_max": cur_dets[3], 
-                                  "confidence": cur_dets[4]},ignore_index=True)
+    if cls_dets.size > 0:
+      output_df = output_df.append({"image name": img_name, 
+                                    "x_min": cur_dets[0], 
+                                    "y_min": cur_dets[1], 
+                                    "x_max": cur_dets[2], 
+                                    "y_max": cur_dets[3], 
+                                    "confidence": cur_dets[4]},ignore_index=True)
+    else:
+      output_df = output_df.append({"image name": img_name, 
+                                    "x_min": "No Detection", 
+                                    "y_min": "No Detection", 
+                                    "x_max": "No Detection", 
+                                    "y_max": "No Detection", 
+                                    "confidence": "No Detection"},ignore_index=True)
 
     # Limit to max_per_image detections *over all classes*
     if max_per_image > 0:
