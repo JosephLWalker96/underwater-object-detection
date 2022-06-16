@@ -24,6 +24,7 @@ from model.config import cfg, get_output_dir
 from model.bbox_transform import clip_boxes, bbox_transform_inv
 
 import torch
+import pandas as pd
 
 def _get_image_blob(im):
   """Converts an image into a network input.
@@ -212,6 +213,8 @@ def split_bbox(bbox, imgname, class_recs):
 def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
   vis = False
 
+  output_df = pd.DataFrame(columns=["image name", "x_min", "y_min", "x_max", "y_max", "confidence"])
+
   np.random.seed(cfg.RNG_SEED)
   """Test a Fast R-CNN network on an image database."""
   num_images = len(imdb.image_index)
@@ -268,6 +271,14 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
     original_all_boxes[j][i] = cls_dets
     
     idx = np.argmax(all_boxes[j][i][:, 4])
+    img_name = imdb.image_path_at(i).split('/')[-1]
+    cur_dets = all_boxes[j][i][idx]
+    output_df = output_df.append({"image name": img_name, 
+                                  "x_min": cur_dets[0], 
+                                  "y_min": cur_dets[1], 
+                                  "x_max": cur_dets[2], 
+                                  "y_max": cur_dets[3], 
+                                  "confidence": cur_dets[4]},ignore_index=True)
 
     # Limit to max_per_image detections *over all classes*
     if max_per_image > 0:
@@ -285,7 +296,13 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.):
         .format(i + 1, num_images, _t['im_detect'].average_time(),
             _t['misc'].average_time()))
 
+  print(f"saving detection results to {output_dir}")
+  try:
+    output_df.to_excel(os.path.join(output_dir,"detections.xlsx"))
+  except:
+    output_df.to_csv(os.path.join(output_dir,"detections.csv"))
   det_file = os.path.join(output_dir, 'detections.pkl')
+  
   with open(det_file, 'wb') as f:
     pickle.dump(all_boxes, f, pickle.HIGHEST_PROTOCOL)
 
