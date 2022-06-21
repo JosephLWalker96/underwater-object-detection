@@ -48,11 +48,13 @@ def synth(img_src_path, img_ref_path, img_name):
     gc.collect()
 
 if __name__ == '__main__':
-    source_ls = ['PAL']
-    target_ls = ['LL', 'HUA', 'PAL', 'RAN', 'PAL2021']
+    source_ls = ['LL', 'HUA', 'PAL', 'RAN', 'PAL2021', 'TAK']
+    target_ls = ['LL', 'HUA', 'PAL', 'RAN', 'PAL2021', 'TAK']
     for source in source_ls:
         for target in target_ls:
-            print(f"preparing {source}synth{target}")
+            if source == target:
+                continue
+            print(f"preparing {source}synth{target} directory")
             if os.path.exists(source + 'synth' + target):
                 os.system(f'rm -r {source}synth{target}/JPEGImages')
                 os.mkdir(f'{source}synth{target}/JPEGImages')
@@ -72,6 +74,8 @@ if __name__ == '__main__':
         for img_name in os.listdir(loc):
             if img_name.split('.')[1] == 'JPG':
                 for target in target_ls:
+                    if source == target:
+                        continue
                     target_img_path = np.random.choice(target_img_paths[target], 1)[0]
                     img_path = f"{source}synth{target}/JPEGImages/{img_name}"
                     args.append((loc+'/'+img_name, target_img_path, img_path))
