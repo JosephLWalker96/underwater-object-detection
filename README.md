@@ -22,39 +22,49 @@ sh ./lib/make.sh
 ```
 
 ## Data Preparation
-#### KITTI
-- Download the data from [here](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d).
-- Extract the files under `data/KITTI/`
+#### HUA
+- Download the data from [here](https://drive.google.com/file/d/1qVys_q6kJsKD9fI0nEgCxMXlWsXsJIMB/view?usp=sharing).
+- Extract the files under `data/`
 
-#### Cityscapes
-- Download the data from [here](https://www.cityscapes-dataset.com/).
-- Extract the files under `data/CityScapes/`
+#### LL
+- Download the data from [here](https://drive.google.com/file/d/1wkJYBn7Dt-sFQLcfJxS8gvszOnkMvcw5/view?usp=sharing).
+- Extract the files under `data/`
 
-#### Foggy Cityscapes
-- Follow the instructions [here](https://www.cityscapes-dataset.com/) to request for the dataset download.
-- Locate the data under `data/CityScapes/leftImg8bit/` as `foggytrain` and `foggyval`.
+#### PAL_2020 FR
+- Download the data from [here](https://drive.google.com/file/d/1XS1fks52eXOpYsH5_kGlAzlw7K6UH38M/view?usp=sharing).
+- Extract the files under `data/`
 
-#### BDD100k
-- Download the data from [here](https://bdd-data.berkeley.edu/).
-- Extract the files under `data/bdd100k/`
+#### PAL_2021 RT
+- Download the data from [here](https://drive.google.com/file/d/1vp_AOVgbXS4dr_Tg1tDdAhryPvzVvijX/view?usp=sharing).
+- Extract the files under `data/`
 
-#### Train your own CycleGAN:
-Please follow the training instructions on [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN).
+#### TAK
+- Download the data from [here]([https://www.cityscapes-dataset.com/](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing)).
+- Extract the files under `data/`
 
-## Test the adaptation model
+#### RAN
+- Download the data from [here]([https://www.cityscapes-dataset.com/](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing)).
+- Extract the files under `data/`
+
+#### Preparing synthetic dataset with color-matcher:
+cd data;
+python ColorMatcherSynthMP.py;
+
+## Test the adaptation model (TODO: NEED TO UPLOAD TRAINED WEIGHTS)
 Download the following adapted weights to `./trained_weights/adapt_weight/`
-- [KITTI->Cityscapes](http://vllab1.ucmerced.edu/~hhsu22/da_det/adapt_weight/vgg16_faster_rcnn_K2C_stage2.pth)
-- [Cityscapes->FoggyCityscapes](http://vllab1.ucmerced.edu/~hhsu22/da_det/adapt_weight/vgg16_faster_rcnn_C2F_stage2.pth)
-- [Cityscpaes->BDD100k](http://vllab1.ucmerced.edu/~hhsu22/da_det/adapt_weight/vgg16_faster_rcnn_C2BDD_stage2.pth)
+- [Google Drive](link)
 ```
 ./experiments/scripts/test_adapt_faster_rcnn_stage1.sh [GPU_ID] [Adapt_mode] vgg16
 # Specify the GPU_ID you want to use
 # Adapt_mode selection:
-#   'K2C': KITTI->Cityscapes
-#   'C2F': Cityscapes->Foggy Cityscapes
-#   'C2BDD': Cityscapes->BDD100k_day
+#   'HUA2LL': HUA->LL
+#   'HUA2PAL': HUA->PAL_2020(FR)
+#   'HUA2PAL2021': HUA->PAL_2021(RT)
+#   'HUA2TAK': HUA->TAK
+#   'HUA2RAN': HUA->RAN
+#   ...
 # Example:
-./experiments/scripts/test_adapt_faster_rcnn_stage2.sh 0 K2C vgg16
+./experiments/scripts/test_adapt_faster_rcnn_stage2.sh 0 HUA2LL vgg16
 ```
 
 ## Train your own model
@@ -63,30 +73,22 @@ Download the following adapted weights to `./trained_weights/adapt_weight/`
 ./experiments/scripts/train_adapt_faster_rcnn_stage1.sh [GPU_ID] [Adapt_mode] vgg16
 # Specify the GPU_ID you want to use
 # Adapt_mode selection:
-#   'K2C': KITTI->Cityscapes
-#   'C2F': Cityscapes->Foggy Cityscapes
-#   'C2BDD': Cityscapes->BDD100k_day
+#   'HUA2LL': HUA->LL
+#   'HUA2PAL': HUA->PAL_2020(FR)
+#   'HUA2PAL2021': HUA->PAL_2021(RT)
+#   'HUA2TAK': HUA->TAK
+#   'HUA2RAN': HUA->RAN
+#   ...
 # Example:
-./experiments/scripts/train_adapt_faster_rcnn_stage1.sh 0 K2C vgg16
+./experiments/scripts/train_adapt_faster_rcnn_stage1.sh 0 HUA2LL vgg16
 ```
-Download the following pretrained detector weights to `./trained_weights/pretrained_detector/`
-- [KITTI for K2C](http://vllab1.ucmerced.edu/~hhsu22/da_det/pretrained_detector/vgg16_faster_rcnn_KITTI_pretrained.pth)
-- [Cityscapes for C2f](http://vllab1.ucmerced.edu/~hhsu22/da_det/pretrained_detector/vgg16_faster_rcnn_city_pretrained_8class.pth)
-- [Cityscapes for C2BDD](http://vllab1.ucmerced.edu/~hhsu22/da_det/pretrained_detector/vgg16_faster_rcnn_city_pretrained_10class.pth)
+Download the following pretrained detector weights to `./trained_weights/pretrained_detector/` (TODO: UPLOAD PRETRAINED DETECTOR)
+- [Google Drive](link）
 
 #### Stage two
 ```
-./experiments/scripts/train_adapt_faster_rcnn_stage2.sh 0 K2C vgg16
+./experiments/scripts/train_adapt_faster_rcnn_stage2.sh 0 HUA2LL vgg16
 ```
-Discriminator score files: 
-- netD_synthC_score.json
-- netD_CsynthFoggyC_score.json
-- netD_CsynthBDDday_score.json
-
-Extract the pretrained [CycleGAN discriminator scores](http://vllab1.ucmerced.edu/~hhsu22/da_det/D_score.tar.gz) to `./trained_weights/` </br>
-or </br>
-Save a dictionary of CycleGAN discriminator scores with image name as key and score as value </br>
-Ex: {'jena_000074_000019_leftImg8bit.png': 0.64}
 
 ## Detection results
 ![](figure/det_results.png)
@@ -97,4 +99,4 @@ Ex: {'jena_000074_000019_leftImg8bit.png': 0.64}
 ![](figure/adapt_results_c2bdd.png)
 
 ## Acknowledgement
-Thanks to the awesome implementations from [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md) and [PyTorch-CycleGAN](https://github.com/aitorzip/PyTorch-CycleGAN).
+We would like to express our thanks to the awesome implementations from [DA_detection](https://github.com/kevinhkhsu/DA_detection) and [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md).
