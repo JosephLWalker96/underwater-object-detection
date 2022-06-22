@@ -52,7 +52,11 @@ python ColorMatcherSynthMP.py;
 
 ## Test the adaptation model (TODO: NEED TO UPLOAD TRAINED WEIGHTS)
 Download the following adapted weights to `./trained_weights/adapt_weight/`
-- [TAK as source environment](https://drive.google.com/drive/folders/1ezIv_joJIq2tmC7jlS8Vs8lnP0Z2lesr?usp=sharing)
+- [TAK2HUA](https://drive.google.com/file/d/1ctnBEzk_xwPJaYAgs4IxMRzM8qafNPRi/view?usp=sharing)
+- [TAK2LL](https://drive.google.com/file/d/1Pkfmf0rJCARWAtFF3ICmDj4lJaCwsPYq/view?usp=sharing)
+- [TAK2PAL](https://drive.google.com/file/d/1R6Q4P9DfJCO_EFBHRf7_E4TTUYUSbcEj/view?usp=sharing)
+- [TAK2PAL2021](https://drive.google.com/file/d/1xYMNg0C6hpEdldslxhJEs9Bmi91-kUMc/view?usp=sharing)
+- [TAK2RAN](https://drive.google.com/file/d/1w2Opyxo5sd4LcqK9pVt4LCwbE5U50GNm/view?usp=sharing)
 ```
 ./experiments/scripts/test_adapt_faster_rcnn_stage1.sh [GPU_ID] [Adapt_mode] vgg16
 # Specify the GPU_ID you want to use
