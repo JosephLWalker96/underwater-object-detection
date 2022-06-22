@@ -50,7 +50,7 @@ sh ./lib/make.sh
 cd data;
 python ColorMatcherSynthMP.py;
 
-## Test the adaptation model (TODO: NEED TO UPLOAD TRAINED WEIGHTS)
+## Test the adaptation model
 Download the following adapted weights to `./trained_weights/adapt_weight/`
 - [TAK2HUA](https://drive.google.com/file/d/1ctnBEzk_xwPJaYAgs4IxMRzM8qafNPRi/view?usp=sharing)
 - [TAK2LL](https://drive.google.com/file/d/1Pkfmf0rJCARWAtFF3ICmDj4lJaCwsPYq/view?usp=sharing)
@@ -87,7 +87,7 @@ Download the following adapted weights to `./trained_weights/adapt_weight/`
 ./experiments/scripts/train_adapt_faster_rcnn_stage1.sh 0 HUA2LL vgg16
 ```
 Download the following pretrained detector weights to `./trained_weights/pretrained_detector/` (the provided pretrained_detector are using TAK as source environment)
-- [pretrained on images from TAK environments](https://drive.google.com/file/d/1Rv6yP0Wcg_kSCpfl4zSxURCdWqBFU9Hw/view?usp=sharing）
+- [pretrained on images from TAK environments](https://drive.google.com/file/d/1Rv6yP0Wcg_kSCpfl4zSxURCdWqBFU9Hw/view?usp=sharing)
 
 #### Stage two
 ```
