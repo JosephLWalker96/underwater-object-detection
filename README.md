@@ -39,11 +39,11 @@ sh ./lib/make.sh
 - Extract the files under `data/`
 
 #### TAK
-- Download the data from [here](https://www.cityscapes-dataset.com/](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing).
 - Extract the files under `data/`
 
 #### RAN
-- Download the data from [here](https://www.cityscapes-dataset.com/](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing).
 - Extract the files under `data/`
 
 #### Preparing synthetic dataset with color-matcher:
