@@ -52,7 +52,7 @@ python ColorMatcherSynthMP.py;
 
 ## Test the adaptation model (TODO: NEED TO UPLOAD TRAINED WEIGHTS)
 Download the following adapted weights to `./trained_weights/adapt_weight/`
-- [Google Drive](link)
+- [TAK as source environment](https://drive.google.com/drive/folders/1ezIv_joJIq2tmC7jlS8Vs8lnP0Z2lesr?usp=sharing)
 ```
 ./experiments/scripts/test_adapt_faster_rcnn_stage1.sh [GPU_ID] [Adapt_mode] vgg16
 # Specify the GPU_ID you want to use
@@ -82,8 +82,8 @@ Download the following adapted weights to `./trained_weights/adapt_weight/`
 # Example:
 ./experiments/scripts/train_adapt_faster_rcnn_stage1.sh 0 HUA2LL vgg16
 ```
-Download the following pretrained detector weights to `./trained_weights/pretrained_detector/` (TODO: UPLOAD PRETRAINED DETECTOR)
-- [Google Drive](link）
+Download the following pretrained detector weights to `./trained_weights/pretrained_detector/` (the provided pretrained_detector are using TAK as source environment)
+- [pretrained on images from TAK environments](https://drive.google.com/file/d/1Rv6yP0Wcg_kSCpfl4zSxURCdWqBFU9Hw/view?usp=sharing）
 
 #### Stage two
 ```
