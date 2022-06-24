@@ -103,4 +103,4 @@ Download the following pretrained detector weights to `./trained_weights/pretrai
 ![](figure/adapt_results_c2bdd.png)
 
 ## Acknowledgement
-We would like to express our thanks to the awesome implementations from [DA_detection](https://github.com/kevinhkhsu/DA_detection) and [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md).
+We would like to express our thanks to the awesome implementations from [DA_detection](https://github.com/kevinhkhsu/DA_detection) and [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md). This project is heavily based on [DA_detection](https://github.com/kevinhkhsu/DA_detection).
