@@ -15,7 +15,7 @@ This code is tested with **Pytorch 0.4.1** and **CUDA 9.0**
 # Pytorch via pip: Download and install Pytorch 0.4.1 wheel for CUDA 9.0
 #                  from https://download.pytorch.org/whl/cu90/torch_stable.html
 # Pytorch via conda: 
-conda install pytorch=0.4.1 cuda90 -c pytorch
+conda install pytorch=0.4.0 cuda90 -c pytorch
 # Other dependencies:
 pip install -r requirements.txt
 sh ./lib/make.sh
