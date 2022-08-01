@@ -261,7 +261,7 @@ def TranslateBboxSafe(img, v, bbox):
     x_v = random.random()*v
     y_v = v - x_v
     img, bbox = TranslateXBBoxSafe(img, x_v, bbox)
-    img, bbox = TranslateXBBoxSafe(img, y_v, bbox)
+    img, bbox = TranslateYBBoxSafe(img, y_v, bbox)
     return img, bbox
 
 def Rotate(img, v, bbox):  # [-30, 30]
