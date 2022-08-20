@@ -1,12 +1,4 @@
 # Underwater Object Detection Under Dataset Shift
-
-## Backgorund
-This dataset consists of 2,109 images of Smart Underwater Imaging Telemeters (SUITs) that were
-imaged across six different coral reefs. This dataset was curated for domain adaptation experimentation
-for underwater object detection settings.
-The associated manuscript has been submitted for publication under the title:
-Underwater object detection under dataset shift.
-
 Authors: 
 Joseph L. Walker 1*, 
 Zheng Zeng2, 
@@ -21,6 +13,13 @@ Stuart A. Sandin 1
 Corresponding author: Joseph L. Walker, jlwalker (at) ucsd (dot) edu
 python-based software associated with the publication can be found at:
 https://github.com/JosephLWalker96/underwater-object-detection
+
+## Backgorund
+This dataset consists of 2,109 images of Smart Underwater Imaging Telemeters (SUITs) that were
+imaged across six different coral reefs. This dataset was curated for domain adaptation experimentation
+for underwater object detection settings.
+The associated manuscript has been submitted for publication under the title:
+Underwater object detection under dataset shift.
 
 ## Dependencies
 This code is tested with **Pytorch 0.4.1** and **CUDA 9.0**
