@@ -22,7 +22,7 @@ The associated manuscript has been submitted for publication under the title:
 Underwater object detection under dataset shift.
 
 ## Dependencies
-This code is tested with **Pytorch 0.4.1** and **CUDA 9.0**
+This code is tested with **Pytorch 0.4.0** and **CUDA 9.0**
 ```
 # Pytorch via pip: Download and install Pytorch 0.4.1 wheel for CUDA 9.0
 #                  from https://download.pytorch.org/whl/cu90/torch_stable.html
