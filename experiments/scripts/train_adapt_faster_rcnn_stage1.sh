@@ -63,7 +63,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_HUA_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="PAL_val"
+    TRAIN_IMDB_T="PAL_trainval"
     TEST_IMDB="PAL_val"
     STEPSIZE="[2755]"
     ITERS=5510
@@ -96,7 +96,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_HUA_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="PAL2021_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[2755]"
     ITERS=5510
@@ -129,7 +129,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_HUA_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="TAK_val"
+    TRAIN_IMDB_T="TAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2755]"
     ITERS=5510
@@ -162,7 +162,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_HUA_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="LL_val"
+    TRAIN_IMDB_T="LL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2755]"
     ITERS=5510
@@ -195,7 +195,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_HUA_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="RAN_val"
+    TRAIN_IMDB_T="RAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2755]"
     ITERS=5510
@@ -217,8 +217,8 @@ case ${ADAPT_MODE} in
   PAL2HUA_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthHUA_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthHUA_trainval"
     TEST_IMDB="HUA_val+HUA_train"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -228,7 +228,7 @@ case ${ADAPT_MODE} in
   PAL2HUA_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
+    TRAIN_IMDB_S="PAL_trainval"
     TRAIN_IMDB_T="HUA_train+HUA_val"
     TEST_IMDB="HUA_val+HUA_train"
     STEPSIZE="[2988]"
@@ -239,8 +239,8 @@ case ${ADAPT_MODE} in
   PAL2HUA_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthHUA_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthHUA_trainval"
     TEST_IMDB="HUA_val+HUA_train"
     STEPSIZE="[2988]"
     ITERS=11950
@@ -250,8 +250,8 @@ case ${ADAPT_MODE} in
   PAL2LL_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthLL_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthLL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -261,8 +261,8 @@ case ${ADAPT_MODE} in
   PAL2LL_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="LL_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="LL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -272,8 +272,8 @@ case ${ADAPT_MODE} in
   PAL2LL_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthLL_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthLL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2988]"
     ITERS=11950
@@ -283,8 +283,8 @@ case ${ADAPT_MODE} in
   PAL2PAL2021_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthPAL2021_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthPAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -294,8 +294,8 @@ case ${ADAPT_MODE} in
   PAL2PAL2021_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PAL2021_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[2988]"
     ITERS=23900
@@ -305,8 +305,8 @@ case ${ADAPT_MODE} in
   PAL2PAL2021_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthPAL2021_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthPAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[2988]"
     ITERS=26290
@@ -316,8 +316,8 @@ case ${ADAPT_MODE} in
   PAL2RAN_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthRAN_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthRAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -327,8 +327,8 @@ case ${ADAPT_MODE} in
   PAL2RAN_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="RAN_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="RAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -338,8 +338,8 @@ case ${ADAPT_MODE} in
   PAL2RAN_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthRAN_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthRAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2988]"
     ITERS=11950
@@ -349,8 +349,8 @@ case ${ADAPT_MODE} in
   PAL2TAK_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthTAK_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthTAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -360,8 +360,8 @@ case ${ADAPT_MODE} in
   PAL2TAK_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="TAK_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="TAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -371,8 +371,8 @@ case ${ADAPT_MODE} in
   PAL2TAK_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthTAK_val"
+    TRAIN_IMDB_S="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthTAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2988]"
     ITERS=11950
@@ -383,8 +383,8 @@ case ${ADAPT_MODE} in
   PAL20212HUA_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthHUA_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthHUA_trainval"
     TEST_IMDB="HUA_val+HUA_train"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -394,7 +394,7 @@ case ${ADAPT_MODE} in
   PAL20212HUA_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
     TRAIN_IMDB_T="HUA_train+HUA_val"
     TEST_IMDB="HUA_val+HUA_train"
     STEPSIZE="[2988]"
@@ -405,8 +405,8 @@ case ${ADAPT_MODE} in
   PAL20212HUA_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthHUA_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthHUA_trainval"
     TEST_IMDB="HUA_val+HUA_train"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -416,8 +416,8 @@ case ${ADAPT_MODE} in
   PAL20212LL_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthLL_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthLL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2988]"
     ITERS=5850
@@ -427,8 +427,8 @@ case ${ADAPT_MODE} in
   PAL20212LL_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="LL_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="LL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -438,8 +438,8 @@ case ${ADAPT_MODE} in
   PAL20212LL_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthLL_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthLL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -449,8 +449,8 @@ case ${ADAPT_MODE} in
   PAL20212PAL_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthPAL_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthPAL_trainval"
     TEST_IMDB="PAL_val"
     STEPSIZE="[2988]"
     ITERS=5975
@@ -460,8 +460,8 @@ case ${ADAPT_MODE} in
   PAL20212PAL_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL_trainval"
     TEST_IMDB="PAL_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -471,8 +471,8 @@ case ${ADAPT_MODE} in
   PAL20212PAL_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthPAL_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthPAL_trainval"
     TEST_IMDB="PAL_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -482,8 +482,8 @@ case ${ADAPT_MODE} in
   PAL20212RAN_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthRAN_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthRAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2988]"
     ITERS=5850
@@ -493,8 +493,8 @@ case ${ADAPT_MODE} in
   PAL20212RAN_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="RAN_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="RAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -504,8 +504,8 @@ case ${ADAPT_MODE} in
   PAL20212RAN_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthRAN_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthRAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -515,8 +515,8 @@ case ${ADAPT_MODE} in
   PAL20212TAK_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthTAK_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthTAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -526,8 +526,8 @@ case ${ADAPT_MODE} in
   PAL20212TAK_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="TAK_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="TAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -537,8 +537,8 @@ case ${ADAPT_MODE} in
   PAL20212TAK_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_PAL2021_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthTAK_val"
+    TRAIN_IMDB_S="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthTAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[2988]"
     ITERS=11700
@@ -561,7 +561,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="PAL_val"
+    TRAIN_IMDB_T="PAL_trainval"
     TEST_IMDB="PAL_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -594,7 +594,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="PAL2021_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -627,7 +627,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAK_val"
+    TRAIN_IMDB_T="TAK_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -660,7 +660,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="LL_val"
+    TRAIN_IMDB_T="LL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -693,7 +693,7 @@ case ${ADAPT_MODE} in
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="RAN_val"
+    TRAIN_IMDB_T="RAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[3500]"
     ITERS=10500
