@@ -23,27 +23,27 @@ sh ./lib/make.sh
 
 ## Data Preparation
 #### HUA
-- Download the data from [here](https://drive.google.com/file/d/1qVys_q6kJsKD9fI0nEgCxMXlWsXsJIMB/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1OgYHt_m0fd_3lj08H3bH-K5rGofxskaN/view?usp=sharing).
 - Extract the files under `data/`
 
 #### LL
-- Download the data from [here](https://drive.google.com/file/d/1wkJYBn7Dt-sFQLcfJxS8gvszOnkMvcw5/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1q0_xNuBmdLGNK0Vf0t3kuPYTtqI-eDD7/view?usp=sharing).
 - Extract the files under `data/`
 
 #### PAL_2020 FR
-- Download the data from [here](https://drive.google.com/file/d/1XS1fks52eXOpYsH5_kGlAzlw7K6UH38M/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1ddsyh8sHCWGx3PiDCwLuhKdAy-bSYO6f/view?usp=sharing).
 - Extract the files under `data/`
 
 #### PAL_2021 RT
-- Download the data from [here](https://drive.google.com/file/d/1vp_AOVgbXS4dr_Tg1tDdAhryPvzVvijX/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1GjpiYFHO7k8xupa9LLhtMA4NQ6Zmoo63/view?usp=sharing).
 - Extract the files under `data/`
 
 #### TAK
-- Download the data from [here](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/1IVptCL_yX2l8gqkBaJmvjm4aoSb-vT9i/view?usp=sharing).
 - Extract the files under `data/`
 
 #### RAN
-- Download the data from [here](https://drive.google.com/file/d/1syo7P1sa1W5WcIIyiow9BgYdFgmnPUA6/view?usp=sharing).
+- Download the data from [here](https://drive.google.com/file/d/10xoa_dCF-CjOMO6kglCcSK79z8SRoq46/view?usp=sharing).
 - Extract the files under `data/`
 
 #### Preparing synthetic dataset with color-matcher:
