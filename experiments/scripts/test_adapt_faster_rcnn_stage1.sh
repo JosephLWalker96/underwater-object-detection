@@ -46,7 +46,7 @@ case ${ADAPT_MODE} in
   HUA2PAL_CycleGAN)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUA_synthPALtrain+HUA_synthPALval"
-    TEST_IMDB="PAL_val"
+    TEST_IMDB="PAL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -54,8 +54,8 @@ case ${ADAPT_MODE} in
     ;;
   HUA2PAL_direct)
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="PAL_val"
-    TEST_IMDB="PAL_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TEST_IMDB="PAL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -64,7 +64,7 @@ case ${ADAPT_MODE} in
   HUA2PAL_cm)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynth_PALtrain+HUAsynthPAL_val"
-    TEST_IMDB="PAL_val"
+    TEST_IMDB="PAL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -73,7 +73,7 @@ case ${ADAPT_MODE} in
   HUA2LL_CycleGAN)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthLL_train+HUAsynthLL_val"
-    TEST_IMDB="LL_val"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -81,8 +81,8 @@ case ${ADAPT_MODE} in
     ;;
   HUA2LL_direct)
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="LL_val"
-    TEST_IMDB="LL_val"
+    TRAIN_IMDB_T="LL_trainval"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -91,7 +91,7 @@ case ${ADAPT_MODE} in
   HUA2LL_cm)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthLL_train+HUAsynthLL_val"
-    TEST_IMDB="LL_val"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -100,7 +100,7 @@ case ${ADAPT_MODE} in
   HUA2PAL2021_CycleGAN)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthPAL2021_train+HUAsynthPAL2021_val"
-    TEST_IMDB="PAL2021_val"
+    TEST_IMDB="PAL2021_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -108,8 +108,8 @@ case ${ADAPT_MODE} in
     ;;
   HUA2PAL2021_direct)
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="PAL2021_val"
-    TEST_IMDB="PAL2021_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TEST_IMDB="PAL2021_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -118,7 +118,7 @@ case ${ADAPT_MODE} in
   HUA2PAL2021_cm)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthPAL_2021train+HUAsynthPAL2021_val"
-    TEST_IMDB="PAL2021_val"
+    TEST_IMDB="PAL2021_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -127,7 +127,7 @@ case ${ADAPT_MODE} in
   HUA2TAK_CycleGAN)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthTAK_train+HUAsynthTAK_val"
-    TEST_IMDB="TAK_val"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -135,8 +135,8 @@ case ${ADAPT_MODE} in
     ;;
   HUA2TAK_direct)
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="TAK_val"
-    TEST_IMDB="TAK_val"
+    TRAIN_IMDB_T="TAK_trainval"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -145,7 +145,7 @@ case ${ADAPT_MODE} in
   HUA2TAK_cm)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthTAK_train+HUAsynthTAK_val"
-    TEST_IMDB="TAK_val"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -154,7 +154,7 @@ case ${ADAPT_MODE} in
   HUA2RAN_CycleGAN)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthRAN_train+HUAsynthRAN_val"
-    TEST_IMDB="RAN_val"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -162,8 +162,8 @@ case ${ADAPT_MODE} in
     ;;
   HUA2RAN_direct)
     TRAIN_IMDB_S="HUA_train+HUA_val"
-    TRAIN_IMDB_T="RAN_val"
-    TEST_IMDB="RAN_val"
+    TRAIN_IMDB_T="RAN_trainval"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -172,7 +172,7 @@ case ${ADAPT_MODE} in
   HUA2RAN_cm)
     TRAIN_IMDB_S="HUA_train+HUA_val"
     TRAIN_IMDB_T="HUAsynthRAN_train+HUAsynthRAN_val"
-    TEST_IMDB="RAN_val"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -180,7 +180,7 @@ case ${ADAPT_MODE} in
     ;;
     
   PAL2HUA_direct)
-    TRAIN_IMDB_S="PAL_val"
+    TRAIN_IMDB_T="PAL_trainval"
     TRAIN_IMDB_T="HUA_train+HUA_val"
     TEST_IMDB="HUA_trainval"
     ITERS=${TEST_ITER}
@@ -189,8 +189,8 @@ case ${ADAPT_MODE} in
     RATIOS="[0.5,1,2]"
     ;;
   PAL2HUA_cm)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthHUA_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthHUA_trainval"
     TEST_IMDB="HUA_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
@@ -198,72 +198,72 @@ case ${ADAPT_MODE} in
     RATIOS="[0.5,1,2]"
     ;;
   PAL2LL_direct)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="LL_val"
-    TEST_IMDB="LL_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="LL_trainval"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2LL_cm)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthLL_val"
-    TEST_IMDB="LL_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthLL_trainval"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2PAL2021_direct)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PAL2021_val"
-    TEST_IMDB="PAL2021_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TEST_IMDB="PAL2021_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2PAL2021_cm)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthPAL2021_val"
-    TEST_IMDB="PAL2021_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthPAL2021_trainval"
+    TEST_IMDB="PAL2021_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2TAK_direct)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="TAK_val"
-    TEST_IMDB="TAK_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="TAK_trainval"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2TAK_cm)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthTAK_val"
-    TEST_IMDB="TAK_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthTAK_trainval"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2RAN_direct)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="RAN_val"
-    TEST_IMDB="RAN_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="RAN_trainval"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL2RAN_cm)
-    TRAIN_IMDB_S="PAL_val"
-    TRAIN_IMDB_T="PALsynthRAN_val"
-    TEST_IMDB="RAN_val"
+    TRAIN_IMDB_T="PAL_trainval"
+    TRAIN_IMDB_T="PALsynthRAN_trainval"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -271,7 +271,7 @@ case ${ADAPT_MODE} in
     ;;
     
   PAL20212HUA_direct)
-    TRAIN_IMDB_S="PAL2021_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
     TRAIN_IMDB_T="HUA_train+HUA_val"
     TEST_IMDB="HUA_trainval"
     ITERS=${TEST_ITER}
@@ -280,8 +280,8 @@ case ${ADAPT_MODE} in
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212HUA_cm)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthHUA_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthHUA_trainval"
     TEST_IMDB="HUA_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
@@ -289,72 +289,72 @@ case ${ADAPT_MODE} in
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212LL_direct)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="LL_val"
-    TEST_IMDB="LL_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="LL_trainval"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212LL_cm)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthLL_val"
-    TEST_IMDB="LL_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthLL_trainval"
+    TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212PAL_direct)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL_val"
-    TEST_IMDB="PAL_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL_trainval"
+    TEST_IMDB="PAL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212PAL_cm)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthPAL_val"
-    TEST_IMDB="PAL_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthPAL_trainval"
+    TEST_IMDB="PAL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212TAK_direct)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="TAK_val"
-    TEST_IMDB="TAK_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="TAK_trainval"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212TAK_cm)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthTAK_val"
-    TEST_IMDB="TAK_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthTAK_trainval"
+    TEST_IMDB="TAK_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212RAN_direct)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="RAN_val"
-    TEST_IMDB="RAN_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="RAN_trainval"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
   PAL20212RAN_cm)
-    TRAIN_IMDB_S="PAL2021_val"
-    TRAIN_IMDB_T="PAL2021synthRAN_val"
-    TEST_IMDB="RAN_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021synthRAN_trainval"
+    TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
     ANCHORS="[4,8,16,32]"
@@ -372,7 +372,7 @@ case ${ADAPT_MODE} in
     ;;
   TAK2PAL_direct)
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="PAL_val"
+    TRAIN_IMDB_T="PAL_trainval"
     TEST_IMDB="PAL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
@@ -399,7 +399,7 @@ case ${ADAPT_MODE} in
     ;;
   TAK2LL_direct)
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="LL_val"
+    TRAIN_IMDB_T="LL_trainval"
     TEST_IMDB="LL_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
@@ -426,7 +426,7 @@ case ${ADAPT_MODE} in
     ;;
   TAK2PAL2021_direct)
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="PAL2021_val"
+    TRAIN_IMDB_T="PAL2021_trainval"
     TEST_IMDB="PAL2021_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
@@ -453,7 +453,7 @@ case ${ADAPT_MODE} in
     ;;
   TAK2HUA_direct)
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="HUA_val"
+    TRAIN_IMDB_T="HUA_trainval"
     TEST_IMDB="HUA_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
@@ -480,7 +480,7 @@ case ${ADAPT_MODE} in
     ;;
   TAK2RAN_direct)
     TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="RAN_val"
+    TRAIN_IMDB_T="RAN_trainval"
     TEST_IMDB="RAN_trainval"
     ITERS=${TEST_ITER}
     STEPSIZE="[50000]"
