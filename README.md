@@ -9,6 +9,28 @@
 ```
 
 
+## Backgorund
+This dataset consists of 2,109 images of Smart Underwater Imaging Telemeters (SUITs) that were
+imaged across six different coral reefs. This dataset was curated for domain adaptation experimentation
+for underwater object detection settings.
+The associated manuscript has been submitted for publication under the title:
+Underwater object detection under dataset shift.
+
+Authors: 
+Joseph L. Walker 1*, 
+Zheng Zeng2, 
+Chengchen Wu 2, 
+Jules S. Jaffe 1, 
+Kaitlin E. Frasier 1, 
+Stuart A. Sandin 1
+
+1 Scripps Institution of Oceanography,
+2 University of California, San Diego
+
+Corresponding author: Joseph L. Walker, jlwalker (at) ucsd (dot) edu
+python-based software associated with the publication can be found at:
+https://github.com/JosephLWalker96/underwater-object-detection
+
 ## Dependencies
 This code is tested with **Pytorch 0.4.1** and **CUDA 9.0**
 ```
@@ -21,7 +43,10 @@ pip install -r requirements.txt
 sh ./lib/make.sh
 ```
 
-## Data Preparation
+## Data Details
+This dataset includes six .zip files (one .zip file for each of the six environments considered in the study)
+where each .zip file contains the images and bounding box annotations for the SUITs.
+
 #### HUA
 - Download the data from [here](https://drive.google.com/file/d/1OgYHt_m0fd_3lj08H3bH-K5rGofxskaN/view?usp=sharing).
 - Extract the files under `data/`
