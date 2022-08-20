@@ -1,13 +1,4 @@
-# Progressive Domain Adaptation for Object Detection (from https://github.com/kevinhkhsu/DA_detection)
-```
-@inproceedings{hsu2020progressivedet,
-  author = {Han-Kai Hsu and Chun-Han Yao and Yi-Hsuan Tsai and Wei-Chih Hung and Hung-Yu Tseng and Maneesh Singh and Ming-Hsuan Yang},
-  booktitle = {IEEE Winter Conference on Applications of Computer Vision (WACV)},
-  title = {Progressive Domain Adaptation for Object Detection},
-  year = {2020}
-}
-```
-
+# Underwater Object Detection Under Dataset Shift
 
 ## Backgorund
 This dataset consists of 2,109 images of Smart Underwater Imaging Telemeters (SUITs) that were
@@ -124,3 +115,13 @@ Download the following pretrained detector weights to `./trained_weights/pretrai
 
 ## Acknowledgement
 We would like to express our thanks to the awesome implementations from [DA_detection](https://github.com/kevinhkhsu/DA_detection) and [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn/blob/master/README.md). This project is heavily based on [DA_detection](https://github.com/kevinhkhsu/DA_detection).
+
+## Citation
+```
+@inproceedings{hsu2020progressivedet,
+  author = {Han-Kai Hsu and Chun-Han Yao and Yi-Hsuan Tsai and Wei-Chih Hung and Hung-Yu Tseng and Maneesh Singh and Ming-Hsuan Yang},
+  booktitle = {IEEE Winter Conference on Applications of Computer Vision (WACV)},
+  title = {Progressive Domain Adaptation for Object Detection},
+  year = {2020}
+}
+```
