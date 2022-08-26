@@ -1,4 +1,7 @@
+# istarmap.py for Python 3.8+
+# cite: https://www.pythonfixing.com/2022/01/fixed-starmap-combined-with-tqdm.html 
 import multiprocessing.pool as mpp
+
 
 def istarmap(self, func, iterable, chunksize=1):
     """starmap-version of imap
@@ -19,5 +22,6 @@ def istarmap(self, func, iterable, chunksize=1):
             result._set_length
         ))
     return (item for chunk in result for item in chunk)
+
 
 mpp.Pool.istarmap = istarmap
