@@ -69,59 +69,130 @@ case ${DATASET} in
     RATIOS="[0.5,1,2]"
     ;;
   HUA)
-    TRAIN_IMDB='PAL_train'
+    TRAIN_IMDB='PAL2021_train'
     TEST_IMDB='HUA_trainval'
-    ITERS=70001
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
-    ;;
-  HUAsynthPAL)
-    TRAIN_IMDB='HUA_train+HUA_val'
-    TEST_IMDB='PAL_val'
-    ITERS=70000
-    ANCHORS="[4,8,16,32]"
-    RATIOS="[0.5,1,2]"
-    NET_FINAL='/mnt/DA_detection/output/vgg16/HUA_train+HUA_val/default/vgg16_faster_rcnn_iter_70000.pth'
     ;;
   PAL)
-    TRAIN_IMDB='PAL_train'
-    TEST_IMDB='PAL_val'
-    ITERS=70000
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL_trainval'
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
-    NET_FINAL='/mnt/DA_detection/output/vgg16/HUA_train/default/vgg16_faster_rcnn_iter_15000.pth'
     ;;
   LL)
-    TRAIN_IMDB='PAL_train'
-    TEST_IMDB='LL_val'
-    ITERS=70000
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='LL_trainval'
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
-    NET_FINAL='/mnt/DA_detection/output/vgg16/HUA_train/default/vgg16_faster_rcnn_iter_15000.pth'
+    ;;
+  MOO)
+    TRAIN_IMDB='MOO_train'
+    TEST_IMDB='PAL2021_trainval'
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAH)
+    TRAIN_IMDB='TAH_train'
+    TEST_IMDB='PAL2021_trainval'
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
     ;;
   PAL2021)
-    TRAIN_IMDB='PAL_train'
-    TEST_IMDB='PAL2021_val'
-    ITERS=70000
+    TRAIN_IMDB='TAK_train'
+    TEST_IMDB='PAL2021_trainval'
+    ITERS=35000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
-    NET_FINAL='/mnt/DA_detection/output/vgg16/HUA_train/default/vgg16_faster_rcnn_iter_15000.pth'
     ;;
   RAN)
-    TRAIN_IMDB='PAL_train'
-    TEST_IMDB='RAN_val'
-    ITERS=70000
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='RAN_trainval'
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
-    NET_FINAL='/mnt/DA_detection/output/vgg16/HUA_train/default/vgg16_faster_rcnn_iter_15000.pth'
     ;;
   TAK)
-    TRAIN_IMDB='PAL_train'
-    TEST_IMDB='TAK_val'
-    ITERS=70000
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='TAK_trainval'
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
-    NET_FINAL='/mnt/DA_detection/output/vgg16/HUA_train/default/vgg16_faster_rcnn_iter_15000.pth'
+    ;;
+  PAL20212HUA)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021synthHUA_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212LL)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021synthLL_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212PAL)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021synthPAL_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212TAK)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021synthTAK_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL20212RAN)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021synthRAN_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  HUA2PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='HUAsynthPAL2021_trainval'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  LL2PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='LLsynthPAL2021_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PALsynthPAL2021_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  RAN2PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='RANsynthPAL2021_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK2PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='TAKsynthPAL2021_val'
+    ITERS=30084
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
     ;;
   *)
     echo "No dataset given"

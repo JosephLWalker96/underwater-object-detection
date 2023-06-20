@@ -15,8 +15,16 @@ from __future__ import print_function
 
 from model.config import cfg
 from roi_data_layer.minibatch import get_minibatch
+from utils.blob import prep_im_for_blob, im_list_to_blob
+from RandAugment import *
+import cv2
 import numpy as np
+import numpy.random as npr
+import random
+import PIL.Image as Image
 import time
+import os
+from torch.utils.data import DataLoader, Dataset
 
 class RoIDataLayer(object):
   """Fast R-CNN data layer used for training."""
@@ -28,6 +36,13 @@ class RoIDataLayer(object):
     # Also set a random flag
     self._random = random
     self._shuffle_roidb_inds()
+    
+    self.dataloader = DataLoader(MyDataset(roidb), 
+                                 shuffle=random, 
+                                 batch_size=1,
+                                 pin_memory=True, 
+                                 num_workers=os.cpu_count())
+    self.iter = self.dataloader.__iter__()
 
   def _shuffle_roidb_inds(self):
     """Randomly permute the training roidb."""
@@ -86,5 +101,116 @@ class RoIDataLayer(object):
       
   def forward(self):
     """Get blobs and copy them into this layer's top blob vector."""
-    blobs = self._get_next_minibatch()
+    # blobs = self._get_next_minibatch()
+    try:
+      blobs = self.iter.__next__()
+    except StopIteration:
+      self.iter = self.dataloader.__iter__()
+      blobs = self.iter.__next__()
+
+    blobs['data'] = blobs['data'].squeeze(dim=0).cpu().detach().numpy()
+    blobs['gt_boxes'] = blobs['gt_boxes'].squeeze(dim=0).cpu().detach().numpy()
+    blobs['im_info'] = blobs['im_info'].squeeze().cpu().detach().numpy()
+    
+    # print(blobs['data'].shape)
+    # print(blobs['gt_boxes'].shape)
+    # print(blobs['im_info'].shape)
     return blobs
+
+class MyDataset(Dataset):
+  def __init__(self, roidb):
+    super().__init__()
+    self.database = roidb
+
+  def __len__(self) -> int:
+    return len(self.database)
+
+  def __getitem__(self, idx: int):
+    data_entry = self.database[idx]
+    scale_inds = npr.randint(0, high=len(cfg.TRAIN.SCALES),
+                  size=1)
+
+    i = 0
+    processed_ims = []
+    im_scales = []
+    im_path = []
+    im = cv2.imread(data_entry['image'])
+    orig_imshape = im.shape
+    if data_entry['flipped']:
+      im = im[:, ::-1, :]
+
+    # gt boxes: (x1, y1, x2, y2, cls)
+    if cfg.TRAIN.USE_ALL_GT:
+      # Include all ground truth boxes
+      gt_inds = np.where(data_entry['gt_classes'] != 0)[0]
+    else:
+      # For the COCO ground truth boxes, exclude the ones that are ''iscrowd'' 
+      gt_inds = np.where(data_entry['gt_classes'] != 0 & np.all(data_entry['gt_overlaps'].toarray() > -1.0, axis=1))[0]
+    
+    bboxes = data_entry['boxes'][gt_inds, :]
+
+#     shape transform (changed shape+position)
+#     if np.random.random(size=1)[0] > 0.5:
+#         m = np.random.randint(low=0, high=30, size=1)[0]
+#         dist_or_perspective = RandAugment(1, m, \
+#                                           [('FurtherDistance', 0.1, 1)])
+# #                                           [('Perspective', 0, 0.5), \
+# #                                            ('FurtherDistance', 0.1, 1)])
+#         crop = RandAugment(1, m,
+#                           [('RandomCropping', 0, 0.5)])
+#         shape_transform = random.choice([dist_or_perspective, crop])
+#         im, bboxes = shape_transform(Image.fromarray(im), bboxes)
+#         im = np.array(im)
+    # position transform (shape should be unchanged)
+#     if np.random.random(size=1)[0] > 0.5:
+#         n, m = np.random.randint(low=1, high=2, size=1)[0], np.random.randint(low=0, high=30, size=1)[0]
+#         randAug = RandAugment(n, m, \
+#                               [('TranslateBboxSafe', 0, 1), \
+#                               ('Rotate', 0, 30)])
+#         im, bboxes = randAug(Image.fromarray(im), bboxes)
+#         im = np.array(im)
+    
+#     m = np.random.randint(low=0, high=30, size=1)[0]
+#     randAug =  RandAugment(1, m, [('RandomCropping', 0, 0.5)])
+#     randAug =  RandAugment(1, m, [('FurtherDistance', 0.1, 1)])
+#     randAug =  RandAugment(1, m, [('Perspective', 0, 0.5)])
+    n, m = np.random.randint(low=1, high=2, size=1)[0], np.random.randint(low=0, high=30, size=1)[0]
+#     randAug = RandAugment(n, m, [('TranslateBboxSafe', 0, 1)])
+    randAug = RandAugment(n, m, [('Rotate', 0, 30)])
+#                               , \
+#                               ('Rotate', 0, 30)])
+    
+    shape_transform = randAug
+    im, bboxes = shape_transform(Image.fromarray(im), bboxes)
+    im = np.array(im)
+
+    gt_boxes = np.empty((len(gt_inds), 5), dtype=np.float32)
+    gt_boxes[:, 0:4] = bboxes
+    gt_boxes[:, 4] = data_entry['gt_classes'][gt_inds]
+
+    
+    im_path.append(data_entry['image'])
+    target_size = cfg.TRAIN.SCALES[scale_inds[i]]
+    im, im_scale = prep_im_for_blob(im, cfg.PIXEL_MEANS, target_size,
+                    cfg.TRAIN.MAX_SIZE)
+    im_scales.append(im_scale)
+    processed_ims.append(im)
+    gt_boxes[:, 0:4] *= im_scale
+
+    # Create a blob to hold the input images
+    blob = im_list_to_blob(processed_ims)
+
+    blobs = {'data': blob}
+    blobs['data_path'] = im_path
+    blobs['gt_boxes'] = gt_boxes
+    blobs['im_info'] = np.array(
+      [blob.shape[1], blob.shape[2], im_scales[0], orig_imshape[0], orig_imshape[1], orig_imshape[2]],
+      dtype=np.float32)  
+
+    # print(blobs['data'].shape)
+    # print(blobs['gt_boxes'].shape)
+    # print(blobs['im_info'].shape)
+
+    return blobs
+
+      

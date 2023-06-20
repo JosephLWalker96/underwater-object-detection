@@ -549,8 +549,8 @@ case ${ADAPT_MODE} in
   TAK2PAL_CycleGAN)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAKsynthPAL_train+TAKsynthPAL_val"
+    TRAIN_IMDB_S="TAK_train_val"
+    TRAIN_IMDB_T="TAKsynthPAL_trainval"
     TEST_IMDB="PAL_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -562,7 +562,7 @@ case ${ADAPT_MODE} in
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
     TRAIN_IMDB_S="TAK_train+TAK_val"
     TRAIN_IMDB_T="PAL_trainval"
-    TEST_IMDB="PAL_val"
+    TEST_IMDB="PAL_trainval"
     STEPSIZE="[3500]"
     ITERS=10500
     ANCHORS="[4,8,16,32]"
@@ -571,9 +571,9 @@ case ${ADAPT_MODE} in
   TAK2PAL_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAKsynthPAL_train+TAKsynthPAL_val"
-    TEST_IMDB="PAL_val"
+    TRAIN_IMDB_S="TAK_trainval"
+    TRAIN_IMDB_T="TAKsynthPAL_trainval"
+    TEST_IMDB="PAL_trainval"
     STEPSIZE="[3500]"
     ITERS=10500
     ANCHORS="[4,8,16,32]"
@@ -593,7 +593,7 @@ case ${ADAPT_MODE} in
   TAK2PAL2021_direct)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
+    TRAIN_IMDB_S="TAK_train_val"
     TRAIN_IMDB_T="PAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[3500]"
@@ -604,8 +604,8 @@ case ${ADAPT_MODE} in
   TAK2PAL2021_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAKsynthPAL2021_train+TAKsynthPAL2021_val"
+    TRAIN_IMDB_S="TAK_trainval"
+    TRAIN_IMDB_T="TAKsynthPAL2021_trainval"
     TEST_IMDB="PAL2021_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -637,8 +637,8 @@ case ${ADAPT_MODE} in
   TAK2HUA_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAKsynthTAK_train+TAKsynthTAK_val"
+    TRAIN_IMDB_S="TAK_trainval"
+    TRAIN_IMDB_T="TAKsynthHUA_trainval"
     TEST_IMDB="TAK_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -670,8 +670,8 @@ case ${ADAPT_MODE} in
   TAK2LL_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAKsynthLL_train+TAKsynthLL_val"
+    TRAIN_IMDB_S="TAK_trainval"
+    TRAIN_IMDB_T="TAKsynthLL_trainval"
     TEST_IMDB="LL_val"
     STEPSIZE="[3500]"
     ITERS=10500
@@ -703,8 +703,8 @@ case ${ADAPT_MODE} in
   TAK2RAN_cm)
     PRETRAINED_WEIGHT="${NET}_faster_rcnn_TAK_pretrained.pth"
     SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage1"
-    TRAIN_IMDB_S="TAK_train+TAK_val"
-    TRAIN_IMDB_T="TAKsynthRAN_train+TAKsynthRAN_val"
+    TRAIN_IMDB_S="TAK_trainval"
+    TRAIN_IMDB_T="TAKsynthRAN_trainval"
     TEST_IMDB="RAN_val"
     STEPSIZE="[3500]"
     ITERS=10500

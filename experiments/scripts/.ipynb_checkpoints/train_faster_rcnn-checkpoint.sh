@@ -83,7 +83,7 @@ case ${DATASET} in
     TRAIN_IMDB='HUA_train'
     TEST_IMDB='HUA_val'
     STEPSIZE="[5000]"
-    ITERS=70000
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
@@ -91,7 +91,47 @@ case ${DATASET} in
     TRAIN_IMDB='PAL_train'
     TEST_IMDB='PAL_val'
     STEPSIZE="[5000]"
-    ITERS=70000
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2021)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  PAL2021_)
+    TRAIN_IMDB='PAL2021_train'
+    TEST_IMDB='PAL2021_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK)
+    TRAIN_IMDB='TAK_train'
+    TEST_IMDB='TAK_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAH)
+    TRAIN_IMDB='TAH_train'
+    TEST_IMDB='TAH_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  MOO)
+    TRAIN_IMDB='MOO_train'
+    TEST_IMDB='MOO_val'
+    STEPSIZE="[5000]"
+    ITERS=60000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;

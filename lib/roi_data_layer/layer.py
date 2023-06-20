@@ -23,6 +23,7 @@ import numpy.random as npr
 import random
 import PIL.Image as Image
 import time
+import os
 from torch.utils.data import DataLoader, Dataset
 
 class RoIDataLayer(object):
@@ -40,7 +41,7 @@ class RoIDataLayer(object):
                                  shuffle=random, 
                                  batch_size=1,
                                  pin_memory=True, 
-                                 num_workers=12)
+                                 num_workers=os.cpu_count())
     self.iter = self.dataloader.__iter__()
 
   def _shuffle_roidb_inds(self):
@@ -148,12 +149,13 @@ class MyDataset(Dataset):
     
     bboxes = data_entry['boxes'][gt_inds, :]
 
-    # shape transform (changed shape+position)
+#     shape transform (changed shape+position)
     if np.random.random(size=1)[0] > 0.5:
         m = np.random.randint(low=0, high=30, size=1)[0]
         dist_or_perspective = RandAugment(1, m, \
-                                          [('Perspective', 0, 0.5), \
-                                            ('FurtherDistance', 0.1, 1)])
+                                          [('FurtherDistance', 0.1, 1)])
+#                                           [('Perspective', 0, 0.5), \
+#                                            ('FurtherDistance', 0.1, 1)])
         crop = RandAugment(1, m,
                           [('RandomCropping', 0, 0.5)])
         shape_transform = random.choice([dist_or_perspective, crop])
@@ -167,6 +169,20 @@ class MyDataset(Dataset):
                               ('Rotate', 0, 30)])
         im, bboxes = randAug(Image.fromarray(im), bboxes)
         im = np.array(im)
+    
+#     m = np.random.randint(low=0, high=30, size=1)[0]
+#     randAug =  RandAugment(1, m, [('RandomCropping', 0, 0.5)])
+#     randAug =  RandAugment(1, m, [('FurtherDistance', 0.1, 1)])
+#     randAug =  RandAugment(1, m, [('Perspective', 0, 0.5)])
+#     n, m = np.random.randint(low=1, high=2, size=1)[0], np.random.randint(low=0, high=30, size=1)[0]
+#     randAug = RandAugment(n, m, [('TranslateBboxSafe', 0, 1)])
+#     randAug = RandAugment(n, m, [('Rotate', 0, 30)])
+#                               , \
+#                               ('Rotate', 0, 30)])
+    
+    shape_transform = randAug
+    im, bboxes = shape_transform(Image.fromarray(im), bboxes)
+    im = np.array(im)
 
     gt_boxes = np.empty((len(gt_inds), 5), dtype=np.float32)
     gt_boxes[:, 0:4] = bboxes

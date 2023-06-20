@@ -238,7 +238,7 @@ def TranslateYabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
 
-def TranslateYBboxSafe(img, v, bbox):  # [0, 1]
+def TranslateYBBoxSafe(img, v, bbox):  # [0, 1]
     assert 0 <= v
     if random.random() > 0.5:
         v = -v
@@ -434,8 +434,8 @@ augment_map = {
     'TranslateY': TranslateY,
     'TranslateXabs': TranslateXabs,
     'TranslateYabs': TranslateYabs,
-    'TranslateXthr': TranslateXBBoxSafe,
-    'TranslateYthr': TranslateYBboxSafe,
+    'TranslateXBBoxSafe': TranslateXBBoxSafe,
+    'TranslateYBBoxSafe': TranslateYBBoxSafe,
     'CutoutBboxSafe': CutoutBboxSafe,
     'FurtherDistance': FurtherDistance,
     'TranslateBboxSafe': TranslateBboxSafe,
@@ -495,20 +495,6 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
 
     if aug_ls is None:
         ls = [
-            # (AutoContrast, 0, 1),
-            # (Equalize, 0, 1),
-            # # (Invert, 0, 1),
-            # (Posterize, 0, 4),
-            # # (Solarize, 0, 256),
-            # # (SolarizeAdd, 0, 110),
-            # (Color, 0.1, 1.9),
-            # (Contrast, 0.1, 1.9),
-            # (Brightness, 0.1, 1.9),
-            # (Sharpness, 0.1, 1.9),
-#             (TranslateXBBoxSafe, 0., 1),
-#             (TranslateYBboxSafe, 0., 1),
-#             (CutoutBboxSafe, 0, 100),
-
             (Rotate, 0, 30),
             (TranslateBboxSafe, 0., 1.),
             (RandomCropping, 0., 1),

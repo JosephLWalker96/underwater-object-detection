@@ -12,7 +12,9 @@ NET=$3
 # PREV_ITERS=$4
 # PREV_ITERS=5510
 #PREV_ITERS=11950
-PREV_ITERS=11700
+# PREV_ITERS=11700
+PREV_ITERS=10500
+# PREV_ITERS=$4
 
 array=( $@ )
 len=${#array[@]}
@@ -260,7 +262,7 @@ case ${ADAPT_MODE} in
     PREV_S="PAL2021_trainval"
     TRAIN_IMDB_S="PAL2021synthRAN_trainval"
     TRAIN_IMDB_T="RAN_trainval"
-    TEST_IMDB="RAN_val"
+    TEST_IMDB="RAN_trainval"
     STEPSIZE="[2988]"
     ITERS=5975
     ANCHORS="[4,8,16,32]"
@@ -272,6 +274,62 @@ case ${ADAPT_MODE} in
     TRAIN_IMDB_S="PAL2021synthTAK_trainval"
     TRAIN_IMDB_T="TAK_trainval"
     TEST_IMDB="TAK_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+    
+  TAK2HUA_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="TAK_trainval"
+    TRAIN_IMDB_S="TAKsynthHUA_trainval"
+    TRAIN_IMDB_T="HUA_trainval"
+    TEST_IMDB="HUA_trainval"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK2LL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="TAK_trainval"
+    TRAIN_IMDB_S="TAKsynthLL_trainval"
+    TRAIN_IMDB_T="LL_trainval"
+    TEST_IMDB="LL_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK2PAL_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="TAK_trainval"
+    TRAIN_IMDB_S="TAKsynthPAL_trainval"
+    TRAIN_IMDB_T="PAL_trainval"
+    TEST_IMDB="PAL_val"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK2RAN_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="TAK_trainval"
+    TRAIN_IMDB_S="TAKsynthRAN_trainval"
+    TRAIN_IMDB_T="RAN_trainval"
+    TEST_IMDB="RAN_trainval"
+    STEPSIZE="[2988]"
+    ITERS=5975
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  TAK2PAL2021_cm)
+    SNAPSHOT_PREFIX="${NET}_faster_rcnn_${ADAPT_MODE}_stage2"
+    PREV_S="TAK_trainval"
+    TRAIN_IMDB_S="TAKsynthPAL2021_trainval"
+    TRAIN_IMDB_T="PAL2021_trainval"
+    TEST_IMDB="PAL2021_trainval"
     STEPSIZE="[2988]"
     ITERS=5975
     ANCHORS="[4,8,16,32]"

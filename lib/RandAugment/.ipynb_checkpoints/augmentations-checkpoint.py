@@ -14,6 +14,58 @@ from tqdm import tqdm
 import os
 import glob
 
+def RandomCropping(img, v, bboxs):
+    # v = 1-v
+    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    img_w, img_h = img.shape[1], img.shape[0]
+
+    x_min, y_min, x_max, y_max = union_of_bboxes(
+        width=img_w, height=img_h, bboxes=bboxs
+    )
+
+    # find the dist from cropped region to left, top, right and bottom
+    rm_v = 1-v  # the proportion to be removed
+    rm_v_left = float(rm_v * np.random.random(1)[0])
+    rm_v_top = float(rm_v * np.random.random(1)[0])
+    x_rm1 = int(img_w * rm_v_left) if img_w * rm_v_left < x_min else x_min
+    y_rm1 = int(img_h * rm_v_top) if img_h * rm_v_top < y_min else y_min
+    rm_v_left = x_rm1 / img_w
+    rm_v_top = y_rm1 / img_h
+
+    rm_v_right = rm_v - rm_v_left
+    rm_v_bottom = rm_v - rm_v_top
+    x_rm2 = int(img_w * rm_v_right) if img_w * rm_v_right < img_w-x_max else img_w-x_max
+    y_rm2 = int(img_h * rm_v_bottom) if img_h * rm_v_bottom < img_h-y_max else img_h-y_max
+    rm_v_right = x_rm2 / img_w
+    rm_v_bottom = y_rm2 / img_h
+    rm_v_x_curr = rm_v_right + rm_v_left
+    rm_v_y_curr = rm_v_bottom + rm_v_top
+
+    if rm_v_x_curr < rm_v:
+        displace_v = rm_v-rm_v_x_curr
+        if x_rm1+img_w * displace_v < x_min:
+            x_rm1 += displace_v*img_w
+
+    if rm_v_y_curr < rm_v:
+        displace_v = rm_v - rm_v_y_curr
+        if y_rm1+img_h * displace_v < y_min:
+            y_rm1 += displace_v*img_h
+
+    # find the cropped coordinates
+    x1 = max(0, int(x_rm1))
+    y1 = max(0, int(y_rm1))
+    x2 = min(img_w, int(img_w-x_rm2))
+    y2 = min(img_h, int(img_h-y_rm2))
+
+    # cropped out the region
+    t_img = img[y1:y2, x1:x2]
+    t_img = Image.fromarray(np.rint(t_img).astype(np.uint8))
+
+    # transform the bbox (don't need to change the w and h)
+    bboxs[:, 0] = bboxs[:, 0] - x1
+    bboxs[:, 1] = bboxs[:, 1] - y1
+
+    return t_img, bboxs
 
 def FurtherDistance(img, v, bboxs):  # [0, 1] percentage of original image in t_image
     img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
@@ -186,7 +238,7 @@ def TranslateYabs(img, v, bbox):  # [-150, 150] => percentage: [-0.45, 0.45]
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
 
-def TranslateYBboxSafe(img, v, bbox):  # [0, 1]
+def TranslateYBBoxSafe(img, v, bbox):  # [0, 1]
     assert 0 <= v
     if random.random() > 0.5:
         v = -v
@@ -205,15 +257,24 @@ def TranslateYBboxSafe(img, v, bbox):  # [0, 1]
         bbox[i] = corners_to_bbox(updated_corners, img)
     return img.transform(img.size, PIL.Image.AFFINE, (1, 0, 0, 0, 1, v)), bbox
 
+def TranslateBboxSafe(img, v, bbox):
+    x_v = random.random()*v
+    y_v = v - x_v
+    img, bbox = TranslateXBBoxSafe(img, x_v, bbox)
+    img, bbox = TranslateYBBoxSafe(img, y_v, bbox)
+    return img, bbox
 
 def Rotate(img, v, bbox):  # [-30, 30]
     assert -30 <= v <= 30
     if random.random() > 0.5:
         v = -v
-    M = rotation_matrix(img, v)
+
+    M, nW, nH = rotation_matrix(img, v)
+    img = Image.fromarray(cv2.warpAffine(np.array(img), M, (nW, nH)))
     for i in range(len(bbox)):
         bbox[i] = rotate_update_bbox(bbox[i], M, img)
-    return img.rotate(v), bbox
+
+    return img, bbox
 
 
 def AutoContrast(img, _, bbox):
@@ -316,6 +377,7 @@ def CutoutBboxSafe(img, v, bbox):  # [0, 1] => [0, 1 * the precentage of maximum
         img_y0 = int(max(0, img_y0 - v / 2.))
         img_x1 = min(img_w, img_x0 + v)
         img_y1 = min(img_h, img_y0 + v)
+        print(img_x0,img_y0,img_x1,img_y1)
         isValid = True
         for box in bbox:
             if (img_x0 <= box[0] and img_x1 >= box[0]) or \
@@ -372,10 +434,13 @@ augment_map = {
     'TranslateY': TranslateY,
     'TranslateXabs': TranslateXabs,
     'TranslateYabs': TranslateYabs,
-    'TranslateXthr': TranslateXBBoxSafe,
-    'TranslateYthr': TranslateYBboxSafe,
+    'TranslateXBBoxSafe': TranslateXBBoxSafe,
+    'TranslateYBBoxSafe': TranslateYBBoxSafe,
     'CutoutBboxSafe': CutoutBboxSafe,
-    'FurtherDistance': FurtherDistance
+    'FurtherDistance': FurtherDistance,
+    'TranslateBboxSafe': TranslateBboxSafe,
+    'Perspective': Perspective,
+    'RandomCropping': RandomCropping
 }
 
 aug_sel = [
@@ -430,29 +495,16 @@ def augment_list(aug_ls=None):  # 16 oeprations and their ranges
 
     if aug_ls is None:
         ls = [
-            # (AutoContrast, 0, 1),
-            # (Equalize, 0, 1),
-            # # (Invert, 0, 1),
-            # (Rotate, 0, 30),
-            # (Posterize, 0, 4),
-            # # (Solarize, 0, 256),
-            # # (SolarizeAdd, 0, 110),
-            # (Color, 0.1, 1.9),
-            # (Contrast, 0.1, 1.9),
-            # (Brightness, 0.1, 1.9),
-            # (Sharpness, 0.1, 1.9),
-            # (TranslateXBBoxSafe, 0., 1),
-            # (TranslateYBboxSafe, 0., 1),
-            # (CutoutBboxSafe, 0, 100),
-            # (ShearXBboxSafe, 0., 0.3),
-            # (ShearYBboxSafe, 0., 0.3),
-#             (Perspective, 0, 0.5)
+            (Rotate, 0, 30),
+            (TranslateBboxSafe, 0., 1.),
+            (RandomCropping, 0., 1),
+            (Perspective, 0, 0.5),
             (FurtherDistance, 0, 1)
         ]
     else:
         ls = []
         for aug, minval, maxval in aug_ls:
-            ls.append((augment_map[aug_sel[aug]], minval, maxval))
+            ls.append((augment_map[aug], minval, maxval))
     return ls
 
 

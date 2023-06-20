@@ -62,11 +62,18 @@ class vgg16(Network):
     return fc7
 
   def load_pretrained_cnn(self, state_dict):
-    #load from previous network weight
     netDict = self.state_dict()
-    stateDict = {k: v for k, v in state_dict.items() if k in netDict}
+    if not state_dict.__contains__('classifier.0.weight') and state_dict.__contains__('classifier.1.weight'):
+        state_dict['classifier.0.weight'] = state_dict['classifier.1.weight']
+    if not state_dict.__contains__('classifier.0.bias') and state_dict.__contains__('classifier.1.bias'):
+        state_dict['classifier.0.bias'] = state_dict['classifier.1.bias']
+    if not state_dict.__contains__('classifier.3.weight') and state_dict.__contains__('classifier.4.weight'):
+        state_dict['classifier.3.weight'] = state_dict['classifier.4.weight']
+    if not state_dict.__contains__('classifier.3.bias') and state_dict.__contains__('classifier.4.bias'):
+        state_dict['classifier.3.bias'] = state_dict['classifier.4.bias']
+    stateDict = {'vgg.'+k: v for k, v in state_dict.items() if 'vgg.'+k in netDict}
     
-    #print('load pretrained:', stateDict.keys())
+    print('load pretrained:', stateDict.keys())
     netDict.update(stateDict)
     nn.Module.load_state_dict(self, netDict)
     self.vgg.load_state_dict({k.replace('vgg.', ''):v for k,v in state_dict.items() if k.replace('vgg.', '') in self.vgg.state_dict()}) #loading pretrained vgg.pth

@@ -94,7 +94,7 @@ def parse_rec_bdd(labels):
   return objects
 
 def parse_rec(filename):
-  if 'voc' in filename or 'HUA' in filename or 'PAL' in filename or 'LL' in filename or 'TAK' in filename or 'RAN' in filename:
+  if 'voc' in filename or 'HUA' in filename or 'PAL' in filename or 'LL' in filename or 'TAK' in filename or 'RAN' in filename or 'TAH' in filename or 'MOO' in filename:
     return parse_rec_voc(filename)
   elif 'KITTI' in filename:
     return parse_rec_KITTI(filename)
@@ -184,47 +184,45 @@ def voc_eval(detpath,
   imagenames = [x.strip() for x in lines]
 
 
+#   if not os.path.isfile(cachefile) and 'bdd' in annopath:
+#     #load bdd annotations
+#     recs = {}
+#     with open(annopath, 'r') as f:
+#       annots = json.load(f)
+#     cc = 0
+#     for i, ann in enumerate(annots):
+#       imagename = mode+'/'+ann['name']
+#       if imagename in imagenames:
+#         cc += 1
+#         recs[imagename] = parse_rec_bdd(ann['labels'])
+#         if i % 100 == 0:
+#           print('Reading annotation for {:d}/{:d}'.format(
+#             cc , len(imagenames)))
+#     print('Reading annotation for {:d}/{:d}'.format(
+#             cc , len(imagenames)))
+#     # save
+#     print('Saving cached annotations to {:s}'.format(cachefile))
+#     with open(cachefile, 'wb') as f:
+#       pickle.dump(recs, f)
 
-  if not os.path.isfile(cachefile) and 'bdd' in annopath:
-    #load bdd annotations
-    recs = {}
-    with open(annopath, 'r') as f:
-      annots = json.load(f)
-    cc = 0
-    for i, ann in enumerate(annots):
-      imagename = mode+'/'+ann['name']
-      if imagename in imagenames:
-        cc += 1
-        recs[imagename] = parse_rec_bdd(ann['labels'])
-        if i % 100 == 0:
-          print('Reading annotation for {:d}/{:d}'.format(
-            cc , len(imagenames)))
-    print('Reading annotation for {:d}/{:d}'.format(
-            cc , len(imagenames)))
+#   elif not os.path.isfile(cachefile):
+  # load voc/KITTI annotations
+  recs = {}
+  for i, imagename in enumerate(imagenames):
+    recs[imagename] = parse_rec(annopath.format(imagename))
+    if i % 100 == 0:
+      print('Reading annotation for {:d}/{:d}'.format(i + 1, len(imagenames)))
     # save
-    print('Saving cached annotations to {:s}'.format(cachefile))
-    with open(cachefile, 'wb') as f:
-      pickle.dump(recs, f)
-
-  elif not os.path.isfile(cachefile):
-    # load voc/KITTI annotations
-    recs = {}
-    for i, imagename in enumerate(imagenames):
-      recs[imagename] = parse_rec(annopath.format(imagename))
-      if i % 100 == 0:
-        print('Reading annotation for {:d}/{:d}'.format(
-          i + 1, len(imagenames)))
-    # save
-    print('Saving cached annotations to {:s}'.format(cachefile))
-    with open(cachefile, 'wb') as f:
-      pickle.dump(recs, f)
-  else:
-    # load
-    with open(cachefile, 'rb') as f:
-      try:
-        recs = pickle.load(f)
-      except:
-        recs = pickle.load(f, encoding='bytes')
+#     print('Saving cached annotations to {:s}'.format(cachefile))
+#     with open(cachefile, 'wb') as f:
+#       pickle.dump(recs, f)
+#   else:
+#     # load
+#     with open(cachefile, 'rb') as f:
+#       try:
+#         recs = pickle.load(f)
+#       except:
+#         recs = pickle.load(f, encoding='bytes')
 
   # extract gt objects for this class
   class_recs = {}
