@@ -22,7 +22,7 @@ The associated manuscript has been submitted for publication under the title:
 Underwater object detection under dataset shift.
 
 ## Dependencies
-This code is tested with **Pytorch 0.4.0** and **CUDA 9.0**. For prepare images from ColorMatcher, the code requires 3.8 and newer; For PDA steps, the code may require 3.6 from the wheel.
+This code is tested with **Pytorch 0.4.0** and **CUDA 9.0**. For preparation images from ColorMatcher, the code requires 3.8 and newer; For PDA steps, the code may require 3.6 from the wheel.
 ```
 # Pytorch via pip: Download and install Pytorch 0.4.0 wheel for CUDA 9.0
 #                  from https://download.pytorch.org/whl/cu90/torch_stable.html
