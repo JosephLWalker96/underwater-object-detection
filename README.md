@@ -61,7 +61,7 @@ where each .zip file contains the images and bounding box annotations for the SU
 - Download the data from [here](https://drive.google.com/file/d/10xoa_dCF-CjOMO6kglCcSK79z8SRoq46/view?usp=sharing).
 - Extract the files under `data/`
 
-#### Preparing synthetic dataset with color-matcher:
+#### Preparing synthetic dataset with color-matcher (need python > 3.8 only for this step):
 cd data;
 python ColorMatcherSynthMP.py;
 
