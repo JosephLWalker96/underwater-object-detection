@@ -16,7 +16,8 @@ import glob
 
 def RandomCropping(img, v, bboxs):
     # v = 1-v
-    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    # img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    img = np.rint(np.array(img)).astype(np.uint8)
     img_w, img_h = img.shape[1], img.shape[0]
 
     x_min, y_min, x_max, y_max = union_of_bboxes(
@@ -68,7 +69,8 @@ def RandomCropping(img, v, bboxs):
     return t_img, bboxs
 
 def FurtherDistance(img, v, bboxs):  # [0, 1] percentage of original image in t_image
-    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    # img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    img = np.rint(np.array(img)).astype(np.uint8)
     o_width, o_height = img.shape[1], img.shape[0]
     width = int(img.shape[1] * v)
     height = int(img.shape[0] * v)
@@ -103,15 +105,18 @@ def FurtherDistance(img, v, bboxs):  # [0, 1] percentage of original image in t_
 
 
 def Perspective(img, v, bbox):  # [0, 1]
-    img = np.rint(np.array(img.im).reshape((img.size[1], img.size[0], 3)))
+    img = np.rint(np.array(img)).astype(np.uint8)
+    # img = np.rint(np.array(img).reshape((img.size[1], img.size[0], 3)))
     width, height = img.shape[1], img.shape[0]
     M = get_transformation_matrix(width, height, v)
-    # print(np.array(img.im))
+    
     t_img = Image.fromarray(np.rint(cv2.warpPerspective(img, M, (width, height))).astype(np.uint8))
+
     for i in range(len(bbox)):
         corners = bbox_to_corners(bbox[i]).reshape(1, 4, 2).astype(np.float32)
         updated_corners = np.rint(cv2.perspectiveTransform(corners, M)).reshape(4, 2)
         bbox[i] = corners_to_bbox(updated_corners, t_img)
+
     return t_img, bbox
 
 
@@ -564,6 +569,7 @@ class RandAugment:
 
     def __call__(self, img, bbox):
         ops = random.choices(self.augment_list, k=self.n)
+        
         for op, minval, maxval in ops:
             val = (float(self.m) / 30) * float(maxval - minval) + minval
 
@@ -571,11 +577,27 @@ class RandAugment:
             bbox[:,2] = bbox[:,2] - bbox[:,0]
             bbox[:,3] = bbox[:,3] - bbox[:,1]
 
+            orig_h, orig_w = img.size
+
             img, bbox = op(img, val, bbox)
 
             # change x1, y1, w, h to x1, y1, x2, y2
-            bbox[:,2] = bbox[:,2] + bbox[:,0]
-            bbox[:,3] = bbox[:,3] + bbox[:,1]
+            h, w = img.size
+            bbox[:, 0] = np.where(bbox[:, 0] < 0, 0, bbox[:, 0])
+            bbox[:, 1] = np.where(bbox[:, 1] < 0, 0, bbox[:, 1])
+
+            bbox[:, 2] = bbox[:, 2] + bbox[:, 0]
+            bbox[:, 3] = bbox[:, 3] + bbox[:, 1]
+
+            bbox[:, 2] = np.where(bbox[:, 2] > h, h, bbox[:, 2])
+            bbox[:, 3] = np.where(bbox[:, 3] > w, w, bbox[:, 3])
+
+            bbox[:, 0] = bbox[:, 0]/h*orig_h
+            bbox[:, 1] = bbox[:, 1]/w*orig_w
+            bbox[:, 2] = bbox[:, 2]/h*orig_h
+            bbox[:, 3] = bbox[:, 3]/w*orig_w
+
+            img = img.resize((orig_h, orig_w))
 
         return img, bbox
 
